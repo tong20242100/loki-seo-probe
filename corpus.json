@@ -1,0 +1,1081 @@
+{
+ "meta": {
+  "note": "134 条主张表原文语料。#n 与 expert_claims.md 文末索引表同序（同 SQL 生成）。原文版权归原作者(@loki_yan_seo)所有，此处收录仅为可回源核验；生成命令依赖作者本地库，见 expert_claims.md「索引」一节。",
+  "window": "2026-02-11 ~ 2026-08-29",
+  "count": 134
+ },
+ "tweets": [
+  {
+   "n": 1,
+   "tweet_id": "2021379383303471595",
+   "created_at": "2026-02-11 09:22:55 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2021379383303471595",
+   "full_text": "Bing发布了AI Performance Dashboard。现在可以很清楚地看到你的网站在Bing那头的AI表现：\n- Microsoft Copilot \n- Bing Search里的AI Summary\n\n官方的指南里讲Total Citations是指在指定时间范围内，你的网站被作为AI- Generateed Answer中，被看见或者被Cite成Source的次数。\n\n根据0-Click理论。这个数字难道不是Bing那头从你网站“偷走”的流量吗？\nhttps://t.co/JDUSqlcmwj\n\n好事是有了这个数据报表，我们大概可以知道在Bing那头网站内容在AI里的表现，别人搜什么，关注什么。\n\n不知道什么时候Google那边也可以搞一个？"
+  },
+  {
+   "n": 2,
+   "tweet_id": "2033189225483677758",
+   "created_at": "2026-03-15 23:31:00 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2033189225483677758",
+   "full_text": "One of the most persistent SEO myths is that Domain Authority and backlink volume are the most important ranking indicators.\n\nThat sounds reasonable until you work on highly competitive keywords and see smaller sites outrank Amazon, Walmart, Canva, ESPN, Forbes, or The Washington Post.\n\nAt that point, the simplistic model breaks.\n\nIf rankings were driven by a linear relationship between authority metrics and outcomes, this would not happen nearly as often as it does.\n\nWhat that tells me is:\n\nThird-party authority metrics are, at best, rough proxies.\nBacklink count alone is an incomplete explanation.\nAnd the real work is still in quality, topical authority, and trust.\n\nA lot of the industry is still chasing dashboards.\nGoogle has been giving better clues for years.\n\nNot in DA scores.\nIn relevance, depth, E-E-A-T, and whether the page genuinely deserves to rank."
+  },
+  {
+   "n": 3,
+   "tweet_id": "2033192558889963680",
+   "created_at": "2026-03-15 23:44:15 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2033192558889963680",
+   "full_text": "A lot of SEO advice focuses on things that are easy to quantify:\n\ncontent volume, backlinks, technical audits.\n\nBut one of the most important pages for EEAT is often treated like an afterthought:\nthe About Us page.\n\nThis page does more than introduce a company.\n\nIt helps establish:\n1.who is behind the site\n2.what the business actually does\n3.what experience or credentials support it\n4.whether the site’s content aligns with the real-world entity behind it\n\nThat matters because credibility is not only built through isolated articles.\nIt is built through site-wide consistency.\n\nAnd in many cases, the About page is where that consistency becomes visible.\n\nIf a site wants to be taken seriously in competitive search, this page should not be generic.\nIt should be strategic."
+  },
+  {
+   "n": 4,
+   "tweet_id": "2033335605925654664",
+   "created_at": "2026-03-16 09:12:40 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2033335605925654664",
+   "full_text": "我看到315晚会把 国内的 “GEO技术” 摆到台面来敲打的时候，\n\n我担心的是行业会不会重复一个老错误：\n把“能赚钱”误当成“应该存在”。\n\n如果你还记得当年的百度莆田系，其实就是一个更老的互联网问题：\n\n当信息入口越来越集中，入口就一定会被人想办法买下来。\n以前是搜索结果。\n后来是推荐流。\n现在，轮到 AI 的答案层了。\n\n这也是为什么我对 GEO 一直有一个很明确的区分：\n帮助模型更准确理解你，和想办法让模型更偏向你，根本不是一回事。\n前者是建设。\n后者很容易滑向污染。\n\n所以我不觉得未来的问题是 “GEO 会不会存在”。\n我觉得它一定会存在。\n\n真正的问题是：\n这个行业会不会尽快形成白帽与黑帽的边界。\n以及，平台愿不愿意真的去关那个口子。\n\nGEO 最后不会消失，它只会像 SEO 一样，分化成白帽和黑帽。真正的问题不是你在不在做 GEO，而是你到底在优化，还是在污染。\n\n根据我的了解\nGoogle Gemini, AI Mode, AI Overview 因为EEAT框架保底，AI投毒没有那么容易可以干扰到谷歌的结果。\nChatGPT和Claude最新的模型，在毒抗这点也比之前更显著了。\n\n两种GEO优化会不会演变成我们知道的百度VS谷歌呢？"
+  },
+  {
+   "n": 5,
+   "tweet_id": "2033383720305230314",
+   "created_at": "2026-03-16 12:23:52 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2033383720305230314",
+   "full_text": "蓝V互关。做SEO和出海，Affiliation, YMYL类型网站的朋友可以互关一下。\n🤟 我过去三年在美国市场做过最难的几个SEO Niche\n👉 我会不定时更新一些高阶的SEO咨询和玩法"
+  },
+  {
+   "n": 6,
+   "tweet_id": "2033390752001335397",
+   "created_at": "2026-03-16 12:51:48 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2033390752001335397",
+   "full_text": "只要是和钱搭上边的网站，要做 SEO，门槛其实很高。\n\n但这个门槛，不是很多人第一反应里的外链。\n\n真正的门槛，往往是这三件事：\n权威性、专业性、合规性。\n\n这几年 Google 打掉了很多不合规的网站，已经说明一个问题：\n\n在这类赛道里，搜索排名不是单纯的流量分发，而是信任分发。\n\n你的网站是不是合规。\n你背后的公司是不是一个可信实体。\n你的作者团队是不是真实、可验证、具备相关背景。\n这些都直接影响你能不能进入更高的排名区间。\n\n尤其在中文圈，很多人做“直接对钱”的网站，会卡在一个很现实的问题上：\n你很难把作者身份真正亮出来。\n\n但 Google 看作者，不只是看你写了个名字。\n它看的是作者实体、公开履历、领英账号、业背景，以及这些信息是否能被交叉验证。\n\n如果作者是 AIGC 包装出来的，一查其实很容易露出来。\n所以有时候，一个网站 SEO 做不上去，真的不完全是执行层的问题。\n\n有可能是它从底层就缺少 Google 愿意信任的那套信号。\n\n这也是为什么这类项目最后很容易陷入死循环：\n没有权威团队，做不上去；\n做不上去，又很难有资源去补权威团队。\n\n这就是谷歌EEAT 里面讲的YMYL的概念"
+  },
+  {
+   "n": 7,
+   "tweet_id": "2033414646775083406",
+   "created_at": "2026-03-16 14:26:45 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2033414646775083406",
+   "full_text": "Excited to be speaking at Ahrefs Evolve Singapore 2026. @ahrefsevolve @ahrefs \n\nMy topic:\nRebuilding for the Machine: A “Day 0” Framework for AI Inclusion\nMost APAC brands don’t have an authority problem. \nThey have a technical one.\nThey have the expertise.\nThey have the products.\nThey have the brand story.\n\nBut they are still invisible, misunderstood, or poorly represented in AI-driven environments because their digital foundations were never built for machine interpretation.\nThat is the gap I want to address.\n\nThis session will connect traditional Technical SEO with AI Search, and show why brands fail the AI readability test, not in theory, but in practice.\n\nWe’ll look at what actually makes a brand machine-readable, where the breakdown usually happens, and what needs to be rebuilt from Day 0 if we want AI systems to retrieve, interpret, and trust our information correctly.\n\n#AhrefsEvolve #SEO #TechnicalSEO #AISearch #ahrefs #GEO"
+  },
+  {
+   "n": 8,
+   "tweet_id": "2033812415503339622",
+   "created_at": "2026-03-17 16:47:20 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2033812415503339622",
+   "full_text": "@rwayne 文科生搞SEO GEO Affiliation 老猛了。就是信息差"
+  },
+  {
+   "n": 9,
+   "tweet_id": "2033816600642785483",
+   "created_at": "2026-03-17 17:03:58 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2033816600642785483",
+   "full_text": "@YangGuangAI 写得超级好。语义识别是NLP和Embedding方向，需要慢慢反推。中美GEO最大的区别是GPT，Gemini可能没有办法获得国内平台的一手信息。"
+  },
+  {
+   "n": 10,
+   "tweet_id": "2033817449922245047",
+   "created_at": "2026-03-17 17:07:21 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2033817449922245047",
+   "full_text": "给YMYL方向网站，特别是Web 3的SEO Tips:\n如果你的外链都是定制的Anchor Text，disavow或者要求那边删了\n如果你的内容都是AIGC并且作者都是假的，换成新的\n很有可能你的排名一下子就会上去"
+  },
+  {
+   "n": 11,
+   "tweet_id": "2034060421578297579",
+   "created_at": "2026-03-18 09:12:50 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2034060421578297579",
+   "full_text": "Cover image for blog articles is such a nightmare.\n\nI tried Nano Banana Pro on Google AI Studio 2 weeks ago.\n\nI've used Gemini to create some image generation prompts for me, not optimized yet.\n\nbut the quality was amazing.\n\nI will share my prompts if you need them. https://t.co/gOJVUoik8K"
+  },
+  {
+   "n": 12,
+   "tweet_id": "2034484410637283356",
+   "created_at": "2026-03-19 13:17:37 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2034484410637283356",
+   "full_text": "@willlhhh 很好的文章。这样一个Schedule task 盯着一个关键字的情况每个月的成本大概怎么样？\n\n我觉得这种intelligence价值比SEMRUSH那些高多了。"
+  },
+  {
+   "n": 13,
+   "tweet_id": "2034784854009946123",
+   "created_at": "2026-03-20 09:11:28 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2034784854009946123",
+   "full_text": "突然发现半岛电视台https://t.co/RFyF1NfgwR 的中文板块https://t.co/sbsgtZ5ecf被关掉了。现在整个子域名都301了。去年7月在曼谷的Google Conference听他们的SEO分享，还觉得这个网站的新闻SEO做的特别好，有人知道是为什么吗？ https://t.co/RHelDQowuV"
+  },
+  {
+   "n": 14,
+   "tweet_id": "2034868852602151058",
+   "created_at": "2026-03-20 14:45:15 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2034868852602151058",
+   "full_text": "今天看到两家之前在小红书上推AI SEO博客自动化的网站从去年12月开始排名断崖式下降\n这些做SEO工具的是不是都不理解什么是E-E-A-T, YMYL和HCU?"
+  },
+  {
+   "n": 15,
+   "tweet_id": "2037101323024556384",
+   "created_at": "2026-03-26 18:36:17 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2037101323024556384",
+   "full_text": "@gaganghotra_ More spam websites, parasite websites, expired domain, AI content abuse, fake authors."
+  },
+  {
+   "n": 16,
+   "tweet_id": "2037876679922856353",
+   "created_at": "2026-03-28 21:57:17 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2037876679922856353",
+   "full_text": "@willlhhh 基本上manual action 了。整套东西基本上上千万级别的页面，从十一月开始。可以确认每次Core Update就是一次结算周期。领英上一个印度小哥先发现的，然后还艾特了谷歌的人，所以基本上可以确定是手动清理了。"
+  },
+  {
+   "n": 17,
+   "tweet_id": "2037884887307526631",
+   "created_at": "2026-03-28 22:29:53 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2037884887307526631",
+   "full_text": "预计这次alibaba 从十一月开始搞的全AI内容+假作者的矩阵超过10M以上的页面（保守估计）。这个数量估计是跑了什么Agent吧lol，看来这个Agent没有读过E-E-A-T和谷歌的Policy.\n\n最早被领英上印度小哥看到的\n/product-insights/* 已经被干掉了。昨天还有5.9M个收录页面。\n\n剩下的我整理了一下(截止至发稿)：\n1. 大鸟.阿里巴巴.com （https://t.co/gDcHAfbzjD）\n- 讲鸟类的子域名, 还活着\n2. https://t.co/rDgcr3FXp2 (没了)\nSEMRush峰值1.6 Traffic, 1.4M关键字\n3. https://t.co/FhPjPqyTaK (没了)\n4. https://t.co/KZSFCEvjB5(没了)\n5. https://t.co/WokL3ZetDH(没了)\n6. https://t.co/ONZaZryQcC(还在)\n7. https://t.co/zBFk0r1wlj(没了)\n8. https://t.co/Fwdt37gV08(还在)\n9. https://t.co/9zIk6HPHLo(还在)\n10. https://t.co/QDWdRQaNWp(还在)\n11. https://t.co/gqA4jCkJkf(还在)\n12. https://t.co/rWXQpgozp9(还在)\n\n下午看的时候好多还在，忘记截图了，但是SemRush还有Ahrefs应该还能看到之前的排名和流量。应该还有更多的子域名或者subfolder还没发掘出来（SemRush最近的延迟还挺厉害的）。\n\nSemRush上看到大量的把这些AIGC的内容引用在AI Overview里，估计谷歌会采取一些措施。\n\n特别好奇这次的manual action会不会是全站级别的，以及对整个网站的打击会有多大。\n\n之前处理过美国那波Publisher的Site Reputation Abuse，Manual Action基本上对整个域名的打击是致命的。处理的方法很简单，直接404，再去提解除。（alibaba整个网站机会都是soft 404，估计改成http404网站会蹦）"
+  },
+  {
+   "n": 18,
+   "tweet_id": "2037898118898012638",
+   "created_at": "2026-03-28 23:22:28 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2037898118898012638",
+   "full_text": "@willlhhh Manual Action没那么好清的。他们HTTP 404还有问题，就算把这些页面下了也都是软404。我觉得敢这样规模化用Agent搞10M+页面可能完全不知道谷歌有这套反Spam机制吧。"
+  },
+  {
+   "n": 19,
+   "tweet_id": "2038199743797690529",
+   "created_at": "2026-03-29 19:21:01 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2038199743797690529",
+   "full_text": "先得确定是不是Manual Action，如果是的话，所有被Flag的子域名和Subfolder得专门做一个404页面。 然后把Subdomain从 源头上直接全404了。\n\nSubfolder麻烦很多了🤔\n\n还有一种情况就是 不是Manual Action，直接Deindex，我一个朋友碰到过，修复周期差不多要3-4个月。AIGC的页面全部页面从源头Noindex，内链还要阶段式做nofollow, robots.txt调。这种情况下他这个体量就算排查也要排查也要很久。"
+  },
+  {
+   "n": 20,
+   "tweet_id": "2038831420039467027",
+   "created_at": "2026-03-31 13:11:04 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2038831420039467027",
+   "full_text": "@willlhhh lol. 他们直接把子域名直接 从DNS那边下架了。"
+  },
+  {
+   "n": 21,
+   "tweet_id": "2038873129012134374",
+   "created_at": "2026-03-31 15:56:49 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2038873129012134374",
+   "full_text": "@willlhhh 大鸟下了，其他没下。估计没吃manual action的都还没动作。不过DNS直接下子域名这个事儿我还是第一次见。好歹做个404啊lol"
+  },
+  {
+   "n": 22,
+   "tweet_id": "2039641960601043096",
+   "created_at": "2026-04-02 18:51:52 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2039641960601043096",
+   "full_text": "@lilyraynyc I think the KPI of Baidu is to get more \"GEO Citations\". Anyway, the quality is much better than https://t.co/2JPfLIlSOk's 10M AI Pages"
+  },
+  {
+   "n": 23,
+   "tweet_id": "2064883047825395749",
+   "created_at": "2026-06-11 10:30:56 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2064883047825395749",
+   "full_text": "和朋友一起做的一个网站，准备养老用。\n域名花了10K USD, 迄今为止觉得物超所值\n域名针对的是美国市场，新闻，本地资讯相关\n所有内容都是手搓，不存在任何Agent，Workflow。\n没有做任何外链.\n所有的图片视频素材都是真人拍摄\n所有的作者都是真人作者\n整个网站CMS用到搭建估计花了我一周时间，500美金一年。\nSEO就那样，没有捷径，护城河要靠人来堆"
+  },
+  {
+   "n": 24,
+   "tweet_id": "2064981657497813013",
+   "created_at": "2026-06-11 17:02:47 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2064981657497813013",
+   "full_text": "一个很实用SEO Tip，如果你准备买一个新域名，最好先去查一下域名的历史，万一这个域名有一些不好的数据，比如说用于做spam站点，PBN站群，或者有不好的外链史，甚至是用于做一些黄赌毒行业的历史，那么你第一步就直接是地狱级。\n\n怎么查呢？\n外链去看SEMRush, Ahrefs或者Majestic\n网站的Traffic Trends 也可以看SEMRush, Ahrefs 或者Similar Web\n还有一个就是Wayback Machine看这个网站有没有存在过。\n\n很多玩SEO的老炮喜欢买Expired Domain的都是通过这个方式去淘一些有价值的域名。"
+  },
+  {
+   "n": 25,
+   "tweet_id": "2065232184374645078",
+   "created_at": "2026-06-12 09:38:17 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2065232184374645078",
+   "full_text": "If you recall Google's Navboost leak, its entire foundation relies on user clicks and search journeys.\n\nBut here is the paradox: AI Overviews & AI Mode are inherently Zero-Click environments.\n\nIf users aren't clicking out, Navboost’s primary data source completely dries up.\n\nThis leaves us with two possibilities: \n1️⃣ Navboost theories are obsolete for Generative Search, replaced by semantic/vector validation. \n2️⃣ Google secretly swapped \"clicks\" with micro-behaviors (hovering, dwell time, query steps).\n\nIf the traditional concept of Navboost is true, it simply doesn't fit the AI Mode reality.\n\nDoes Navboost even exist? If it exists, did Google change it to something else?\n\nYour thoughts? 🤔"
+  },
+  {
+   "n": 26,
+   "tweet_id": "2065685991499985131",
+   "created_at": "2026-06-13 15:41:33 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2065685991499985131",
+   "full_text": "@becool_me 这个惩罚大概持续了多久？ 你觉得是这次算法更新结束以后捞回来的吗？"
+  },
+  {
+   "n": 27,
+   "tweet_id": "2065688886270108027",
+   "created_at": "2026-06-13 15:53:03 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2065688886270108027",
+   "full_text": "@hezhiyan7 就是你先要有Root keyword, 然后拿Ads Forcast的数据 一下子全部下载下来，然后让Claude去整理，基本上可以获得一个比较准的Search Volume"
+  },
+  {
+   "n": 28,
+   "tweet_id": "2070420648900403202",
+   "created_at": "2026-06-26 17:15:23 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2070420648900403202",
+   "full_text": "我就真的挺好奇的，为什么那么多做SEO，学SEO的都觉得用AI批量生成博客会帮助到网站和生意呢？为什么你会觉得生成文章可以帮到GEO呢？这玩意从Computer Science, Artificial Intelligence, Machine Learning 数学每一个角度都站不住的。\n你真觉得用户会因为一篇文章就买你的东西和产品？\n我已经看到不止一家 国内头部的DTC大牌子搞这个事情，今年流量直接腰斩了😶"
+  },
+  {
+   "n": 29,
+   "tweet_id": "2071840010593358218",
+   "created_at": "2026-06-30 15:15:26 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2071840010593358218",
+   "full_text": "@CoderJeffLee 这里有一个文字陷阱：谷歌说的是从谷歌Search的角度来说，AI Overview 和AI Mode 不管LLM.txt。Google Search 不包括Gemini，他们是两个部门。\n广义的GEO是包括 ChatBOT, LLMs，包括所有其他的平台。所以如果GEO是广义的，所有的平台都要做的话，还是要做LLM.txt的。"
+  },
+  {
+   "n": 30,
+   "tweet_id": "2072681906228121745",
+   "created_at": "2026-07-02 23:00:49 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2072681906228121745",
+   "full_text": "@rwayne 说句实话。。已经各个渠道成熟的品牌在GEO里的表现都很好，拆解一下就是SEO，SEM，Youtube, Instagram, Facebook, Tiktok等。反过来倒推一下，也就是传统的branding, marketing换了一种方式去说而已，理论一样，技巧不同。"
+  },
+  {
+   "n": 31,
+   "tweet_id": "2076337271381598396",
+   "created_at": "2026-07-13 01:05:56 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2076337271381598396",
+   "full_text": "@Charles_SEO Reddit should never rank for YMYL topics🤔"
+  },
+  {
+   "n": 32,
+   "tweet_id": "2079109647160734202",
+   "created_at": "2026-07-20 16:42:22 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2079109647160734202",
+   "full_text": "GEO优化到底在做什么？\n反正我就把传统SEO做到极致，ChatGPT来的流量就涨了🫤。\n没写过博客，没发过Reddit, 没做过语意匹配，没发过PR稿，也没做过schema，没写过FAQ。\n网上铺天盖地那些GEO优化说法，我不是不同意啊，只是我接受的教育和我看过的所有资料，我的研究总结，都没有任何证据证明这些方法是正确的做法，因为逻辑不通。"
+  },
+  {
+   "n": 33,
+   "tweet_id": "2088623359366209644",
+   "created_at": "2026-08-15 22:46:28 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2088623359366209644",
+   "full_text": "@GoSailGlobal 以前都是远古思路。我出来做Agency之前那个工作，每个月搞外链预算接近20K USD呢，而且是在最卷的YMYL行业。最后发现DR，外链都没用。"
+  },
+  {
+   "n": 34,
+   "tweet_id": "2088627560033009736",
+   "created_at": "2026-08-15 23:03:09 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2088627560033009736",
+   "full_text": "@GoSailGlobal 不是。主要是EEAT的那套理论的东西。\nAuthority 这个东西，当你跨过一个门槛以后，比的就是页面对页面，微观层面了。\n如果微观层面拉到顶了，比的就是实体对某一个topic的内容深度和社交媒体层面上的知名度。"
+  },
+  {
+   "n": 35,
+   "tweet_id": "2088635124187529218",
+   "created_at": "2026-08-15 23:33:13 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2088635124187529218",
+   "full_text": "@GoSailGlobal 就是这个，而且是美国那边比较卷的关键字。就是说如果外链数量和DA的成立的话，这个网站是不可能排到前面去的。这个关键字的KD是70+。 https://t.co/pkWSaQmqZk"
+  },
+  {
+   "n": 36,
+   "tweet_id": "2088803453565059194",
+   "created_at": "2026-08-16 10:42:06 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2088803453565059194",
+   "full_text": "我正在养的一个新闻网站，做了很多有意思的SEO测试，数据也很有意义：\nYMYL类目的网站，Bing目前应该是没有门槛的。\n绝大部分做SEO的网站，谷歌和其他的搜索引擎大概率应该是9:1 的分布，但是很有可能出现Bing 微软系的自然流量大于谷歌的流量。\n北美和欧洲，Bing来的流量质量还是很高的。\n原创图片对于网站的“质量”加成很高，网站上上千张图片都是我的合伙人自己拍的。"
+  },
+  {
+   "n": 37,
+   "tweet_id": "2088839484083404844",
+   "created_at": "2026-08-16 13:05:16 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2088839484083404844",
+   "full_text": "GSC里Generative AI 的数据，你们最高是多少？\n你们会把这个当作一个目标，或者KPI吗？\nCitation 和关键转化数据对的上么？\n从AI来的流量带来的真实转化能超过整个网站的5%吗？ https://t.co/T3uNptK1pp"
+  },
+  {
+   "n": 38,
+   "tweet_id": "2089165558516437461",
+   "created_at": "2026-08-17 10:40:58 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2089165558516437461",
+   "full_text": "非品牌关键字，关键字总数，网站流量掉到到谷底。\n网站权重并不能抵消掉 AI Spam, AI Slope, 垃圾博客带来的负面影响。\n我觉得铺词，铺内容这两个东西本质就是伪命题。🤔\n一个错误的Decision 会导致一个网站在很长一段时间流量和业务都出现问题 https://t.co/0zwlkDkcaJ"
+  },
+  {
+   "n": 39,
+   "tweet_id": "2090051220425839091",
+   "created_at": "2026-08-19 21:20:16 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2090051220425839091",
+   "full_text": "Gemini 3.7 Flash 做SEO有点吊的。。整体的解题思路已经超过Junior 水平了。"
+  },
+  {
+   "n": 40,
+   "tweet_id": "2090225718877905322",
+   "created_at": "2026-08-20 08:53:40 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2090225718877905322",
+   "full_text": "从纯SEO执行的角度来说，我已经大半年没有用ChatGPT 做过任何 优化了，其中包括 Brainstorm，Proof of Theory，SEO Research了。\n\nGemini和Claude 大概是3:7。\n工具基本上都是用的Gemini。\n代码层面基本上都是Claude。"
+  },
+  {
+   "n": 41,
+   "tweet_id": "2090289091011391554",
+   "created_at": "2026-08-20 13:05:29 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2090289091011391554",
+   "full_text": "我们做SEO的离不开 Content Writer， 就像做Paid Specialists 离不开做Creative团队一样。\n鱼是离不开水的，是因为：\n我见过Content Writer 无论写什么，排名就是高。\n页见过Designer 无论做什么广告设计就是转化率高。"
+  },
+  {
+   "n": 42,
+   "tweet_id": "2090291222556578070",
+   "created_at": "2026-08-20 13:13:57 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2090291222556578070",
+   "full_text": "写给大家的SEO小帖士：\n你的网站必须要有About Us页，和Contact Us 页。\n其中About Us 页里必须给你的网站，你的品牌一个“定性”。\n这个定性会影响到你最终的排名。\n为什么呢？\n这个理论是基于 2024年 Google Site Reputation Abuse推来的，包括后来的Google Content Warehouse API Leak 里也有数据验证。 \n谷歌有一个东西叫Site Focus。Site Focus基本上决定了你能排什么，你不能排什么。\n\n举个例子：\n如果我在我的about us页面上讲我的专业是做SEO的，那么我即便我的authority再高，（DA, 外链再高），我也没有办法在这个网站上去排和旅游相关的内容，因为我要排的东西和我的focus 不相符。"
+  },
+  {
+   "n": 43,
+   "tweet_id": "2090307375836315959",
+   "created_at": "2026-08-20 14:18:09 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2090307375836315959",
+   "full_text": "@myrealw AI Mode的本质是 Google Search. 就是老的那套东西 换成Gemini 才做排名。\n\nLLM比如说gemini app内部 的东西还不归SEO （谷歌Search 部门）管"
+  },
+  {
+   "n": 44,
+   "tweet_id": "2090396597066899635",
+   "created_at": "2026-08-20 20:12:41 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2090396597066899635",
+   "full_text": "Google SEO 有一个东西叫Spam_score. \n谷歌有一个文档叫Spam Policies.\n里面记录的东西大概率有套自动系统在那里跑。\n\n大概逻辑是 \nFor each spam found on your website, spam score +1. \n\n最显著几个，肯定被干的是 Clocking，AI洗稿拼凑，AI灌水，Link Spam.\n\n每次Spam Update，就像前两天那个，就是会刷新一次🤨🤨\n\n我见过网站删掉所有做的Anchor Guest Post以后 排名上涨的网站\n\n也见过觉得自己被算法更新影响，不停花钱买外链最后被清零的网站。"
+  },
+  {
+   "n": 45,
+   "tweet_id": "2090684152328945976",
+   "created_at": "2026-08-21 15:15:19 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2090684152328945976",
+   "full_text": "昨天在写演讲PPT的时候 做了一个SEO Research。\n在网站们都极致好的情况下（神仙打架的级别），{品牌+关键字}搜索量的大小和那个页面排名基本上是线性的一致关系。\n测试了5组关键字，基本上都是这个样子。"
+  },
+  {
+   "n": 46,
+   "tweet_id": "2090685656079241520",
+   "created_at": "2026-08-21 15:21:18 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2090685656079241520",
+   "full_text": "一直在追外链的同学可以看一下 这篇：https://t.co/meVEqCXqZn\n\n谷歌在2016年就把企鹅算法归进核心了。企鹅算法就是谷歌专门针对外链的一个算法。\n\n外链到底有没有用？有用，但是不用追。追了会浪费钱。\n我三年前工作公司的网站每个月budget 是20K USD。\n\n后来停了没有半毛钱影响。"
+  },
+  {
+   "n": 47,
+   "tweet_id": "2090686787534598639",
+   "created_at": "2026-08-21 15:25:47 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2090686787534598639",
+   "full_text": "SEO 小帖士， 特别是现在出海的网站要注意。\n1. 谷歌是完全mobile first，并且可以做到JS渲染\n2. 谷歌在2012年发布的above-the-fold 算法\n3. 也就是说如果爬虫渲染好你的页面，你的首屏是空的，或者东西少的话，直接会被干\n4. 这里的首屏，指的是Mobile首屏\n5. <h1>记得放在首屏，别藏在下面\n\n如何测试？去GSC或者Rich Results Test 看看你的页面是不是能被谷歌渲染的出来，首屏有没有内容，Cookie或者广告弹窗有没有覆盖above the fold的内容？\n\n如果有，你改完马上会有效果。\n\nhttps://t.co/HQnT8Z4KvY"
+  },
+  {
+   "n": 48,
+   "tweet_id": "2090697074153283687",
+   "created_at": "2026-08-21 16:06:40 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2090697074153283687",
+   "full_text": "分享一个EEAT出问题的著名案例\n2017年售价为 11.5M Euro的 Casino Affiilate 网站，从头到底玩的都是外链，假作者，Spam，堆垃圾内容等老打法，我称之为欧洲打法。\n\n2023年开始被谷歌算法更新打崩了以后，一直还在想用不断买外链，不断发博客，不断做假作者，来恢复 EEAT出现的问题。现在直接蹦没了。\n\n为啥我知道？因为来找我买过lol..\n\nEEAT里，特别是Trust 出问题的网站是致命的。"
+  },
+  {
+   "n": 49,
+   "tweet_id": "2090735573443158517",
+   "created_at": "2026-08-21 18:39:39 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2090735573443158517",
+   "full_text": "AI能替代人？\nWirecutter 是美国头部的内容affiliate 网站。光Q2，就赚了75.5 Million 美刀。\n\nNYTimes 2016年花了30M 收购了这个纯内容站点。\n\n内容是SEO的门槛。高水平写手是企业资产。\n整个Wirecutter 部门有150+个 Editor。\n\n北美的这种印钞机打法就是花钱买人，买内容，日积月累。\n\n你算平均10万USD一年的年薪吧，他一年人工要出去多少？\n\n人家那么大企业不懂降本增效？\n\n为什么不砍掉100个editor 上AI Agent “写高质量内容” ，这样一年省10M成本？ \n\n因为他整个排名和流量的护城河就是基于这150个有名有姓有经验的人上面。\n\nSEO的资产永远是品牌和人，你细品。\n\n最近灵感比较多，想起来就分享了。🧐"
+  },
+  {
+   "n": 50,
+   "tweet_id": "2090738619808088255",
+   "created_at": "2026-08-21 18:51:45 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2090738619808088255",
+   "full_text": "做SEO的同学，如果你看过谷歌EEAT QRG的话，里面有一个MC （Main Content）的概念。\n\n这个东西从Semantic HTML的角度去看，就是你每一页的代码都要遵循\n<header>\n<nav>\n<main>\n<section>\n<section>\n<aside>\n<footer>\n这种写法。\n\nh1 h2 h3 img table, ul, 各种各样的html元素都要注意。很多即插即用的设计库都是有问题的。\n\nMC是什么？<main>里面的东西。你Div到底，会导致一些和主内容无关的东西被输送到算法系统里去。"
+  },
+  {
+   "n": 51,
+   "tweet_id": "2090938323284185332",
+   "created_at": "2026-08-22 08:05:18 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2090938323284185332",
+   "full_text": "SEO小贴士\n网站的架构（URL）是可以完全跟着商业逻辑走，临床逻辑，事实逻辑，科学逻辑等去走的，他没有标准答案，但是一定会遵于一个逻辑。\n\n另外理论上你的每一个页面都应该可以找到一个不重复，有搜索量的关键字。"
+  },
+  {
+   "n": 52,
+   "tweet_id": "2090954259680694666",
+   "created_at": "2026-08-22 09:08:38 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2090954259680694666",
+   "full_text": "如果你是正经在跑SEO项目，想做长期的话，你应该要理解“SEO铺词”这个概念是不存在的。\n理论上来说你在做每一个页面的时候，清楚的知道每一个页面是做什么的，会排什么词。\n\n这个时候就要用到Semrush，Ahrefs。\n如果你功底强一点，可以用Dataforseo\n精益求精的话，玩手活可以用用Google Keyword Planner（谷歌这头最准）\n还能看Google Keyword Trends。\n\n看关键词，分析关键词，是一个体力活，也是一个脑力活。"
+  },
+  {
+   "n": 53,
+   "tweet_id": "2090960111447794111",
+   "created_at": "2026-08-22 09:31:53 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2090960111447794111",
+   "full_text": "谷歌今年发布了一个新的功能，你可以在GSC上看到自己社媒账号 在Google的表现。\n\n未来的SEO可能不止是做网站那么简单。\n比如说周杰伦要在墨尔本开演唱会，现在整个AI Mode里 不止有网站，还有Youtube，有Facebook。\n\n以后要优化，要抓流量，就不单单是网站那么简单了。 https://t.co/DBkiELAue3"
+  },
+  {
+   "n": 54,
+   "tweet_id": "2091008050262110227",
+   "created_at": "2026-08-22 12:42:22 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091008050262110227",
+   "full_text": "SEO小贴士：Google和Bing都不推荐 m站和桌面站点分开。这个大概十年前就有专门的文档说明了。\n\n手机站点的意思是你的网站比如说叫 apple点com, 你还做了一个 m点apple点com\n\n你去观察一下现在专门吃SEO流量的美国一线网站，没有任何一个网站有专门的手机站点。\n\n即便有Canonical做好也不行。\n\n如果你要100%保证你的技术架构优于你的竞争对手，那么\n1，你的手机端和桌面端的内容要一致\n2，Raw HTML要和Rendered后的内容一致\n3，一份HTML只能出现一次，不能用display none这种写法\n\n很多时候SEO出现问题都是出现在设计，代码，还有产品那边。特别是国内小程序，H5那套模版的逻辑，十有八九是不适配现代SEO和GEO的。"
+  },
+  {
+   "n": 55,
+   "tweet_id": "2091011325438955723",
+   "created_at": "2026-08-22 12:55:23 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091011325438955723",
+   "full_text": "SEO小贴士，过期域名的玩法。\nAffiliate联盟营销界专门有一群玩家，买过期域名，在算法更新的Timing 去快速排一些高价值的关键字。\n\n如果大家了解YMYL，和EEAT的话，很多主题的网站是有门槛机制的（这个不是沙盒）。\n\n比如说医疗，健康，新闻，和钱直接相关的关键字。\n\n根据我的观察，YMYL的门槛应该是和域名绑定的。\n\n我见到过的有 Gov, Clinic, Medical, Restaurant, Education等网站 被用于去排很多 Casino，Web 3相关的关键字。\n\n这些黑帽玩家应该在Covid之后囤了一批这样的域名。\n\n域名是有价值的，一个好的域名不光是名字，域名本身也承载了很多好的，有价值的数据"
+  },
+  {
+   "n": 56,
+   "tweet_id": "2091014853863637176",
+   "created_at": "2026-08-22 13:09:24 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091014853863637176",
+   "full_text": "SEO小贴士： 如果你的网站要做多语言，抄苹果官网就可以了，都是细节。对了，千万不要根据IP自动切语言和自动跳转。\n\n日本以外的Yahoo用的都是Bing的引擎。日本的雅虎用的是Google。日本雅虎加Bing能占到50%的流量。\n\n记得去Bing Webmaster 提交你的站点，和GSC差不多。\n\n如果你要做韩文的话，记得去弄一下Naver。韩国人基本上都在用Naver. 整个Naver的生态差不多就是把百度，小红书，大众点评，抖音放在了一起。"
+  },
+  {
+   "n": 57,
+   "tweet_id": "2091060807065117104",
+   "created_at": "2026-08-22 16:12:01 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091060807065117104",
+   "full_text": "想了解SEO应该怎么学习，怎么做，有一个很好的办法。\n你先假设自己是一个SEO的求职者，你希望从入门级别一直成为一个独角兽公司的SEO老大。 \n\n然后你就在领英上看JD就可以了，尽量看美国，欧洲，澳洲巨头公司的JD, 或者看那些知名的，拿过奖的SEO Agency的JD。\n\n可以不用看国内巨头公司的JD，比如说飞书的这个JD内行一看就知道是不对的。\n\n目前我观察到的趋势就是大部分的AIO,GEO的岗位都和SEO融合了。有些公司把以前传统的SEO岗位变成了Discoverablity，特别是美国。\n\nSEO这个岗位你越往上走，越需要CS 和IT背景，基本上就是六边形战士了，可以参考Klook的SEO Director。\n\n然后你几乎可以发现叫的上名字的公司和Agency 都没有花钱招人写博客和做外链。\n\n从产品角度出发，SEO的岗位基本上是存在于Marketing和Product和Engineer 中间的位置。\n\n写内容的岗位是单独的，都是叫Content, Editor或者Content Strategist之类的。"
+  },
+  {
+   "n": 58,
+   "tweet_id": "2091071455350169891",
+   "created_at": "2026-08-22 16:54:19 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091071455350169891",
+   "full_text": "SEO 小帖士：\nGoogle SEO 包括传统的Search, 电商，Image Search, Video, News, Discover等等。只要入口是从https://t.co/z5M3EoKqqJ进去的，我认为都可以称之为Google Search的部分。\n\n包括最新的AI Overview, AI Mode，他们都是一整套体系，他们是Gemini Power的系统，用的是Search 的逻辑。\n\nBut, Gemini本身，不归 Search管。"
+  },
+  {
+   "n": 59,
+   "tweet_id": "2091185632202883243",
+   "created_at": "2026-08-23 00:28:01 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091185632202883243",
+   "full_text": "这两天一下子好多朋友关注我，让我更有动力分享一些经验和心得。\n\n关于你网站的首页，尽量找到一个关键字能够盖得住你未来三五年的方向。\n\n从Hierarchy的角度，和绝大部分企业来说，首页是最有价值的页面。\n\n这个关键字一般来说是\n\n｛定语｝+ Entity\n\n比如说我如果给我自己的网站首页做排名的话，肯定会是Melbourne SEO Consultant 。\n\n那我提供的服务就会作为字页面去延伸下去。\n\n和SEO Consultant相关的词，我的网站理论上就盖不住，也不应该去涵盖。比如说如果我喜欢唱跳Rap，我能放下我的网站上去做排名吗？当然不行，因为我的首页的基调已经是SEO Consultant了。\n\n这里 Melbourne是一个定语，SEO Consultant 是一个Entity。\n\n假如你不理解Entity的概念的话，可以参考2012年谷歌发布的关于Knowledge Graph的文章。\n\n这里可以理解为：关键字其实不是字符串（String）而是一个实体的东西（Entity）。\n\n你可以把Entity想象成一个NoSQL的结构，方便理解。\n\n当你理解entity（实体）以后，你就会发现KW Density这种概念其实是无稽之谈🥹\n\nhttps://t.co/0PBuR1UN0q"
+  },
+  {
+   "n": 60,
+   "tweet_id": "2091198495197913207",
+   "created_at": "2026-08-23 01:19:08 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091198495197913207",
+   "full_text": "我知道很多做出海的朋友都是技术大佬，都是各种名校毕业，各种大厂。 这个背景可以利用起来。\n\n你的网站可以变成你一个开发工作室的项目。你的那个开发工作室的主体或者实际关联的背后的人是你自己。你自己的GitHub，Linkedin都弄好。\n\n这个是实现一个网站EEAT的最方便的事情了。\n\n网站A <-> 开发者网站 <-> GitHub/Linkedin\n\n然后在开发者网站写一个你的远景，理想的描述。\n\n这样有理有据，网站实控人在搜索引擎看来还是一个多年工作经验的名校毕业的，大厂/硅谷工程师/产品经理。\n\n因为这件事情我觉得理论上是成立的，所以前两天我特地花了几百刀买了 https://t.co/lImfHrq86O 这个域名。\n\n当然，如果你做的东西是灰色地带，不想让人知道是你做的，就是另外一种做法了。\n\n现在做SEO最快捷的方法其实就是抛头露面，我知道对于中华文化背景来说，大家可能不如西方那么愿意抛头露面，但是说实话，能自己做项目搞出海，有技术已经超过99%的人了。"
+  },
+  {
+   "n": 61,
+   "tweet_id": "2091301352463102268",
+   "created_at": "2026-08-23 08:07:51 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091301352463102268",
+   "full_text": "学和做SEO有一种修炼和悟道的体验。\n\n我第一次悟道是 刚入行的时候听了我师傅的SEO Workshop，大概是2017年的事情。因为我本身就是学IT，那个时候盛行React， Angular，Web开发，所以突然领悟了Technical SEO 是所有的Foundation。\n爬虫资源管理，渲染管理，巨型网站（有大量数据交互）的Core Web Vitals等等。这种东西只有你上手做过，你才能有“临床”的经验。你只要懂Tech SEO你就能找到一份还不错的SEO工作。\n\n我第二次悟道是Agency被挖去做In House, 见识了美国Affiliate行业神仙打架的那几年。从DA来讲，我们的网站大概是30出头。我们的竞争对手平均80+，外链加起来都是Billion级别，很多都是上百年的老牌子（媒体）。整个项目周期里我还亲身经历了Site Reputation Abuse的一整个“实战”。\n我们网站是Angular的网站，有很严重的渲染问题。\n谷歌在爬网站的时候经常会渲染超时，导致很多页面出现Soft404的状态。\n就光修这个渲染问题，让网站流量一下子冲了上去。突然意识到好像DA他不是排名的原因，而是结果。即很多排名高的网站DA和外链会很多很高，而不代表你排名排上去就一定要很高的DA和外链。\n也就是因为这次的“临床”经验把我送上了Google Search Central Live 做了Speaker。\n\n我第三次悟道也是同一个阶段。我发现当网站在Techinical在一个水准的情况下，起到排名决定性因素的，都是微观层面上的东西。页面上的每一个HTML Tag，每一个字，每一段话，每一个Alt Tag，每一个Anchor Text 他最后组成了你页面的最终形态。\n排名排的就是这个最终形态，也就是你的页面和你的竞争对手比，谁更好。"
+  },
+  {
+   "n": 62,
+   "tweet_id": "2091304086608236745",
+   "created_at": "2026-08-23 08:18:43 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091304086608236745",
+   "full_text": "SEO小贴士：你知道的概念不代表你的用户会这么搜。\n\n大家在做AI出海的时候别动不动总叫自己 XXX AI Agent。\n\nAI Agent今年的搜索量还挺高的，但是如果你拿Google Trends 仔细拆解成地区来看，过去5年里，前十基本都是亚洲，美国才第8，中国领先级别第一，第二是新加坡。\n\n我一直都感觉这个词是咱们自己创造出来的。\n\n假设你要做AI的SEO，并且是C端用户，他们可能搜的词不是“Agent” ， not yet.\n\n如果你靠Product Hunt，社媒等来做增长，那没毛病。SEO的角度可能要换一个叫法。"
+  },
+  {
+   "n": 63,
+   "tweet_id": "2091309003397902703",
+   "created_at": "2026-08-23 08:38:15 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091309003397902703",
+   "full_text": "Site Migration 是SEO里最复杂也是技术含金量最高的一项工作。\n\n去年在深圳和一个头部出海的公司产品经理一起吃饭，他们有一个子域名因为某些原因在短时间内做了两次Re Brand, 没有做好Migration，导致流量暴跌。\n\n网站重做，Re-brand，产品重构经常会导致网站流量崩掉。\n\n1，开发不知道要做301 Redirect\n2，301 Redirect 是要一一对应的\n3，Migration之前无论你有多少URL，你在做的时候要完全控制先后URL的版本，而不是说改就改\n4，谷歌那边做Migration有一套标准流程的\n5，你随便改一个页面，改一个产品，改一个域名，上述流程没做好可能几年的积累都会付之东流。\n6, 改URL，切网址，产品重构，Re Brand之前做好可以做一次SEO Review，别让老板，Product，设计说改就改，背锅的是你自己\n\nhttps://t.co/F11dq20pnT"
+  },
+  {
+   "n": 64,
+   "tweet_id": "2091321150127366357",
+   "created_at": "2026-08-23 09:26:31 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091321150127366357",
+   "full_text": "今年和我的合伙人聊过，其实有两种SEO。\n\n一种是我们常规的，大家一直在聊的，做排名，做自然流量，提高转化。这种是做增长。\n\n另外一种更高阶的，Canva，Zillow，Booking啊这种吃SEO流量的大企业，他们做的是Maintain leadership，要控制风险。\n\n简单讲就是，SEO在公司里的作用就是阻止别人瞎搞。网站的任何一个改动都会导致有S流量下滑的潜在风险，导致你的网站在行业里Leader的位置下滑，简介导致你的股价出现问题。\n\n打江山和守江山的区别。"
+  },
+  {
+   "n": 65,
+   "tweet_id": "2091349098553295075",
+   "created_at": "2026-08-23 11:17:35 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091349098553295075",
+   "full_text": "SEO 小帖士：软404的危害。\n正常的404应该返回http 404的代码。\n软404的意思就是你做了错误页，但是返回的HTTP 状态实际是200。\n\n去年整整一年谷歌在所有conference里，在讲爬虫预算的时候都特地去提了 soft 404软404的问题。\n\n这强调过好多次的东西，基本上就是大雷，和一定要避免的。\n\n会出现几种副作用：\n1. 影响谷歌的爬虫预算。因为你的错误页面，不存在的页面返回的都是200，爬虫就要花预算去看你的页面。但是你的这个页面又没东西。大网站该被爬的地方爬不到。\n\n2.被攻击。前端Template 没有设置好404的title, h1等组件吗，而是从url 里得到。这样会导致被黑帽利用PBN等方式制造出一批能够被收录的垃圾页面。你网站的spam分数变高。\n\n越大的网站越会发生这种问题，linkedin 也没办法避免。"
+  },
+  {
+   "n": 66,
+   "tweet_id": "2091353930425127142",
+   "created_at": "2026-08-23 11:36:47 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091353930425127142",
+   "full_text": "这个是Google Search Central Live Shanghai的官方PPT。\n\n谷歌从2025年首次讲Quality 是一个Ranking Factor开始以后，其实做SEO的方向就很明确了。\n\nQuality 是你应该追求的东西，而且Quality 应该是site-wide的singal.\n\nQuality的对立面就是Spam. 你网站上有Spam的东西就会影响你的Quality.\n\n你的Quality不如竞争对手高，你就排不过竞争对手。\n\n这里的Quality 可以指的是\n- 用户体验\n- 网站内容\n- Core Web Vitals\n- 所有QRG里提到的细节。\n\nQuality 可以是 所有产品照片都是自己拿单反实拍。所有的Image Alt，产品描述都是自己一个个写。\n\nSpam可以是 研究了一个AI Agent，从各个网站拿别人的东西过来缝合洗稿。"
+  },
+  {
+   "n": 67,
+   "tweet_id": "2091362717907251353",
+   "created_at": "2026-08-23 12:11:42 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091362717907251353",
+   "full_text": "这个还是2026年5月份的 官方slide.\n\n谷歌从2025年曼谷，2025年香港，2026年上海，悉尼的四场 Search Central Live 的活动（我都去了），现场都提到了 他们不管内容是不是AI 创作的，只要你的内容有effort, helpful, original等等 （HCU里那套东西）。\n\n但是在上海的时候又说了\n“由于基于机器学习的排名算和信号是用“人类为人类创作的内容”训练出来的”\n“他们天然更注重用户体验。因此，它们能更好地理解并推荐那些自然、优质的内容”\n\n你细品。你再细品。\n\n所以，能够有排名的内容大概要以下几个conditions:\n1. 接近人写的\n2. 有Quality\n3. Quality 的定义是Effort 和Original\n\n你连起来就是 如果AI写的东西，可以接近人写的，花心力（effort）的，并且是原创的内容，那么就会有排名。\n\n这里的原创可不是你找几个网站去缝合。\n\n你用你接受过的教育，现在告诉我，你怎么弄一套AI系统出来，花心力（Effort）去做原创内容？ \n\n🙄 明明一堆人用AI做博客生产线，就是为了不花心力去假装做原创内容么？"
+  },
+  {
+   "n": 68,
+   "tweet_id": "2091364706703581191",
+   "created_at": "2026-08-23 12:19:36 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091364706703581191",
+   "full_text": "因为懒，所以Google Search Central Live Shanghai 一直没有写总结。\n\n这两天写推特上瘾，可以拿出来分享一下。\n\n先说定义\nGoogle 这里SEO/AIO/GEO 有三个概念\n1. 传统的Search\n2. AI Mode / AI Overview\n3. Gemini \n\n传统的Search， 也就是我们以前说的SEO，他做三件事情，爬网站，index网站，serve (排名)\n\nAI Mode/AI Overview 在前两步 Crawl 和 Index 是和传统SEO一致的！他的机制是完全一致的！ \n\n这也就是你为什么一直看到海外的SEO的那些专家们在强调谷歌的GEO什么就是SEO这件事情。\n\nServing的部分，也就是返回搜索结果和排名，AI Mode 和 AI  Overview是基于传统的排名机制下，新增了Grounding on Search Index Query Fanout. 所以他们的数据库是完全一致的。\n\n第三行里写的Gemini，uses crawlers for data，gemini的爬虫应该是和Google Search用的爬虫机制不一样的。\nindexing这里写的是  Not part of search。 我在上海特地问了谷歌官方人员，Gemini 是不归 Search部门管的，他们是不同的部门。\n\n优化Google SEO 以及 AIO：AI Mode / AI Overview 这条线路就是做SEO的事儿，没任何区别。\n\n优化Gemini 你可以参考传统的SEO那套理论，因为他们的内核，包括用的技术是很多基建是一样的。\n\n所以平时大家关注的Google Search官方发布的东西是仅限于传统SEO，AI Mode / AI Overview，和Gemini没关系。\n\n所以谷歌对 SEO / GEO / AIO的定义还挺好玩的。"
+  },
+  {
+   "n": 69,
+   "tweet_id": "2091368931353362479",
+   "created_at": "2026-08-23 12:36:23 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2091368931353362479",
+   "full_text": "我说实话，我自己也在学。\n我这样理解：\nGoogle 这头\nSEO, AI Overview, AI Mode 都和以前的SEO是一样的\nGemini的机制会不一样。\n\nMicrosoft 有copilot. 和Bing那头应该是一样的。\n\n剩下的chatgpt, claude 那些需要额外单独研究一下。\n其实也就是 品牌，网站，内容，社媒，PR这些东西。\n\n做GEO就是，更贵的SEO吧，因为你现在除了自己的网站，还要做Social, 要做红人，要做PR，要做媒体了。"
+  },
+  {
+   "n": 70,
+   "tweet_id": "2091381622616797394",
+   "created_at": "2026-08-23 13:26:49 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091381622616797394",
+   "full_text": "分享一下SEO优化的一个实操，以及为什么要这么做。\n\n写博客，不谈作者这个概念，就像谈恋爱不结婚一样，耍流氓。\n\n依然还是182页的QRG，这次是Section 3.3.4\n\n谷歌如何判断 内容作者的reputation.\n\n其中提到了几个点\n1. Educational Degrees\n2. Co-authors\n3. Citations\n4. Employment History\n5. Influencers on Social Media platforms\n\nCo-author, citation的意思是你署名的文章被人reference， 以及你发表文章在一些知名的地方。\n\nSocial Media Platform就像我们在做X, Youtube, Ins等，也能提高你作为一个作者的authority (我觉得小红书，公众号应该没用).\n\nEducaitional Degrees, Employment History 这俩东西，整个地球上只有 Linkedin 可以做到。所以作者的Linkedin 要连到网站，网站要连到作者的linkedin 这件事情就是优解。\n\n也就是说 写博客，网站内容，做content marketing归根结底还是要弄到 谁是作者上。\n\n并且 假作者肯定是行不通的。\nSection 4.5.3里面就讲了\nA webpage or website with \"fake\" owner or content creator profiles. For example, AI generated content with made up \"author\" profiles (AI generated images or deceptive creator descriptions) in order to make it appear that the content is written by people.\n\n根据我对谷歌的了解，任何命令禁止你不要做的东西，基本上他都会有有程序在那里跑。"
+  },
+  {
+   "n": 71,
+   "tweet_id": "2091387930963263678",
+   "created_at": "2026-08-23 13:51:53 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091387930963263678",
+   "full_text": "有一个让我愿意把SEO当作我终身职业的一个契机\n\n2020年的时候因为工作原因，我接触到了News SEO 这个SEO领域里比较小众的类目。\n\nNews SEO 是谷歌里一条非常垂直的赛道，其中包括了Google Top Stories, Google News, Google Discover 三条线。\n\n长话短说，你在谷歌上搜新闻，新闻的排名是可以通过SEO手法去操控的。\n\n新闻是可以操控的，那么也就是说国外体系的媒体，比如说BBC，NYTimes这些， 在很多特别的主题里是有优势的。\n而国内的媒体因为生态原因，没有做过任何新闻SEO方面的优化，也就是他们对很多主题都是劣势的。\n\n关于这个主题优势，指的 是某一个记者或者机构，在某一个topic上发布的内容的coverage，（时间够长，范围够广），那么他们天然的在这个主题上有一个东西叫topical authority，他们天然的排名就会上去。\n\n接上一条和linkedin 相关的推，如果国内的新闻网站，1没有做好网站架构，2没有Author Profile, 学历等实体链接。那你永远在一些特定的主题上，就是没有排名上的优势。\n\n即你写的东西没有排名和流量，别人可以追着你写你的坏话的意思。"
+  },
+  {
+   "n": 72,
+   "tweet_id": "2091399665241759915",
+   "created_at": "2026-08-23 14:38:31 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2091399665241759915",
+   "full_text": "@seazon000 比如说啊，我这个网站的目的，就是去承载SEO服务之类的关键词。那么我的词根 我选的是SEO Consultant，定语是墨尔本，那么我就矛定了墨尔本地区。因为很多词，是由地理限制的。我的子页面就可以往下去拓展。\n\n但是我盖不住的地方就是Facebook，TikTok那些，因为他们和SEO是平级的。"
+  },
+  {
+   "n": 73,
+   "tweet_id": "2091453544683729230",
+   "created_at": "2026-08-23 18:12:37 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091453544683729230",
+   "full_text": "今天有同学问我SEO怎么学。\n\n我市面上的SEO的课程基本上都上过，从Ahrefs, 到SemRush，到Hubspot, 到Moz，到Coursera，到Udemy.\n免费的，付费的我都上过，少则花了几千刀吧。\n\n如果你想从头走一遍的话，除非是真的热爱，不然我不推荐。\n\n首推，肯定是按照 @aleyda 的https://t.co/2XGEQ8dLiU上的SEO Roadmap 去学习。\n\n这个SEO 学习的Roadmap是迄今为止最完整的SEO系统性学习路径，基本上是全覆盖。\n\n如果你学的很快，天赋异禀，可以回去看Ahrefs, SemRush, Moz, Coursera的课。\n\nAhrefs: https://t.co/haHsAkFjJZ\nSEMRush: https://t.co/ljjIpyyvvq\n\nAhrefs和SEMRush的课都算比较前沿的东西。\n\nMoz是收费给证书的，你可以自行判断。\nCoursera 的课也是收费的， 我觉得0基础去学挺好的，讲的东西是有帮助的：https://t.co/92N2ZAUQFc\n\n2026年的话 Udemy上的东西就不推荐了。很多都是小网站，Wordpress等最基础的东西，很多适合在国外的小生意去看着自己做网站这样。"
+  },
+  {
+   "n": 74,
+   "tweet_id": "2091463375003983897",
+   "created_at": "2026-08-23 18:51:40 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2091463375003983897",
+   "full_text": "@RevaHuai @aleyda 他是这样的。SEO像一个粘合剂一样，或者是foundation。 因为我们之前叫搜索引擎优化，其实是吧网站，品牌在搜索引擎上被露出最大化的一个过程。\n即便以后是AI，他也是一个把网站和品牌在各个露出最大化的过程。"
+  },
+  {
+   "n": 75,
+   "tweet_id": "2091487107806323136",
+   "created_at": "2026-08-23 20:25:59 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091487107806323136",
+   "full_text": "2天时间 从30/100 粉丝 涨到 500/1.7K Followers. \n\n起因是 和 @GoSailGlobal 交流开始，然后开始有动力进行一些SEO方向的分享。\n潜水十几年的推特终于开始启动了。\n\n初步看来效果还不错。过程当中也感谢一些朋友的热情回复和转发。\n\n整个过程体验着INFP 和 ADHD 双持的快感，主打一个想到哪写到哪。\n\n借此机会顺便再干货一把。\n\n今年谷歌在北美的Search Central Live第一次提到了Non-Commodity Content的定义。谷歌说AI Search 会更喜欢Non-commodity Content。\n\nCommodity Content执意就是大宗商品化内容，指的是高度同质化的内容。\n拿SEO的角度来说\n举几个Commodity Content的例子：做SEO一定要做外链，因为外链会提高权重。你的网站DA不够，所以没有排名，你要做DA。\n你要写博客，铺词，所以才会有流量。\n做GEO一定要做Reddit。\n\n那么Non-commodity Content 是什么？\nNon-commodity Content 指的是非商品化内容，有独家经验分享，独特视角，没办法被通用知识库轻易替代的内容。\n\n这两天在写推的时候，我一直采用的是 Non-commodity Content的写法：\n每一个我抛出的概念，或者分享，都会有一个具体的实例为佐证。\n截止至今日为止，自动化，AIGC的东西可能还没有办法做到，没有人为干预的情况下，完全实现 Non-Commodity的这个概念。\n\n为什么我一直说做SEO最难的是内容，就是因为当你把Content Quality看的特别重的时候，你会发现你作为人的思维，AI还是无法直接替代掉。除非你在写东西之前先把自己懂得，知道的全蒸馏一遍。\n\n如果你看了我写的推，觉得写的不错，你会选择Engage, 这也就是为什么我两天时间一下子📈了那么多follower 和观看的数据。\n\n我是AI Native, 重度AI使用者。唯独在内容层面上，我选择手搓全手动。你看的没错，这两天我写的内容是全手搓，想到哪写到哪。主打一个真情流露。 \n\n无论是SEO还是做Social Media，真诚就是必杀技。Token买不来情感波动。"
+  },
+  {
+   "n": 76,
+   "tweet_id": "2091492121186635988",
+   "created_at": "2026-08-23 20:45:54 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091492121186635988",
+   "full_text": "SEO小贴士：网站和手机App你可以通过同一个 .app域名来做的。\n\n技术架构你可以用类似React Native这种来做，一套底层三端打通。\n\n有机会同时赚网站，App两笔钱。\n网页和App双端打通了以后可以加速你的Authority，毕竟你同时多了App Store和Google Play Store俩个 Profile “外链”。\n\n很多公司买网站的时候都会忘记买.app的域名，比如说FEISHU。\n\n不是非得要抢别人名字，但是 XXXX App叫起来也挺顺口，很容易被记住。\n\n挑域名的时候你可以看一下.app的选择，说不定有惊喜🙊。"
+  },
+  {
+   "n": 77,
+   "tweet_id": "2091508567119642847",
+   "created_at": "2026-08-23 21:51:15 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091508567119642847",
+   "full_text": "SEO小贴士：用Screaming Frog（付费版）是可以看到完整的渲染完的页面长什么样，这样你就能知道模拟的爬虫看到的网站是什么样。另外Screaming Frog是能够查得出你 Raw HTML和JS渲染后的HTML差别在哪里，这个很有帮助。记住一个公式，这样\n\n另外Screaming Frog是能够查得出你 Raw HTML和JS渲染后的HTML差别在哪里，这个很有帮助。\n\n记住一个公式，这样会有帮助\n从内容层面来说 要同时满足，尽量不要用Display none去做，这会导致重复内容。\nRaw  = Rendered \nDesktop  = Mobile"
+  },
+  {
+   "n": 78,
+   "tweet_id": "2091668405367791619",
+   "created_at": "2026-08-24 08:26:23 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091668405367791619",
+   "full_text": "你把做SEO当作打仗来看。\n\n大公司/上市公司要保持领先地位\n\n初创公司，竞争者们要抢大公司的位置\n\n市场就这点。做SEO包括未来的GEO，都是在catch 需求。假设每个月100个人 搜一个solution或者一个产品，那么大家都是在一个盘子里抢菜，排名高的，产品好的吃的份额更多而已。\n\n做AI图片，视频，音乐出海的同学肯定都会去看Canva的网站，想研究他们怎么做的。Canva在很多国家，地区，语言等关键字都是第一 第二。\n\n你在选词的时候看KW Difficulty, 其实看的是竞争对手有多少的弹药和装备和人员，而不是这个词有多简单和多难。\n\n那你怎么知道你的对手有多少子弹和部队呢？\n\n其中有几个办法\n1. 去他们的linkedin，搜SEO title的员工有多少人，搜content title的员工有多少人，这样你就知道你在和多大的一个军队在战斗。\n2. 以Canva为例，我估计整个和SEO相关的团队（包括content和其他的人员），全球会在200人以上。\n3. 去公司的招聘网站上看看他们的动向，Canva正在招聘意大利，日本，韩国，马来西亚，阿根廷，西班牙的SEO岗位，也就是人家在排兵布阵去做当地国家的市场\n\n军棋玩过吧？\n就好像，你就一个单兵，一个战斗小组，甚至连一个排的人都没有，就要去打对面营？你老板莫不是战犯，派你去送死？\n\nhttps://t.co/45YgoMvENy"
+  },
+  {
+   "n": 79,
+   "tweet_id": "2091682678261375106",
+   "created_at": "2026-08-24 09:23:06 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091682678261375106",
+   "full_text": "从普通人视角里来分析SEO重要性。\n\n场景是今年我老婆突然迷上了要看逐玉，就问我哪里能看。很简单就是打开谷歌，搜一下逐玉。\n\n你看这个SERP，你会选爱壹帆，爱奇艺，还是奈飞？\n\n那首先我是有奈飞会员的，我会点奈飞对吧。\n\n那么爱奇艺和腾讯都是发品商，为什么谷歌里面看不到腾讯的链接？\n\n也就是说在逐玉最火的时候，大家在搜逐玉，流量都会跑去爱壹帆，爱奇艺，奈飞和youtube。没有办法转化成腾讯视频海外版的付费用户。\n\n今年Ahrefs Evolve 新加坡的时候和很多 印尼，菲律宾，泰国，新加坡的朋友在聊天。因为我也用到了逐玉的例子。\n\n逐玉最火的时候在东南亚那个简直了。但是别人在搜pursuit of jade的的时候，出来的也是爱奇艺和Netflix，腾讯视频海外版 排名就是在下面。\n\n也就是说你自家的出品的东西，你排名都不在上面，错过了很好的转化窗口期。\n\n你再去分析为什么 爱壹帆，奈飞，和爱奇艺排在腾讯视频前面\n\nhttps://t.co/Ljiz86vTum\nhttps://t.co/yE3lC2QPYZ\nhttps://t.co/FlkgrrkBmt\n\n同样的page title角度去看\n\n奈飞\n<title>观看《逐玉》</title>\n<title>Watch Pursuit of Jade</title>\n\n爱奇艺\n<title>逐玉 (2026)   全集 带字幕 –爱奇艺 iQIYI | iQ com</title>\n\n腾讯\n<title>\nWeTV - 免費觀看國產劇、韓劇、日劇、泰劇、動漫、電影和其他豐富的影片內容。平台提供泰語、印尼語和馬來語字幕和配音服務，滿足不同地區使用者的需求。註冊成為 WeTV VIP，即可觀賞無廣告節目，並可在留言區與好友互動，享受多語言字幕帶來的身臨其境的觀看體驗。\n</title>\n\n腾讯视频海外版这个就是duplicated page title的问题。或者你没有把核心关键字放在title里的事儿。他的主要的电视剧集合页都是这样。\n\n也可能他放了，但是前端在渲染的时候call了一个default的page title。\n\n那很容易可以得出一个结论，优化page title的重要性。\n\n不然你自己的产品排不过盗版，这个事儿对吧，说不过去。\n\n然后因为大家在搜这个词的时候，肯定会带某个动词或者定语对吧\n比如说在线，免费，观看，watch等等，可以把这些动词和定语放到page title里去做一个匹配。"
+  },
+  {
+   "n": 80,
+   "tweet_id": "2091716914599067838",
+   "created_at": "2026-08-24 11:39:09 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091716914599067838",
+   "full_text": "跳出我们出海的思维。\n\n你知道其实很多外国同行也在学怎么做中文GEO吗？\n\n我今年在Ahrefs Evolve Singapore的时候就有很多人问我，怎么才能让豆包，Deepseek推荐他们？\n\n比如说，去泰国旅游，推荐哪家免税店？ 去日本旅游买什么伴手礼？去澳洲旅游买什么酒？\n\n我不是很理解豆包还有deepseek的机制，我自己也在学。如果你有路子或者理解的话说不定可以反向代理一波。\n\n怎么让国内的AI推荐国外的产品？\n\n出海反过来怎么说？上岸？"
+  },
+  {
+   "n": 81,
+   "tweet_id": "2091727382726205949",
+   "created_at": "2026-08-24 12:20:45 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091727382726205949",
+   "full_text": "学SEO不一定只是为了创业，出海赚钱什么的。\n\n我学SEO的初衷其实就是为了在澳洲找工作而已。学着学着就今天这样了。\n\n目前SEO有一个趋势：就是SEO在慢慢向AEO，GEO这个方向靠。\n\n谷歌的美国版本永远是最新的版本。\n\n你可以参考这些行业leader公司的动态。 Manager以上的岗位，都在往AEO，GEO里靠。\n\nAutodesk的这个岗位更有意思，叫Search Intelligence Manager。\n\n你如果问我AEO，GEO怎么做？我现在也没有办法回复你，我觉得他们的底层逻辑和SEO差不多，都是优化你的品牌和网站实体，让LLM，AI推荐你的品牌和产品。\n\n大家都是0起步，学新的东西。就像十几年前React, Cloud这些东西出来以后，大家都是一个起跑线在学的。\n\n只是这些大公司的招聘你可以看得到他们觉得目前从SEO的池子里去找AEO和GEO的人，是一个方向。 \n\n如果你的职业发展是SEO+AEO+GEO的话，的确可以关注一下这个趋势。\n\nSEO+AEO+GEO这个方向适合谁去学？我觉得至少是有一定CS/IT背景的人。因为这是一个文理结合的专业，如果你一点技术背景都没有的话，是做不了的。\n\n而且这个岗位，应该每一个公司都会需要，特别是北美，很多公司都很恐慌，恐慌就会有机会。"
+  },
+  {
+   "n": 82,
+   "tweet_id": "2091741166094213429",
+   "created_at": "2026-08-24 13:15:31 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2091741166094213429",
+   "full_text": "@whoknowskaemi 交易所招了十几年了。crypto排名本质是合规，和SEO没太大关系。"
+  },
+  {
+   "n": 83,
+   "tweet_id": "2091770029687935427",
+   "created_at": "2026-08-24 15:10:12 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2091770029687935427",
+   "full_text": "@zhiwei_bao_seo @lyn121111 先生退出外贸圈，我是第一个不同意的。"
+  },
+  {
+   "n": 84,
+   "tweet_id": "2091795112745689273",
+   "created_at": "2026-08-24 16:49:53 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091795112745689273",
+   "full_text": "SEO小帖士：Robots.txt\n两年前刚开始写小红书, 写了一篇关于「知乎」为什么会一夜之间丢掉谷歌流量的帖子，下面还被很多人喷。\n\n今天拿出来再看一下，还是觉得挺有意思的。\n一个巨量级别的网站，在robots.txt把所有爬虫都跟禁了。\n时间节点正好是AI们迅猛发展，谷歌和Reddit谈好deal的时候。\n\n先不谈数据价值的问题，就想说robots.txt 如果禁止掉所有爬虫以后 你可以观察到他的流量和index的趋势是什么样的。\n\n为什么注意到这点？因为平时在谷歌搜中文的东西，永远都是知乎排在前面。后来突然间知乎不见了，我就去SEMRush 看了一眼，果不其然，robots.txt有问题。\n\n网站如果出现排名大面积下滑，做SEO Audit的时候，首先要看的就是robots.txt，第二看的就是Crawl status。\n从这个图片上基本上可以看到发帖以后没多久，他们把robots.txt给改回去了。直到现在才有恢复的趋势。\n\n危害是不是致命的？是不是其他原因导致排名没有康复到以前水平就不得而知了。\n\n但是我知道的是，海外的中文用户少则几百万，多则上千万吧，你看小林说，老高小莫的关注量就知道了。\n\n知乎也是做Adsense 什么的，免费的流量和广告费送你你难道不要么。\n\n这个号虽然已经很久没更了，以后有机会再利用起来。\n\n写推比写小红书有意思多了。"
+  },
+  {
+   "n": 85,
+   "tweet_id": "2091805576611471526",
+   "created_at": "2026-08-24 17:31:27 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091805576611471526",
+   "full_text": "关于多语言站点，统一回复一下各位推友，关于为争论很厉害的，为什么不要自动重定向？\n就是没有为什么，谷歌说不要做重定向，你要做SEO，官方的推荐是什么就是什么，你和流量/排名犟什么🤣 https://t.co/HSpFSmnmEM"
+  },
+  {
+   "n": 86,
+   "tweet_id": "2091844216980979877",
+   "created_at": "2026-08-24 20:05:00 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091844216980979877",
+   "full_text": "我知道我分享了这个SEO JD很多次了。\n\n为什么一直在分享这个Klook的JD？ \nKlook 在SEO的表现真的很强。是真的真的真的花了很多功夫\n \n如果你做过Enterprise SEO，跑过大型项目，并且正在拥抱未来，这个JD的最后一个部分关于公司DNA和Mindset以及文化的分享，真的很触动。\n\n原文如下：\nThe DNA (Mindset & Culture)\n\nThe Evangelist: You can explain \"Crawl Budget\" to a C-level executive and \"Business Value\" to a Junior Developer. You know how to get SEO tickets prioritized.\n\nData-Driven, Not Voodoo: You don't believe in \"SEO magic.\" You believe in hypothesis, test, measure, and iterate.\n\nGlobal Mindset: You understand the nuances of international SEO (ccTLDs, Hreflang) and search \nengines beyond Google (Naver, Yahoo! Japan).\n\n特别是“You don't believe in \"SEO magic.\" You believe in hypothesis, test, measure, and iterate.” 这句话。\n\n因为谷歌算法本质是黑盒的，即便谷歌官方发布了很多东西，包括业界的专家一直在分享。\n\n但是我们平时工作仍旧属于摸石头过河，所有的经验都是经过假设，测试，衡量，迭代来做的。\n\nhttps://t.co/MDWFkj024D"
+  },
+  {
+   "n": 87,
+   "tweet_id": "2091894056687431704",
+   "created_at": "2026-08-24 23:23:03 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2091894056687431704",
+   "full_text": "之前的都是SEO小帖士，现在开始我会区分干货和Tips.\n\n下面是我认为SEO 更干货的东西\n\n2024年3月份 Google 误将Content Warehouse API的内部代码文档开源到Github。 这份文档包含了2500页、1.4万和排名相关的文件。\n\n后来在网上各路专家都有去看和分析。\n\n不得不说谷歌的程序员命名规范，这样让我们就可以有迹可循。\n\n先讲的板块：QualityAuthorityTopicEmbeddingsVersionedItem\n\n这个板块的几个看点\n1. siteFocusScore\n2.siteRadius\n3 embedding (嵌入向量) page/site\n\n怎么解释呢？\n\nsiteFocusScore，意思就是你的网站针对于特定垂直领域的分数，比如说我的话，如果我的网站全部写SEO，那么我在SEO的Focus分数上就会越高。\n\npageEmbedding 就是单一页面的主题向量\n\nsiteRadius 就是站内各网页向量距离站点中心向量（siteEmbedding）的偏离程度/离散度（半径越小，说明站内所有内容越统一；半径越大，说明站内文章跨度越杂）。\n\n那继续往下分析。\n\n也就是说我的网站在一个垂直领域的Authoritativeness的分数相对应就会更高。就是说我，如果一直在输出SEO的高质量内容，那么我在SEO整个topic里面的A值就越高。\n\n这个就是大家常谈的topical authority 的事情。和EEAT相关。也就是为什么大家会看到很多网站垂直领域做得特别好的原因。\n\n也就是说如果你的网站主题是A，你又跑去讲C和D，那么你的主题其实是很偏离的。\n\n举个例子，假设我是一个SEO博主，我突然开始在同一个网站写唱，跳，Rap, 那么我这个网站的Focus分数可能会下降，siteRadius会变大。\n\n小半径(siteRadius）的网站在垂直领域更容易成功，更容易建立你在这个主题和领域的“专家权重\", 这个是我推荐的做法。\n\n千万不要东做一点，西做一点，乱铺内容，要stay focus."
+  },
+  {
+   "n": 88,
+   "tweet_id": "2091995138864406654",
+   "created_at": "2026-08-25 06:04:43 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2091995138864406654",
+   "full_text": "@kkgogogoETH 北美Ecom很厉害。我最近发现，Shopping feed （merchant centre）, image alt , product image 的质量 这三个东西弄好了以后，会涨很凶🧐"
+  },
+  {
+   "n": 89,
+   "tweet_id": "2092027807719444899",
+   "created_at": "2026-08-25 08:14:32 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2092027807719444899",
+   "full_text": "日语区的 SEO JD 还是比较上路，正规的。\n\n去年在Google Search Central Live Deep Dive活动 认识了日本的一群SEO大咖。\n\n看完他们的分享，我还是有点震撼的。\n\n毕竟他们没有要求我们做SEO的人开发AI Agent/workflow 来造大量的高质量AI Slope\n\n不得不提到 @kimuyan 他应该是日本上市公司CyberAgent Inc 的SEO Director, 超过20多年的工作经验。\n\n他在活动中分享了他怎么优化Ameba Blog的SEO。你可以把它想成是日本的微博？小红书？\n\n我是第一次直观看到，这种级别的网站是如何管理SEO的。\n\n也是我觉得这次活动中最有价值的一个talk。\n\n92 Million Blogs, 9200万 博客\n2.8 Billion Articles， 28亿 文章\n5 Billion Page Views, 50亿浏览量\n500 Million Search Traffic，5亿 SEO搜索流量\n\n前两天有提到Quality的概念。Quality应该考虑网站的整体。作为体量那么大的网站，他们如何规避Spam，或者AI Slope 对网站的Quality 的影响？\n\n他们引入了一个内部的Spam Filtering的机制，即做了一套内部的Machine Learning的程序，把网站上的文章去做Quality 和Spam的分类。\n把低质量，AI Slope, Spam的文章 主动去 No Index。\n\n做为一个管SEO的，如果你只做100个页面网站，你的策略是什么？\n\n如果你做一个100万个页面的网站，你的策略是什么？\n\n如果你做一个 Billion级别的网站，你应该怎么做？\n\n关于为什么要经常参加一些SEO的活动，认识一些行业里的大咖，前辈，同行，因为你们可以私下进行一些经验的分享与沟通。\n\n我和Kimura先生认识的时候还有一个小故事。在悉尼的SEO Conference后的活动里，我看这个大哥大概率是抽烟的，于是我递上了一根烟。然后就认识了。\n\n于是每次在线下活动我们都会交流一些心得。我俩交流全程就是无障碍 Google + ChatGPT翻译🤣"
+  },
+  {
+   "n": 90,
+   "tweet_id": "2092067172021608918",
+   "created_at": "2026-08-25 10:50:57 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2092067172021608918",
+   "full_text": "这两天好多朋友私信问我，能不能做SEO Agent, SEO Automation, GEO Agent, GEO Automation。\n\n因为可以降本增效，所以会有人买单。\n\n仅供讨论：\n你们是不是觉得市面上没有？是不是觉得很多企业需要？\n\n我想说的是，现在要设计和做一套Agent, 做一套Automation的系统，with Claude, with Codex，我再拉上几个大厂的Tech Lead 一起坐在那里搞，我搞不出来么？\n\nSEO届一堆技术大佬，研究算法的，CS博士毕业的。\n一堆独角兽企业，无限子弹和开发资金的，他们为什么不做？  \n\n你得思考的是：\n这玩意是技术上实现不了，还是逻辑上不通？\n\n@profound , @peec_ai 是2个GEO方向的当红辣子鸡，他们做起来的原因是能够提供最够高的Insights, 给大企业去做data intelligence的。他们的卖点肯定不是automation，而是数据啊。\n\n@ahrefs , @semrush, @lumarhq , @botify @screamingfrog \n都有一整套完整的爬虫，渲染系统，审计系统，为啥他们不做SEO, GEO Automtation？ 他们做起来不是更方便？\n\n去年开始SEO届最喜闻乐见的，就是大家收到了更多的Algorithm Recovery的咨询业务了。"
+  },
+  {
+   "n": 91,
+   "tweet_id": "2092090944648581505",
+   "created_at": "2026-08-25 12:25:25 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2092090944648581505",
+   "full_text": "SEO干货分享：这次讲的是contentEffort\n\n继续来拆解Google Content Warehouse 的API Leak的事件。\n\n我是一个喜欢研究谷歌算法的人。我不理解透，我就做不好这个事情。\n\n谷歌不止一次提到 Effort这个概念。\n\n我心里就在想这个东西怎么量化？这个事情从去年8月曼谷一直研究到今年5月上海。\n\n我在上海的谷歌活动问了Gary，关于EEAT，Quality Rater Guideline 这本东西里面，谷歌有没有算法去自动跑呢？比如说effort 这种东西如何自动去衡量呢？\n\n当然谷歌的回答没有特别正面，我也忘记具体每一个字是什么了。大概意思是会有“mathematic calculation”\n\n然后你去扒这个 Warehouse里的数据。\n\ncontentEffort - LLM-based effort estimation for article pages\n\n那这个contentEffort 既然有一个变量的定义，那么就一定可以计算对吧？\n\n我知道很多推友都是AI，Data Science，Machine Learning的大佬，我就不班门弄斧了。\n\n我们可以一起来假设，假设如果你是一个Google 的Engineer， 你该如何通过写代码的形式，来自动去计算contentEffort?\n\n1. AI写出来的通用Template, 通用结构?\n2.内容是不是前20，或者前10的文章 Paraphrasing和缝合？\n3. 内容里面是否能提供到独特的entities, 参数等等（我觉得这个机器学习是能预测得出的）\n4. 内容中assset的effort: 我放的图片，视频是否原创？我很确定谷歌是能分辨得出图片、视频是否原创，是否AI生成。\n5. 信息增量(Information Gain)，你写的东西之前出现过没有？\n\n我不是AI工程师 ，或者是Data Scientist 。\n但是我知道，我每一个页面，每一篇文章有没有用心写，花多少时间写，修改了多少遍，做了多少research。\n\n这些东西可以通过，我提出的观点，我提出的分析，我拍的照片，我收集的资料，甚至我做的视频来验证。\n\n那么结论就来了， 已知 提高contentEffort能提高SEO，那么原创文字，原创图片，原创视频，原创见解都可以被认定为contentEffort，那我应该做什么来提高SEO呢？\n\nAI可以量化这个事情吗？我觉得悬。你要不把我蒸馏了。\n\n最后，有没有什么不出错的方法？我觉得就是，你做任何批量的事情，至少要有增量。至少是在数据和内容角度来说，你得想办法搞一点原创的东西， 不然一定会被判定为low  effort，然后被干。"
+  },
+  {
+   "n": 92,
+   "tweet_id": "2092095823731462302",
+   "created_at": "2026-08-25 12:44:48 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2092095823731462302",
+   "full_text": "补一句。我一直说我不信纯SEO Automation的原因就是Google 设置了EEAT这个门槛。\n这里有2个关键点：Effort和Originality。\n通用型SEO Automation 怎么跨过Effort和Originality? By 花了多少Token ? \n如果每一个网站都需要定制一些策略来实现 Effort 和原创，那你还要 通用型SEO Automation做什么？\n这不就是定制了么？"
+  },
+  {
+   "n": 93,
+   "tweet_id": "2092100375239438810",
+   "created_at": "2026-08-25 13:02:53 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2092100375239438810",
+   "full_text": "SEO擦边\n很多谷歌SEO，甚至现在Gemini 使用的东西, Google Cloud系统里 说不定会有。\n\n你要自己去联想和假设。\n\n比如说Google Cloud 有 AI Image Detection这个API的。它即便不会惩罚你，但是你contentEffort分数一定不会是 正 的。\n\n如果小公司，小工作室，甚至独立出海者，我认为你请国内机灵一点的大学生实习生，学校好一点的，学的快的，帮你去做effort 的事情不行么？人家要工作经验，你要“人”的effort。弄一个Canva账号，手动做图片，一个月能做好多呢\n\n我看到很多美国的朋友，你们大概率周围有谷歌或者ex-Google的朋友。有事没事可以打听打听，他们做过什么系统，说不定就串起来了。\n\nSEO要学Best Practice的目的，是在合理的范围内利用规则。🤡\n\nhttps://t.co/NI0rWCeWlD"
+  },
+  {
+   "n": 94,
+   "tweet_id": "2092105285955473656",
+   "created_at": "2026-08-25 13:22:24 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2092105285955473656",
+   "full_text": "SEO小帖士\n如果你的网站是非常 JS Heavy， 有很多五彩斑斓的特效的。\n\n去Chrome 设置里，把JavaScript 关掉\n看一下 https://t.co/1vfkVN2xv7 这个页面\n\n大概你就会清楚 很多特效都是可以靠CSS去写的。这种写法是最SEO Friendly的写法。\n\n如果你测试你自己网站的时候，发现有一些特别重要的东西不见了，那你可以跟着这个东西去做调整。\n\n因为，不是所有的爬虫都可以处理JS。你有些很核心的内容藏在了JS下，说不定爬虫就看不到，处理不到了。\n\n我这里说的爬虫有\n\nGoogle, Bing, OpenAI, Claude, Grok, Meta, Duckduckgo, Common Crawl, Deepseek, Doubao, Bytdance, Baidu, Yahoo, Naver。"
+  },
+  {
+   "n": 95,
+   "tweet_id": "2092108099628769390",
+   "created_at": "2026-08-25 13:33:35 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2092108099628769390",
+   "full_text": "我最近猛写推特 还有一个原因，我在做自己的EEAT。\n\n说不定趁热度可以冲一波低保。\n\n谷歌今年发布了Google for Creators.\n\n之前的Eligiblity非常高，现在降低到了\nIns, Youtube, X: 35,000 Followers\nTiktok: 100,000 Followers\n\n这个不限个人还是公司。\n\n我觉得跨过了这个坎，你个人/公司的Entity至少是某种程度上达标了。\n\n和GSC能看到X，Ins, Youtube的数据这个新功能关联起来不难看出，未来的SEO，AIO，GEO优化可能不仅仅是网站了。更多的是你/公司 旗下的所有媒体。\n\nhttps://t.co/e8UmyHXcXn"
+  },
+  {
+   "n": 96,
+   "tweet_id": "2092113071745769731",
+   "created_at": "2026-08-25 13:53:20 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2092113071745769731",
+   "full_text": "@KajianD65580 你把 en的都一一对应 301过去根目录，然后其他的页面hreflang 改一下，sitemap改一下，内链改一下。\n\n301的时候会丢失link power还有 会增大爬虫的爬虫预算。\n说不定可以有效。"
+  },
+  {
+   "n": 97,
+   "tweet_id": "2092174932323311912",
+   "created_at": "2026-08-25 17:59:09 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2092174932323311912",
+   "full_text": "前两天突发奇想，如果我要做一个“出海”的项目，我应该怎么操作？\n\n1. 找一个开发的朋友强强联合\n2. 买一个响亮的域名（我喜欢找好记的）\n3. 定计划 （从退休角度讲，我会找长线的）\n4. 做产品\n5. 上线网站，收米\n\n我会怎么选类目？\n1. 我首先会看搜索量\n2. 我会选哪些用户停留之间会长的页面（广告费高）\n3. 能同时做mobile app的类目（三吃）\n4. 看这个类目竞争对手子弹多不多（如果你碰到对面融资，无限子弹的，那换一个做）\n5. Effort (我会算大概要花多少精力才能排的上去)\n6. 如果找付费意愿的产品，可以精，但是要卖铲子\n\n我还是那套“以人为本的打法”，我会做一个“工作室”，这个工作室下面会有我的一些“产品”，介绍我的实力和背景。\n\n所以我买了 https://t.co/cfTAzZO69F 这个域名。几百刀。怪我当年出国的时候名字没起好。刚有了这个名字，漫威就出来了lol\n\n如果你要做工作室的这种方法，就是你有几个小伙伴一起。可以选择域名后缀有 io, technology, ai, io, asia等等。看你自己的预算，如果.com 买不到的情况下，可以找一个还不错的其他域名。\n\n开始做你的linkedin， 把你的学历，工作经验都放上去。\n\n连上你的Github，做实你的“技术”实力。\n\n你要做出海这个事情，你不可能上述所有的东西都没有吧？再不济，学历有的吧？"
+  },
+  {
+   "n": 98,
+   "tweet_id": "2092210684503503245",
+   "created_at": "2026-08-25 20:21:13 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2092210684503503245",
+   "full_text": "其实Google Analytics 去年就发布了 MCP服务。\n\n你可以直接连到自己的账号里面问一些数据问题。\n\n前提是你tagging, tracking 都做好了。\n\nhttps://t.co/8QF11RF008"
+  },
+  {
+   "n": 99,
+   "tweet_id": "2092238655909920985",
+   "created_at": "2026-08-25 22:12:22 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2092238655909920985",
+   "full_text": "@jjonlydown 看你多苛求 这个了。 正常情况下，观察bing和gsc的新的dashboard够了。然后交叉看Google Analytics里新的AI Assistant数据。你要问我哪个准，我也不知道，。"
+  },
+  {
+   "n": 100,
+   "tweet_id": "2092248676324520232",
+   "created_at": "2026-08-25 22:52:11 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2092248676324520232",
+   "full_text": "关于GEO的事儿。\n\n今年5月份在Search Central Live Sydney 做了一个分享。\n\n关于Google AI Search 的一个小实验，模型用的是当时的 Gemini 3.1 Pro.\n\n起因是平时我在搜索的时候，即便我上大学和工作都是在用英文，AI搜索的时候我还是习惯用中文。\n\n所以我观察到了，你同样一个问题，AI给出的答案会是不一样的。为了验证我的一个想法，\n\n我搭了一个观察从Query -> AI 思考过程 -> Fan-out -> Citation 的工具\n\n结论就是\n用户的输入的语言，地区 -> AI 系统（思考） -> Query Fanouts -> Citations -> 结果返回到用户输入的语言\n\n在这个过程中， Query Fanouts的语言是根据内容丰富度以及输入的语言+地区去决定的。\n\n你搜中文/日文/韩文的时候，他也有可能串英文的citation 和queries进来。\n\n目前观察到的在Google 那边依然是双轨制（用户语言+英文），他还没有跨语言总结的能力。\n\n也就是说 在AI搜索这块，依然是Language Lock的。你用英文问问题，中文问问题，AI不会去参考德文，法文，日文的东西。\n\n这也就是为什么AI Search, GEO 这一块你不仅仅要做你本国语言的网站，你为了在所有的AI平台里有机会露出，你就要做多语言。\n\n你以为AI会给你一个非常完整的答案，但是实际上他目前还是在做Information Retrival, 这个东西目前还是语言隔离的。\n\n5月份的时候我也试了ChatGPT, 和Claude，几乎是类似的情况。\n\nhttps://t.co/pv6H6PT8wc"
+  },
+  {
+   "n": 101,
+   "tweet_id": "2092272309528900070",
+   "created_at": "2026-08-26 00:26:05 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2092272309528900070",
+   "full_text": "SEO资源分享：老SEO应该都应该听过 Moz。\n\nMoz应该是第一个做出 DA Domain Authority域名权重 指标的 第三方公司。\n\n他们有一个板块叫Moz Whiteboard Friday，里面很多很酷的，新颖的，前沿的SEO理论，实战，和知识。\n\n每个周都会更新。\n\n虽然大家现在慢慢不用Moz了，但是Moz的内容质量依然很高。\n\nhttps://t.co/XTwpEfW75X"
+  },
+  {
+   "n": 102,
+   "tweet_id": "2092409990413975891",
+   "created_at": "2026-08-26 09:33:11 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2092409990413975891",
+   "full_text": "继alibaba 后 观察到的第二个国内龙头网站 lark 在用Fake Author 铺博客。\n\n谷歌刚发布了8月份的Spam Update\n\n可以一起来观察一下 Fake Author 和 scaled content abuse 谷歌的algorithm 反应会有多快。 https://t.co/Ni31Ksi1ey"
+  },
+  {
+   "n": 103,
+   "tweet_id": "2092413146774560864",
+   "created_at": "2026-08-26 09:45:44 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2092413146774560864",
+   "full_text": "@Zacharykent64 🤡 内容质量不差的。fake author 这个事儿。。怎么说的。但凡做过两年SEO， 平时研究谷歌的 都不可能允许假作者出现的。"
+  },
+  {
+   "n": 104,
+   "tweet_id": "2092468221794513075",
+   "created_at": "2026-08-26 13:24:34 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2092468221794513075",
+   "full_text": "我忘记API Leak里有没有写这个了。\n\n等有没有谷歌或者微软的大佬来解答了。\n\n我认为写代码 来判断作者是不是真的这个网站，双向连接很简单。人家linkedin 没连你，就不算。\n\n你看这篇吧，谷歌有专利的。\nhttps://t.co/Nw2PwFXIjI\n\nhttps://t.co/jYlQXuMznf \n\n这个是专利号。。\n\n我觉得普通人能想到的漏洞，人家谷歌程序员早就都堵上了。"
+  },
+  {
+   "n": 105,
+   "tweet_id": "2092487752776556895",
+   "created_at": "2026-08-26 14:42:11 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2092487752776556895",
+   "full_text": "@underwoodxie96 这么理解没错。\n\nOn page (Page Level) &lt;-&gt; 关键字 （Search Query）\n\nTrust/Authority (Site Level) 就是 刚才你说的可信。权威\n\nSite 和Site PK\nPage 和 Page PK"
+  },
+  {
+   "n": 106,
+   "tweet_id": "2092557180755144890",
+   "created_at": "2026-08-26 19:18:04 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2092557180755144890",
+   "full_text": "SEO 不推荐系列\n\n已知不懂SEO的公司，会用AI Agent大批量生成垃圾内容。\n\n那么懂SEO玩法的公司，如果要降本增效，提速，会怎么玩呢？\n\nAI兴起之前，SEO行业有专门的Ghost Writing的服务，服务于各行各业，主要是affilate这一块。\n\n为什么呢？因为人工成本。英美国家的用人成本特别高，所以他们会选择找第三方合作提供ghost writing的服务。\n\n然后他们公司的人和团队作为作者，背后是一台隐藏在黑暗里的内容生产机器， content machine。\n\n一般来说这些ghost writing的公司都会和大affiliate 平台合作。\n\n前两年出来一件事情就是site reputation abuse。当时是一个很大的新闻。就是一堆大媒体的网站全被谷歌K了 （Manual Action）。我管的网站也在里面。所以我走过完整的一个recovery cycle。\n\n什么是site reputation abuse? \n即第三方内容公司，做affiliate的平台借助一些大的媒体公司的authority 来做板块内容，借助他们权威度来排名，来获得收入。\n\n一般来说这种模式由内容提供方和媒体公司一起分成。\n\n内容提供方背后都有一套完整的ghost writing团队。\n\nhttps://t.co/uHPr4gIwFp\n\n风险提示：\n纯行业科普，不推荐你去找这样的服务。他有一定的风险。你还要能够把控内容质量。\n\n我觉得谷歌能查得出作者到底是谁。Spam的事情不推荐做。如果做了被罚，可以找algorithm hit recovery服务。\n\n另外\n吸烟有害健康。"
+  },
+  {
+   "n": 107,
+   "tweet_id": "2092595964888699272",
+   "created_at": "2026-08-26 21:52:11 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2092595964888699272",
+   "full_text": "SEO关于外链的思考\n\n学做SEO的第一天，所有人，所有教材，所有资料都在和你讲如何做外链。没错，这个东西是谷歌的核心机制，没有外链，就没有谷歌。\n\nPageRank（PR） 是 Google 联合创始人 Larry Page 和 Sergey Brin 于 1996 年开发的核心算法，它奠定了 Google 统治搜索引擎地位的基础。\n\n具体的这个计算公式可以自行GPT。\n\n自从大家知道了这个事儿以后，这个世界就出现了一批魔修：啥也不做，就搞外链。因为那个时候外链就是最重要的东西。\n\n那谷歌肯定不干了。谷歌出现了一批勇士，开始开发算法进行反抗，其中最著名的就是2012年谷歌推出的企鹅算法（Penguin Algorithm）。\n\n企鹅算法初期，依然是打的难解难分，直到打到2016年，企鹅算法并入了Google 核心算法(core algorithm)以后。\n\n勇士终于战胜了恶龙。\n\n为什么要讲这个故事？截图里放的依然是algorithm leak的内容，这次分析的是外链的事儿。\n\n和我熟的朋友都知道，过去工作中我做过外链，直到有一天我悟了，开始不做了。\n我劝周围的朋友，你不应该把重心放在外链上，你还有很多的事儿没做。能优化的地方有太多太多了。\n\n直到重新去翻这个文档以后，我大概又多了一层领悟。\n原文解读，看不懂可以让AI翻一下。\n\npenguinPenalty (number, 0 = good, 1 = bad)\n页面级别的企鹅惩罚系数。表示页面的惩罚程度，0 为正常，1 为严重惩罚。\n\npenguinEarlyAnchorProtected\n白帽/老站保护机制。如果一个页面早期积累了大量高质量、自然的“早期锚文本”（Early Anchors），该页面会被打上保护标记，免受后续突发垃圾外链或恶意负面 SEO 的误伤。\n\nNote: 这一点解开了我的疑惑。如果我的竞争对手拿外链进攻我，我怎么办？所以就是好的网站会被“保护”，有点意思。\n\nbadbacklinksPenalized \n一旦被标记为受恶意/垃圾外链惩罚，下游的打分引擎（Mustang ascorer）将直接禁用该页面的 improvanchor（增强锚文本）加权得分。\n\ntopPrOnsiteAnchorCount\nAccording to anchor quality bucket, anchor with pagrank > 51000 is the best anchor. anchors with pagerank < 47000 are all same.\n\nPagerank的阈值，也就是我们耳朵都听出老茧的优质外链。\n这里有2个分数，我也不知道代表什么。你就知道一件事情好了，优质外链没个几百，上千刀的，你要不起。\n\n接下来讲如何惩罚Spam 垃圾外链\n\nspamPenalty: Combined penalty for anchor demotion.\n\ndemotedStart：降权开始的时间\ndemotedEnd: 降权结束的时间\ndemotedAll（Boolean）：把你这个周期内做的外链和新增的anchor classified as spam\n\ntrustedDemoted，trustedExamples，trustedMatching以及spamProbability 应该和刚才那个保护机制一样，是一个对冲机制。也就是说如果你的站点有足够多的优质的外链。可以对冲掉Spam?\n\n那么结论来了\n你到底要不要花精力在做外链上？Pagerank > 51000 的网站外链你拿得到吗？拿不到你就不要花精力去搞了。免费的，我估计你一个星期就搞得完。\n\n付费的？你有钱你想办法呗。做PR，做新闻稿，做优质的内容别人自然引用你。\n\n便宜的，批量的外链又不是只做你一个。算法机制写清楚了，就算不Spam，对你的帮助也不会大的。"
+  },
+  {
+   "n": 108,
+   "tweet_id": "2092601636241953071",
+   "created_at": "2026-08-26 22:14:43 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2092601636241953071",
+   "full_text": "谨慎为上。要判断这个网站有没有问题。如果你去查ahrefs, semrush, 那些工具，这个网站几乎没流量的，那么就可以判断他不行。\n如果有一个免费的地方所有人都可以去提交的话，我不确定这个东西还有没有价值。\n因为有一个东西是一票否决制。\nbadbacklinksPenalized\nWhether this doc is penalized by BadBackLinks, in which case we should not use improvanchor score in mustang ascorer."
+  },
+  {
+   "n": 109,
+   "tweet_id": "2092603291092021479",
+   "created_at": "2026-08-26 22:21:17 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2092603291092021479",
+   "full_text": "@FanShifu 对。就是要有一个筛选标准。不然我觉得不如自己好好做社交媒体。社交媒体的singal 更加强烈。\n因为SEO里有一个东西叫 Brand Search，即品牌搜索量。这个东西我认为比外链重要更多。\n正因为如此，起名字就更重要了"
+  },
+  {
+   "n": 110,
+   "tweet_id": "2092604590067970417",
+   "created_at": "2026-08-26 22:26:27 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2092604590067970417",
+   "full_text": "在买域名之前，你可以用https://t.co/D3RwPQYNnJ 去查这个域名之前的一些记录，是不是有做过一些不好的事情。\n\n我差点就中过一次招，域名弄回来上线了，chrome打开直接是红色木马警报。\n\n后来查出来是之前网站域名被当过肉机，或者垃圾站点。\n\n这都是我买域名4，5年的前的事情了，居然还存在。"
+  },
+  {
+   "n": 111,
+   "tweet_id": "2092610440823980420",
+   "created_at": "2026-08-26 22:49:42 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2092610440823980420",
+   "full_text": "我不是王婆卖瓜。\n\n如果你是做GTM的同学，你可以适当的了解一下SEO。\n\n第一，Google Ads里的Ad Relevancy和SEO里的On Page是高度相关的\n第二，Google Ads里的Page Experience和Technical SEO是高度相关的\n第三，Google Ads里的Ad Rank可以由SEO提高\n第四，你可以用SEO同学做的KW Research来帮你做Campaign\n第五，做好SEO的网站平均CPC会比竞争对手低一点点🤏，这个和Ad Rank有关系\n\n所以，你汇报业绩的时候可以带上SEO同学一起，毕竟你打Brand Campagin的时候会把我们的数据弄下去🤨"
+  },
+  {
+   "n": 112,
+   "tweet_id": "2092612192122405067",
+   "created_at": "2026-08-26 22:56:40 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2092612192122405067",
+   "full_text": "如果你是 医学背景的，工程师背景的，法律背景的，或者你有PHD，你简直就是SEO界的圣子和圣女。\n\n因为很多的内容，你要做排名，他是有职业门槛的。"
+  },
+  {
+   "n": 113,
+   "tweet_id": "2092615876222849492",
+   "created_at": "2026-08-26 23:11:18 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2092615876222849492",
+   "full_text": "如果你想学SEO，可以去参加Google Search Central Live Deep Dive的活动，这次是在巴塞罗那。\n\n我从去年开始参加了四场：曼谷（演讲），香港，上海，悉尼（演讲）\n\n我几乎类似的PPT 听了四遍，每一遍都有新的领悟。每一次SCL的活动，都会伴随着谷歌发布一些新的东西，以及你在现场可以听到别的行业专家讲什么有趣的主题。\n\n这些主题可能对你没帮助，也可以对你有很大的启发。\n\n比如说对我最大的启发和收获有：\n1 Gemini不归Google Search 团队管\n2 AI Mode，AI Overview和SEO至少66.6%以上一致\n3. 谷歌声明了Quality是Ranking Factor\n4. 电商网站到底应该怎么做SEO\n5. 深入了解其他语言国家的SEO：SEO不仅仅只有英文\n6.还有很多我整理了还没来得及发的\n\n报名的时候要附上你的网站，每次活动肯定会有一些今年新的内容。\n\nhttps://t.co/6ZcHSLgExn"
+  },
+  {
+   "n": 114,
+   "tweet_id": "2092625249619882312",
+   "created_at": "2026-08-26 23:48:33 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2092625249619882312",
+   "full_text": "@yscai101 谷歌有一个定义叫YMYL。这个类目下的内容，只有对应背景的人作为Content Creator才能有排名。\n\n另外，PHD的意思是，你是这个领域学历最高的那波人。"
+  },
+  {
+   "n": 115,
+   "tweet_id": "2092718329178059004",
+   "created_at": "2026-08-27 05:58:25 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2092718329178059004",
+   "full_text": "@Jackli57 你说的没错。我们看的角度不一样。我做SEO的工作大部分时间不是起新站，而是优化存在的站点。"
+  },
+  {
+   "n": 116,
+   "tweet_id": "2092784685650997342",
+   "created_at": "2026-08-27 10:22:05 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2092784685650997342",
+   "full_text": "古法SEO怎么做？\n\n我所有其他的tool都可以不要，但是screaming frog是必须的。\n任何一个做SEO的人，都应该要有一个screaming frog.\n我这里说的不是出海。而是纯做SEO。\n\n因为你要分析大量的网站，看大量的页面数据\n\nScreaming Frog 还可以 对比html vs js, 看渲染后的页面\n网站有没有其他的techinical 问题等等。\n\n我们平时不太看Ahrefs 和SEMRush监控的东西，而是会看Screaming Frog里的东西。\n\n有了AI以后，其实你可以把Screaming Frog的数据直接丢给AI去做阅读理解。\n\n之前分享的Lumar 和 Botify 就是属于大企业版本的Screaming Frog了。\n\n另外，如果你的网站希望做反爬（不希望同行调研你）, 你就要反向处理。\n\nhttps://t.co/gWNeCAKgVm"
+  },
+  {
+   "n": 117,
+   "tweet_id": "2092791651349713156",
+   "created_at": "2026-08-27 10:49:46 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2092791651349713156",
+   "full_text": "SEO实验：\n昨天扒完了 高质量域名（外链）PageRank的分数这个东西。来自推友 @royal_zoo_seo 的数学推导分享。\n\n先讲几个概念\n假设 谷歌的这个API Leak 是真的（里面的那些变量，数据，定义是真实在用的）。\n\n那么Page Rank > 51000 \n他的上限应该是 65535，即16-bit 无符号整数（uint16）的上限。\n\n虽然51000/65535 大概是 77.82%，不代表 22.18%的网站属于高质量。\n\n根据数学模型推导\n如果是正态分布，那么代表 最多 4.75% 的域名是高质量域名能给出高质量外链\n\n如果是Beta 分布，中度基准1%\n\n如果是零膨胀混合模型Zero-inflated Model 的话， Page Rank > 51000的综合概率是 0.4%\n\n结论就是谷歌眼里的高质量域名，少之又少，可遇不可求。\n如果 Page Rank < 47000一视同仁的话，只要不是Spam，他的价值对于你来说可能是一致的。\n\n以上内容仅是SEO的实验和假想而已。"
+  },
+  {
+   "n": 118,
+   "tweet_id": "2092829063127949629",
+   "created_at": "2026-08-27 13:18:26 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2092829063127949629",
+   "full_text": "Apple 的AI真的是很烂。不光C端没有能打的AI，内部也没有采用先进的AI进行降本增效 🤡。\n\n苹果这两个SEO纯内容岗位开放了一个月了，一个在上海，一个在总部。\n\n先讲这个上海的岗位\nContent SEO Specialist\n\n要求6年以上SEO经验，并且内容Focus 在内容(写)。\n了解基于百度的内容优化\n母语中文\n有优化过搜狗，360，微信，小红书，抖音的经验\n有优化过基于国内AI GEO的经验\n\n会做中文的KW Research\n管理中文网站的On Page 优化：\n\nManage on-page optimization including metadata, content structure, and internal linking for your product categories.\n\nConduct Chinese-language keyword research and content gap analyses to identify opportunities and prioritize content development.\n\n🤡 我就说。。这些东西国内都用自研AI Agent 提效了，苹果还在古法优化么？👆这点东西没有办法自动化吗？\n\n还有这个:\nCreate content briefs and specifications in Simplified Chinese that translate SEO requirements into actionable guidance for content teams.\n\n🤡 所以Apple在国内还有一个Content Team? 为什么不做Agent来自动做内容?\n\nApple 是上市公司。他们对品控，口碑，品质的要求更高，所以需要人去把控？\n\n还是Apple不懂国内GEO需要：批量生成高转化意图内容矩阵，结构化内容规模化生产，做专题矩阵，全渠道智能分发？\n\n上面都是，开个玩笑。下面是JD的分享。上海的这个岗位挺适合国内语文好，写作好的同学去申请一下。\n\n我反正觉得，文科生，会写内容的同学在AI的年代是更有价值的。做SEO做得好，很大程度上都要仰仗厉害的写手。\n\n有时候看不同企业对待content creation的态度，还挺有趣的。\n\n优质的内容才会带来转化和共鸣。\n\nhttps://t.co/puTDnVWWpl\n\nhttps://t.co/edP1ZKdFMK"
+  },
+  {
+   "n": 119,
+   "tweet_id": "2092889660783722868",
+   "created_at": "2026-08-27 17:19:13 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2092889660783722868",
+   "full_text": "SEO小贴士：Core Web Vital 到底应该怎么看才准？\n\n谷歌官方有一个地方专门可以看到所有网站的Core Web Vitals. 这个是最准的数据，链接在最下面。\n\n无论是Page Speed Insight 还是 Chrome的Lighthouse ，他的数据都只是Lab Data.\n\n真实用户数据的Field Data在这个谷歌自己的dashboard里。\n\n你可以选择origin + all 来看到你最近28天周期的数据。\n其中包括LCP，CLS，和INP。\n\n谷歌不止一次说过不用花太多太多的精力去做Core Web Vitals。为什么呢？ 你要看一个时间线\n\n2020年5月：\n“By adding page experience to the hundreds of signals that Google considers when ranking search results, we aim to help people more easily access the information...”\n通过将页面体验加入到 Google 评估搜索排名所考量的数百个信号中\n\n..page experience will become a ranking factor in Top Stories, in addition to the many factors assessed.”\n页面体验将成为 Top Stories 模块的排名因素之一。\n\nWe will introduce a new signal that combines Core Web Vitals with our existing signals for page experience...\n我们将引入一个结合了 Core Web Vitals 与现有页面体验信号的新信号……\n\n2020 年 11 月\nThis past May, we announced that page experience signals would be included in Google Search ranking.\n今年 5 月，我们宣布页面体验信号将被纳入 Google 搜索排名中。\n\n而现在\nThis, along with other page experience aspects, aligns with what our core ranking systems seek to reward.\n现在CWV和页面体验的其他方面一道，符合我们的核心排名系统旨在奖励的方向\n\n很现实的一个事情，如果谷歌声称某一个东西为 Ranking Factor, 那么大家就会一窝蜂地盯着一件事情做，而放弃了其他东西。\n\n所以又玩了一个文字游戏。\nCWV不是Ranking Factor\nCWV和其他用户体验相关的东西，一起组成了和排名相关的重要部分。\n\n什么叫不要过度消费CWV？\n1. 你要做CWV，CWV要做好，但是不是丢下其他事情不做了。\n2.这个链接是谷歌Field Data, 更能表达网站的CWV分数\n3. Light House或者Page Speed Ingisht 只是开发用来debug，调试的地方\n4. 根据我们的经验你的CWV不能落后竞争对手太多。\n5. 大后期比的都是全绿，全绿一定有好处。\n6. 提前做会比较好，改起来那个坑简直了\n\nhttps://t.co/nEqkh4sWaW"
+  },
+  {
+   "n": 120,
+   "tweet_id": "2092955713916281053",
+   "created_at": "2026-08-27 21:41:42 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2092955713916281053",
+   "full_text": "如果问我SEO如何提升和学习？还有一种，线下交流，同行交流，参加专业会议。\n\n我下个月会参加深圳SEO大会，@shenzhenseoconf, 做20分钟的演讲。\n内容应该会比我发在推特上的更详细，更深，更干。\n\n这次Conference的其他嘉宾有：\n@lilyraynyc SEO 一姐，你但凡做SEO这个行业，不可能不认识她。\n\n@methode Google 搜索关系团队的主要成员。属于谷歌的官方“传声筒”，所有的Google SEO 相关的专业会议都是他攒的。他说话特别谨慎，基本上能代表官方的发言，所有人都喜欢尝试从他那里套话。\n\nJosh Blyskal\nProfound 的2号正式员工。你可能不知道Profound? C轮融资9600万美元，估值10亿美元的 GEO独角兽\n\n@5le SEO神书《Product-Led SEO》的作者\n\n@SashG  是 @canva 的SEO老大\n\n@nikrangerseo 澳洲知名SEO专家，演讲无数，获奖无数。\n\n@daluoseo 北美增长营销鬼才，出海营销增长机构HashMatrix 联合创始人\n\n来自知名企业的SEOer:\nFaber Company @marketing_zero1 : 日本和亚太地区头部的SEO SAAS 上市公司。我看过他们代表的很多次演讲，全都是科研级别的成果。\n\nEasygo @Easygoau : stake和kick的母公司，埃佛顿，UFC，Drake，和曾经索伯 F1的赞助。\n\nREA(ASX: REA)：世界前三的地产上市公司。演讲者是我SEO职业生涯的领路人。\n\nAhrefs @ahrefs : SEO,GTM 出海工具必备0外部融资做到1.5亿ARR的独角兽。你做出海和创业公司的，你应该明白100% Bootstrapped证明这个公司的Marketing有多厉害。\n\n私底下和我关系好的专家们也会从世界各地去交流\n\n比如说 @kimuyan, 是日本上市公司CyberAgent 的SEO老大\n\n比如说Natalia Witczyk，大型Conference的Speaker. 我去参奖，她是评委级的人物。\n\n再比如说 @gefei55 国内独立开发者出海OG，最大出海群群主，写了无数关于出海见解，教人赚钱真本事。\n\n再比如说，我知道有很多亚洲其他国家的SEO，Marketing专家也会去深圳参加这次conference，都很期待这次中国之旅。\n\n我大大小小的SEO Conference参加了很多次，也讲了很多次。\n\n我和JP 是在去年曼谷的Google Conference第一次认识，交流了很多。\n\nJP 是去年到今年几乎一整年飞了整个地球，几乎参加了所有的SEO Conference，才摇到了全世界一流的这些SEO专家，在🇨🇳进行分享。\n\nSMX Advance 在美国和欧洲\nBrigton SEO 在英国和美国\nAhrefs Evolve 在美国和新加坡\nMozCon 在英国\nSEMRush Spotlight 在英国\n清迈SEO 在泰国\nFound Conference 在日本\nSEO Seoul 在韩国\n\nShenzhen SEO Conference 应该是第一个，也是中国最大，最专业的国际SEO Conference。\n\n我是这次Conference的 演讲者之一，我还是挺激动的，第一次在主场进行SEO的分享。\n\n这次的演讲嘉宾有一大片都是巨咖，是值得很多业内人士为了看他们演讲，专门买票飞一次的级别，论实力和资历，我在他们面前只能往后站的那种😂。\n\n最后\n我不是在帮 @jiangpengzhang 推广和卖@shenzhenseoconf 的门票。\n\n我只是纯分享而已，想告诉大家这个conference值得一去。\n\n已经决定要去的朋友，我们可以线下面基，沟通和交流。\n\n因为谷歌2010退出，中文SEO的学习资料，培训，教育，实践几乎是断层的。\n\n可能任何一个嘉宾的发言，都可以让你受益很长时间。\n可能线下Networking的时候，得到了其他地方完全不可能获得的资讯。\n\n活动链接在下面👇\nhttps://t.co/B5GrMl21K0"
+  },
+  {
+   "n": 121,
+   "tweet_id": "2093149251341881693",
+   "created_at": "2026-08-28 10:30:45 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2093149251341881693",
+   "full_text": "I just had a meeting with a tech company in Silicon Valley.\n\nIt's one of greatest product in their vertical. It has over 50M Monthly active users, more than 100 M App downloads.\n\nThey don't have an in-house SEO. And it grows like a rocket because it's a great product.\n\nThey are actively looking for advice on the emerging trends on GEO, AIO, ChatGPT, AI Mode and etc.\n\nThey told me there are agencies suggest them to do backlinks, AI summary, show different versions of pages to the crawlers (cloaking).\n\nFor this website: it's a DR 80+ (Ahrefs)\n\nWTF. people in the industry. \n\nWhy the Fk this website would ever need backlink and black hat tactics?\n\nIf you don't know how to provide SEO advice properly, follow SEO experts in the industry and learn how to do legit things.\n\nThose people are sharing their knowledge for free.\n\nJust follow, and learn."
+  },
+  {
+   "n": 122,
+   "tweet_id": "2093181903579087176",
+   "created_at": "2026-08-28 12:40:29 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2093181903579087176",
+   "full_text": "这个我没办法讲。因为我的思维逻辑是，我搞了一个很厉害的产品，我做这个网站是为了卖我的产品。\n\n那么，比如说我，做了SEO工具站，我去排这个名。那我在建站的第一天，我就已经知道了我每一个页面应该会排什么关键字，应该要做什么页面，每一个title, h1, url怎么写。\n\n而不是我找到关键字，再去做页面。"
+  },
+  {
+   "n": 123,
+   "tweet_id": "2093195666847879327",
+   "created_at": "2026-08-28 13:35:11 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2093195666847879327",
+   "full_text": "研究SEO最迷人的地方就像是做数学题。\n\n你可以用的方法很多\n\n演绎法\n归纳法\n反证法\n构造法\n穷举法，分类排除法\n数型结合\n函数与方程\n极限与微积分\n数学建模\n概率\n离散\n\n我自己在研究的过程当中，我相信SEO和数学很像。你做的任何一个决策都可以用某种数学方法/模型来证明或者反证。\n\n有些我想否定的，或者我不喜欢，不推荐的方法，就是因为我脑子里构建不出一个合理的📈而已。\n\n其实很简单的，找到一个属于自己的通用模型就可以了\n\n我的模型就是\n\nRanking = (Techinical Foundation + Quality) * Brand Reputation"
+  },
+  {
+   "n": 124,
+   "tweet_id": "2093217297284645300",
+   "created_at": "2026-08-28 15:01:08 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2093217297284645300",
+   "full_text": "如果你是新闻系毕业，中文系毕业，文科特别好，你爱写作。\n\n当你的每一篇用心写的文章，发布在网站上。你每一个用心做的新闻报道都可以因为你的质量，获得排名，和流量，并且获得收入，你会不会像打了鸡血一样天天奋笔疾书？\n\n答案是肯定的。美国，欧洲，澳洲有专门的一个SEO支线，叫新闻SEO。\n\n新闻SEO是专门给大的媒体网站做自然流量的岗位。\n\n新闻为什么要做SEO？\n\n因为大部分媒体公司 都要依托于 谷歌，Bing去做流量。谷歌和Bing 作为搜索引擎，他们的算法是公平 公正的。\n\n你的网站优化的好，你的文章写的好，你有一整套内容团队，你的团队成员毕业于各个大学的新闻系，传媒系，中文系，是最优秀，文笔是最好的。\n\n那么你的流量就会更高。无论你是做广告，还是做AFF，你都会有很高的收入。\n\n我知道很多做的好的大型媒体网站，他们70%的自然流量来自于Google Discover (谷歌的信息流)，20%的自然流量来自于品牌搜索，真正漏到传统的10 Links SEO 可能只有10%。\n\nNESS 这个在线的Conference 是北美最大的关于新闻，写作方面的SEO 峰会。\n\n如果你想学如何做好内容？你可以去听一下，完全在线的峰会。\n\n演讲嘉宾有 New York Times, CBS News, Telegraph, Yahoo, Wall Street Journal 专门管SEO的负责人分享关于News 和 Editorial的流量增长方式。\n\n为什么国内做新闻，做内容的同学越来越少了？其实是流量机制的问题罢了。你没有办法通过你的内容获得Rewards, 久而久之你就不想写了。\n\nhttps://t.co/p6aSIeRTJU"
+  },
+  {
+   "n": 125,
+   "tweet_id": "2093224389605261381",
+   "created_at": "2026-08-28 15:29:19 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2093224389605261381",
+   "full_text": "很多同学私信我，问了我一些问题。\n\n我发现很多网站连最基础的H1 都没有做好，然后就在做一些其他，怎么说呢，有点捡了芝麻，丢了西瓜的事儿。\n\n理论上 每一个页面的H1 都应该 要放 你这个页面要排名的关键字。\n\n比如说这个页面要做的关键字是《美女》\n\n那你觉得哪一个<h1>写的最好？\n\n<h1>翩若惊鸿，婉若游龙</h1>\n<h1>垆边人似月，皓腕凝霜雪</h1>\n<h1>关关雎鸠，在河之洲，窈窕淑女，君子好逑</h1>\n<h1>进来看看什么叫绝世美女</h1>\n<h1>美女_美女图片_高清美女写真_美女大全</h1>\n<h1>古典画卷中走出的东方古典美女</h1>\n<h1>美目盼兮，窈窕女子</h1>\n<h1>美女</h1>\n\n开放式题目，没有标准答案，但是你应该看明白我的意思是什么。\n\n错的答案一眼就能看出，最好的H1需要花时间去思考。如果你的文采比较好，估计能给每一个页面都想到一个完美的H1."
+  },
+  {
+   "n": 126,
+   "tweet_id": "2093250963549430072",
+   "created_at": "2026-08-28 17:14:55 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2093250963549430072",
+   "full_text": "SEO这个行业有很多垂类还有岗位细分，如果你想做SEO牛马的话，大概是这样的求职路径。\n\nTechinical SEO Specialist (做技术的)\nOutreach SEO Specialist （做外链的）\nContent SEO Specialist （做内容的）\nLocal SEO Specialist （做地图的）\nE-Commerce SEO Specialist （做电商的）\nSEO Analyst (大公司专门做SEO数据分析和报告的)\nAEO Specialist (App Store 优化)\nSEO Product Manager (做Organic的产品经理)\nSEO Consultant (独立的SEO顾问)\nNews SEO (新闻SEO)\nInternational SEO (国际SEO)\n\n然后分Agency 和 In House\n企业内部大概是分\nJunior -> Mid -> Senior -> Manager -> Senior Manager -> Operation Manager -> Group Manager -> Director \n\n我不认为有人能够跨行业做Digital Marketing. 我们行业存在 SEO+ Google Ads 这种组合, 理论上来说 单会一个SEO，就够你吃饱了，单做一个 Google Ads 也够你吃饱了。\n\n对于公司来说\n不太可能会招到同时有一个人 会SEO，Ads, Social Media, Paid Media, 还会做Media的。真有这种全才，早自己开公司去了。\n\n我创业前最高也才做到Senior Manager的岗位。"
+  },
+  {
+   "n": 127,
+   "tweet_id": "2093255513266122998",
+   "created_at": "2026-08-28 17:32:59 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2093255513266122998",
+   "full_text": "做SEO其实就是小时候做语文的阅读理解。\n\n谷歌的文档很喜欢玩文字游戏，你就是在解迷。\n\n每天读每天读，总会有一些新的收获，这些文档虽然基础，但是细节满满。\n\n这个是谷歌Search Central 的官方指南，链接在最下面\n\n版本答案都在里面。你自己蒸馏，整理，阅读自己做没问题，那你怎么说服你的产品经理？开发？设计师？架构师？\n\n已经跑了十几年，大几年的网站如何在不推倒重建的前提去做优化？\n\nwww.example点com/2/6772756D707920636174\n官方不推荐的写法，你是不是很常见？\n\n图片中让你用目录文件夹的模式去做，你们是不是一直在用？xyz=tmd&tmd=xyz\n\nhttps://t.co/JUCTdd0WtV"
+  },
+  {
+   "n": 128,
+   "tweet_id": "2093334205669499139",
+   "created_at": "2026-08-28 22:45:41 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2093334205669499139",
+   "full_text": "任何想做旅行方向SEO的同学，你要知道旅游行业的SEO是全世界最卷的赛道之一，比这个卷的赛道只有 黄，赌，金融，web 3，新闻，房地产。\n\n业界的当红辣子鸡之一，getyourguide, 一家来自德国的公司，估值高达20亿美元（2023年）。\n\n为什么他排名增长那么快和那么高？\n\n我的看法是。即便他的内容和Trip体系，Klook体系，Booking体系，Trip Advisor体系很像，但是他有独到的解法\n\n230+个真实Travel作者 * 所有语言带来的Expertise加成。\n\n所有旅游产品下都有海量的真实Review和真实照片带来的UGC 加成。\n\n主流全语言高质量翻译覆盖。\n\n有兴趣的同学可以了解一下PSEO的核心是什么？\nPSEO 不是制造垃圾页面。PSEO是放大你的Authority的杀手锏，竖立你自己的护城河。你的护城河是人，是真实照片，是真实Review，是现实社会和互联网的映射。\n\n关于UGC加成我慢点可以单独再拆一个出来讲\n\nhttps://t.co/x8KUAlYQAA"
+  },
+  {
+   "n": 129,
+   "tweet_id": "2093347878098042898",
+   "created_at": "2026-08-28 23:40:01 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2093347878098042898",
+   "full_text": "你知道GEO只有两种语言吗？（国产AI以外）\n\n你的输入语言+英语。AI不会把其他语言的内容整理完弄给你。\n\n你细品。未来的趋势就是所有的品牌，网站要做全语言。多语言网站就是要做 International SEO，典型例子就是Apple和Canva, 借鉴（Chao）就是了。\n不要老问什么为什么。他们的做法就是最合理的。\n\n如果要翻官方文档，很多做International的基础设置，有且只有一种，你可以看看这个文档\n\nhttps://t.co/aTqVe6QwOC"
+  },
+  {
+   "n": 130,
+   "tweet_id": "2093355461303218245",
+   "created_at": "2026-08-29 00:10:09 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2093355461303218245",
+   "full_text": "不要只盯着谷歌，Bing不要忘记了\n\n做Bing别忘记Indexnow 的机制\n\nBing为什么重要？\n微软的默认搜索引擎\nChatGPT会用到Bing\nCopilot会用到Bing\nYahoo会用到Bing\n很多在公司上网的，特别是英美欧洲国家的，公司电脑可能强制用Edge和Bing。\n\nhttps://t.co/7Da6uDoVYz"
+  },
+  {
+   "n": 131,
+   "tweet_id": "2093370148598255624",
+   "created_at": "2026-08-29 01:08:31 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2093370148598255624",
+   "full_text": "@Zacharykent64 我有网站反过来。Bing比谷歌简单一些我觉得，因为Bing没有EEAT"
+  },
+  {
+   "n": 132,
+   "tweet_id": "2093537842945245671",
+   "created_at": "2026-08-29 12:14:52 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2093537842945245671",
+   "full_text": "凡事要辩证去看，特别是做Digital Marketing和产品的。\n\nLovable厉害吧？估值133亿美金，最近一次融资4亿美金。\n\n很多人用lovable是做网站，我这里说的是普通人。\n\n普通人做网站是为什么？我是医生，我做一个我的profile页面，我是一个商家，我做一个我的生意介绍页面，他面向很多小企业，个人用户，做网站来推销自己的那批普通人。\n\n然后，我知道这个平台以后我就在想，哇靠，以后我们要失业了呀，大家都直接做网站了，那我们以后还做啥？\n\n后来仔细一看，lovable做出来的网站都不是SSR的。但凡做过SEO，或者做了有一定年数SEO的一定知道当年 Angular, React, Vue 三国的时候。\n\n如果你在国内做开发，你不一定有这个感受。这三个JS 框架出来以后，全世界都炸了呀，程序员都疯狂了呀，我当时2016年IT Master毕业，只要你会React, 就是8，9万澳币起薪。\n\n顺带着就是企业都炸了呀，面向谷歌的那些网站在用 React, Angular, Vue重构以后，全崩了。\n\n这也就是为什么你看那些排名高的，流量高的龙头老大网站，一定都是SSR的模式。\n\n这个坑大家都踩过，所以为什么会有 next.js 的出现。\n\n结果我看到 lovable做出来的网站是不能SSR的，我就纳闷了，你做的产品是给人做网站的，这些做网站的人是要做SEO，做流量的，结果这个reddit里面，lovable的创始人义正严辞的说\n\"Founder here. We have decided to not build in SSR into lovable for now, for a reason.\"\n“That SSR is necessary for SEO is a long lived myth. You can find more information here..”\n\n我就想，大哥你真不懂吧？\n\n人家wix 和webflow用的人多，用户多，原因就是SEO集成好。谁没事自己搭套dashboard在家玩。做网站都是要做生意的。\n\n当然这个是一年前的 帖子了\nhttps://t.co/bnPYEepOL2\n\n结果就是，现在做SSR了，真香定理。\nhttps://t.co/lOTIjEFNDK"
+  },
+  {
+   "n": 133,
+   "tweet_id": "2093547820808896687",
+   "created_at": "2026-08-29 12:54:31 +09:00",
+   "type": "reply",
+   "url": "https://twitter.com/loki_yan_seo/status/2093547820808896687",
+   "full_text": "@meepodev 域名 可能会承载 topic 这个东西。所以google 有expired domain abuse 这个spam 的惩罚，即你拿过期的，有权重的域名（过了某些门槛的）做坏事。\n\n也就是说 域名应该是和某一个行业类目绑定的。\n\n对这个网站来说问题不大，毕竟lovable 也不是靠SEO获客的。"
+  },
+  {
+   "n": 134,
+   "tweet_id": "2093578005176353204",
+   "created_at": "2026-08-29 14:54:27 +09:00",
+   "type": "original",
+   "url": "https://twitter.com/loki_yan_seo/status/2093578005176353204",
+   "full_text": "《生成式引擎优化（GEO）可信信息传播与信息生态治理规范》发布了，对中区GEO感兴趣的同学可以下载下来仔细品读一下。\n\n比较好玩的是，这个规范规定了GEO信的等级磨合来源。\n以及规范了三个等级的GEO服务商的类别。\n\nGEO是生成是引擎（AI大模型）。\n\n人给“AI” 制定规范。\n\n最高级别的信源变成了资源。\n\n豆包，Deepseek，千问会在算法级别被认为干涉信源吗？还是AI要自己去判断？\n\n以前是\n中国 SEO VS 世界SEO（百度VS Google）\n\n未来是会\n中国GEO VS 世界GEO\n\n了吗？\n\nhttps://t.co/c80BpKOdf3"
+  }
+ ]
+}

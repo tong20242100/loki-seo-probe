@@ -432,4 +432,4 @@ python3 scripts/audit_url.py https://example.com
 - PR>51000、高质量外链占比、品牌+KW 线性、Bing「没有」EEAT、Casino 站崩塌细节。
 - 转推、needs_review、短回复。
 
-核对原文：包内 `expert_claims.md` 文末 `#n → tweet_id`，按 id 回 X 查原推（作者本地的 `twitter_analysis.db` 不随包发布）。
+核对原文：包内 `corpus.json`（#n → full_text / 日期 / X 链接，与 `expert_claims.md` 索引表同序）；`expert_claims.md` 文末 `#n → tweet_id`。作者本地 `twitter_analysis.db` 不随包发布。
