@@ -351,6 +351,40 @@ def test_mhost(au, bad):
         bad.append("P10 m-host 200 应 warn（两套 HTML 风险，7.2）")
 
 
+def test_mhost_dns(au, bad):
+    """P10d NXDOMAIN 走真实 DNS，不靠 urllib 错误文本：文本随环境变（沙箱代理/本地化），
+    同一站点事实会出两种结论——peercare.cn 二轮实测即被代理隧道 502 误判成 na，
+    而 socket 直查该主机 errno=8 确认是 NXDOMAIN（站点事实：没有 m 站）。
+    只 patch **下一层** socket.getaddrinfo：patch 被测函数 host_resolves 本身会让它的
+    分支一行都跑不到（曾因此漏掉 gaierror→False 分支，变异 N6 静默通过）。"""
+    import socket as _sk
+    b = full_bundle(home=200)
+    b["robots"] = [{"ua": "*", "disallow": [], "sitemap": []}]
+    b["sitemap"] = {"n": 100, "prefixes": [("a", 50), ("b", 50)]}
+    noise = "<urlopen error Tunnel connection failed: 502 Bad Gateway>"
+    saved = au.socket.getaddrinfo
+
+    def fake(raises):
+        def f(host, port, *a, **k):
+            if raises:
+                raise raises
+            return [(2, 1, 6, "", ("1.2.3.4", 443))]
+        return f
+
+    for err, want, note in (
+        (_sk.gaierror(8, "nodename nor servname"), "pass",
+         "DNS 确认 NXDOMAIN：代理噪声下仍须 pass（peercare 二轮实测真阳性）"),
+        (None, "na", "DNS 解析得到但连不上=没看到"),
+        (OSError("dns probe failed"), "na", "DNS 自己也没做成=没看到"),
+    ):
+        au.socket.getaddrinfo = fake(err)
+        b["m_host"] = {"host": "m.peercare.cn", "status": 0, "error": noise}
+        st = _st(au.interpret(b), "m-subdomain")
+        if st != want:
+            bad.append(f"P10 m-host 代理噪声 + DNS {err!r} 应 {want}（{note}），实际 {st}")
+    au.socket.getaddrinfo = saved
+
+
 def test_wayback(au, bad):
     """P10b CDX 倒序取最新。合成本地 HttpEcho 层不好做，双保险：
     (1) 查询行必须出现 limit=-3，且同一行不得出现 limit=3 结尾（docstring 提及不算）；
@@ -364,12 +398,22 @@ def test_wayback(au, bad):
     #     dated 过滤掉了它 last200 才取到 200 行；去掉过滤 last200 会变 '-'）
     cdx = ('[["timestamp","statuscode"],["20250323214853","200"],'
            '["20250323214855","301"],["20250323214856","-"]]')
-    saved = au.fetch
-    au.fetch = lambda url, method="GET", timeout=20: {"status": 200, "body": cdx, "url": url}
+    saved, seen = au.fetch, {}
+
+    def fake_fetch(url, method="GET", timeout=20):
+        seen["url"] = url
+        return {"status": 200, "body": cdx, "url": url}
+
+    au.fetch = fake_fetch
     try:
         wb = au.wayback("x.com")
     finally:
         au.fetch = saved
+    # 必须断言**实际发出的请求**：只查源码字符串时，前置一行诱饵再赋真查询
+    # （q = "...limit=-3"; q = "...limit=3"）就能让门禁放行，而行为已经坏了。
+    if "limit=-3" not in (seen.get("url") or ""):
+        bad.append(f"P10 wayback 实际请求 URL 须含 limit=-3（源码字符串检查可被诱饵行骗过），"
+                   f"实际发出 {(seen.get('url') or '')[:80]!r}")
     if wb.get("last200") != "20250323214855":
         bad.append(f"P10 wayback last200 应为最新有效行 20250323214855，实际 {wb.get('last200')}"
                    "（'-' 行未过滤会取到无效 timestamp）")
@@ -421,6 +465,7 @@ def main():
     test_soft404_na(au, bad)
     test_verdict_partial(au, bad)
     test_mhost(au, bad)
+    test_mhost_dns(au, bad)
     test_wayback(au, bad)
     test_sampled_live(au, bad)
     for b in bad:

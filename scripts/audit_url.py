@@ -50,6 +50,7 @@ import json
 import re
 import sys
 import ssl
+import socket
 from html.parser import HTMLParser
 from urllib.error import HTTPError, URLError
 from urllib.parse import urljoin, urlparse
@@ -205,20 +206,37 @@ def soft404_verdict(s404):
     return "pass" if st in (404, 410) else "warn"
 
 
+def host_resolves(mh):
+    """P10b（2026-09-01 二轮实测抓到）：NXDOMAIN 必须走真实 DNS，不能靠 urllib 的
+    错误文本正则。错误文本随环境变——peercare.cn 同一主机、同一站点事实（m 子域无
+    DNS 解析，socket 直查 errno=8），一次报 nodename（→pass 真阳性）、一次因沙箱代理
+    隧道报 "Tunnel connection failed: 502"（文本不匹配→误判 na）。同一个站两种结论，
+    正是 P9「抖动不该翻结论」的翻版。DNS 解析不受 HTTP 代理影响，才是站点事实。
+    返回 True=解析到 / False=确认 NXDOMAIN / None=解析本身没做成（当没看到）。"""
+    host = (mh.get("host") or "").split("://")[-1].split("/")[0].strip()
+    if not host:
+        return None
+    try:
+        return bool(socket.getaddrinfo(host, None))
+    except socket.gaierror:
+        return False
+    except (OSError, UnicodeError):
+        return None
+
+
 def mhost_verdict(mh):
-    """P10：m-host 的 status=0 是**双义**，按 error 文本分流，不能统一收口：
-    NXDOMAIN（nodename/gaierror/not known）＝站点事实「没有 m 站」→ pass 真阳性
-    （实测 peercare.cn：m 子域无 DNS 解析，pass 是对的）；超时/拒连＝探针没看到 → na。
-    统一 responded() 会把 NXDOMAIN 真阳性改坏成 na。5xx＝m 站活着但报错 → warn。
-    200＝两套 HTML 风险 → warn（7.2 不变）。"""
+    """P10：m-host 的 status=0 是**双义**，按站点事实分流，不能统一收口：
+    NXDOMAIN（DNS 查不到）＝站点事实「没有 m 站」→ pass 真阳性；
+    主机存在但连不上＝探针没看到 → na。统一 responded() 会把 NXDOMAIN 真阳性改坏成 na。
+    5xx/200＝m 站活着（两套 HTML 风险）→ warn（7.2 不变）。"""
     st, err = mh["status"], (mh.get("error") or "")
-    if st == 200:
+    if st == 200 or st >= 500:
         return "warn"
-    if st == 0:
-        return "pass" if re.search(r"nodename|gaierror|not known|Name or service", err) else "na"
-    if st >= 500:
-        return "warn"
-    return "pass"
+    if st != 0:
+        return "pass"
+    if re.search(r"nodename|gaierror|not known|Name or service", err):
+        return "pass"
+    return "pass" if host_resolves(mh) is False else "na"
 
 
 def mobile_host(origin):
@@ -355,6 +373,27 @@ def interpret(bundle, conclusive=True):
     return out
 
 
+def originality_finding(samples):
+    """P10c 原创度**分母只计活样本**：502/超时的死样本没拿到正文，不算「看过且原创」；
+    全死 = 一个都没看到 = na（旧分母含死样本时 8 个全 502 也报 pass，把代理噪声当
+    站点事实）。evidence 报 live/dead 分解，让「看到几个」与「看到什么」分开读。"""
+    live = [s for s in samples if s.get("status") == 200]
+    dead = len(samples) - len(live)
+    reprint = sum(1 for s in live if s.get("isBasedOn") or s.get("reprint_flag"))
+    ld = sorted({t for s in live for t in (s.get("ld_types") or [])})
+    if not samples:
+        ev = "未抽样(探针未抓内页，非 sitemap 跟丢) sniffed=0"
+    elif dead:
+        ev = f"sniffed={len(samples)} live={len(live)} dead={dead} reprint={reprint} inner_ld={ld}"
+    else:
+        ev = f"sniffed={len(samples)} reprint={reprint} inner_ld={ld}"
+    return {"rule": "sampled-originality",
+            "status": ("na" if not samples or not live else
+                       "fail" if reprint >= max(1, len(live) // 2) else "pass"),
+            "evidence": ev,
+            "loki": "6.2 Effort/原创；未抽样/抽样全死是 na，不是 pass；跟丢归 sitemap_follow"}
+
+
 def interpret_focus(bundle):
     """sitemap 路径结构 + 抽样页原创度 → Loki 7.4 / 6.2 / 2.1。"""
     out, mix = [], bundle.get("sitemap") or {}
@@ -370,19 +409,7 @@ def interpret_focus(bundle):
          "loki": ("7.4 siteFocus；sitemap 200 但子表跟丢(n=0)=没看到=na，不是健康" if (n == 0 and sm_ok)
                   else f"7.4 siteFocus；单一前缀 {top} 占 {share:.0%} 集中度过高=warn" if share >= 0.6
                   else "7.4 siteFocus；前缀分布均衡=pass")})
-    samples = bundle.get("sniffs") or []
-    live = [s for s in samples if s.get("status") == 200]
-    reprint = sum(1 for s in live if s.get("isBasedOn") or s.get("reprint_flag"))
-    inner_ld = sorted({t for s in live for t in (s.get("ld_types") or [])})
-    dead = len(samples) - len(live)
-    add({"rule": "sampled-originality",
-         "status": ("na" if not samples else "na" if not live else
-                    "fail" if reprint >= max(1, len(live)//2) else "pass"),
-         "evidence": (f"未抽样(探针未抓内页，非 sitemap 跟丢) sniffed=0" if not samples
-                      else f"sniffed={len(samples)} live={len(live)} dead={dead} reprint={reprint} inner_ld={inner_ld}"
-                      if dead else
-                      f"sniffed={len(samples)} reprint={reprint} inner_ld={inner_ld}"),
-         "loki": "6.2 Effort/原创；未抽样/抽样全死是 na，不是 pass；跟丢归 sitemap_follow"})
+    add(originality_finding(bundle.get("sniffs") or []))
     add({"rule": "jsonld-types", "status": st_seen,
          "evidence": f"home @type={bundle.get('home_ld_types') or []}",
          "loki": "2.1 schema 非 GEO 必做；有也不等于能排"})

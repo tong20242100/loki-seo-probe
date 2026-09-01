@@ -184,8 +184,11 @@ python3 scripts/audit_url.py https://example.com
   首页可做信任背书（7.4），不要改成密度榜。**在第 4 条闭环，不进下一步搜集。**
 - `semantic main` pass = 首页 HTML 有 `<main>`（7.5）。**只看首页**：整站结构要 Frog；fail 才是技术阻断。
 - `soft-404 probe` pass = 假 URL 返回真 404/410（1.4 7.1）。`na` = 探针没看到（超时/5xx），不是「没有软 404」。
-- `m-subdomain` **status=0 双义**：evidence 带 `error`，`nodename/gaierror` = 没有 m 站（pass，站点事实）；
-  `timed out` = 没看到（na）。200 = 两套 HTML 风险（warn，7.2）。读 evidence 里的 error 文本，别只看 status。
+- `m-subdomain` **status=0 双义**，判据是**真实 DNS 解析**而非 evidence 的 error 文本——
+  文本随代理/本地化变，同一站点事实会出两种结论（peercare.cn 实测：同一主机一次报 nodename→pass，
+  一次因沙箱代理隧道报 `Tunnel connection failed: 502`→文本不匹配→误判 na）。
+  DNS 查不到 = 没有 m 站（pass，站点事实）；解析得到但连不上 = 没看到（na）。
+  200 或 5xx = m 站活着（warn，两套 HTML 风险，7.2）。**别只看 status 数字。**
 - `wayback` first/last200 是**最新窗口**内带有效状态码行的快照时间（4.1 域名历史）。只看得到 3 条样本，
   不是完整历史；黑历史（spam/PBN）要用 Ahrefs/Wayback 网页版人工查。
 - 技术项全 pass → **7.1 边界**：下一刀砍内容策略，不是再堆 TDK。

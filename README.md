@@ -14,7 +14,7 @@
 |---|---|---|
 | 口径层 | `SKILL.md` + `expert_claims.md` | 134 条专家主张：判定规则、边界、反例、出处 tweet_id；碰撞表决定判定规则叠加顺序 |
 | 探针层 | `scripts/audit_url.py` | 未登录 HTTP 事实采集：robots/sitemap/软404/`<main>`/m 站/Wayback，输出带置信度的 JSON。五值状态机 `na / seen / pass / warn / fail`：**没看到 ≠ 没问题** |
-| 门禁层 | `tests/confidence_gate.py` | P0–P9 十组语义断言（含变异测试验证）：判定规则语义回归直接 exit 1，不靠模型阅读自觉 |
+| 门禁层 | `tests/confidence_gate.py` | 16 组语义断言（含变异测试验证）：判定规则语义回归直接 exit 1，不靠模型阅读自觉。另配 `shape_check.py` 管形态（函数 ≤40 行 / 嵌套 ≤3 / 纯 if ≤5），两条轴缺一不可——语义全绿不代表形态合规，反之亦然 |
 
 关键设计（都在门禁里钉着，回退必红）：
 
@@ -45,9 +45,11 @@ agent 按 SKILL.md 的输出合同（任务类型 / 探针事实 / 先做先停 
 
 ## 验证声明
 
-- `tests/confidence_gate.py`：P0–P9 十组门禁全绿（P0 置信度语义 / P1 研判排序 / P4 seen-na 拆分 / P7 sitemap 变体 / P8 发现层 / P9 抖动与假 healthy），32 个静态断言点。
-- 变异测试：逐个回退 P9 两处修复，门禁分别 CAUGHT；复原后 byte-identical 复绿。
+- `tests/confidence_gate.py`：16 组门禁全绿、46 个静态断言点（P0 置信度语义 / P1 研判排序 / P4 seen-na 拆分 / P7 sitemap 变体 / P8 发现层 / P9 抖动与假 healthy / P10 m-host 双义、Wayback 倒序、抽样活样本分母）。
+- 变异测试：11 个变异（含 3 个诱导性变异：源码诱饵行、只 patch 被测函数、等价变异）逐个回退，10 个 CAUGHT；剩下 1 个是等价变异（`True`/`None` 在唯一调用点同归 `na`，行为无差别）。复原后 byte-identical 复绿。
 - 实测：peercare.cn（本机到该服务器链路间歇超时 30–45s 的恶劣环境）下，`partial` 降级路径与 `insufficient` verdict 均按设计落盘。
+- 发布前二轮实测另抓出三项并已修：Wayback `last200` 取到最早第 3 条（假数据，比真实最新早 10 个月）、m-host 靠 urllib 错误文本判 NXDOMAIN 致同一站点事实随代理环境出两种结论、抽样分母把死样本计入。详见 CHANGELOG 1.0.1。
+- 门禁自身也被实测纠过两次错：只查源码字符串的断言会被**诱饵行**骗过；只 patch **被测函数自身**的断言会让该实现一行都跑不到。两条均已改为断言行为（断言实际发出的请求 URL / 只 patch 下一层）。
 
 ## 仓库结构
 
@@ -55,8 +57,8 @@ agent 按 SKILL.md 的输出合同（任务类型 / 探针事实 / 先做先停 
 SKILL.md                    调用规程：路由表、碰撞表、输出合同、风险信号、判定规则全文
 expert_claims.md            134 条主张表（含 #n → tweet_id 映射）
 corpus.json                 134 条推文原文（#n 同序、日期、X 链接，可离线核验）
-scripts/audit_url.py        探针（633 行，纯标准库）
-tests/confidence_gate.py    语义门禁（compile 源码，绕过 pyc 缓存）
+scripts/audit_url.py        探针（660 行，纯标准库）
+tests/confidence_gate.py    语义门禁（478 行，compile 源码，绕过 pyc 缓存）
 ```
 
 ## License
