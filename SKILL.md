@@ -188,7 +188,8 @@ python3 scripts/audit_url.py https://example.com
   文本随代理/本地化变，同一站点事实会出两种结论（peercare.cn 实测：同一主机一次报 nodename→pass，
   一次因沙箱代理隧道报 `Tunnel connection failed: 502`→文本不匹配→误判 na）。
   DNS 查不到 = 没有 m 站（pass，站点事实）；解析得到但连不上 = 没看到（na）。
-  200 或 5xx = m 站活着（warn，两套 HTML 风险，7.2）。**别只看 status 数字。**
+  200 = 两套 HTML 风险（warn，7.2）；5xx = 没看到（na，同 soft-404 通则——
+  代理 502 与源站 502 在 HTTP 层无从区分，warn 会往 tier-1 塞假警报）。**别只看 status 数字。**
 - `wayback` first/last200 是**最新窗口**内带有效状态码行的快照时间（4.1 域名历史）。只看得到 3 条样本，
   不是完整历史；黑历史（spam/PBN）要用 Ahrefs/Wayback 网页版人工查。
 - 技术项全 pass → **7.1 边界**：下一刀砍内容策略，不是再堆 TDK。

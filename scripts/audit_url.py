@@ -228,10 +228,15 @@ def mhost_verdict(mh):
     """P10：m-host 的 status=0 是**双义**，按站点事实分流，不能统一收口：
     NXDOMAIN（DNS 查不到）＝站点事实「没有 m 站」→ pass 真阳性；
     主机存在但连不上＝探针没看到 → na。统一 responded() 会把 NXDOMAIN 真阳性改坏成 na。
-    5xx/200＝m 站活着（两套 HTML 风险）→ warn（7.2 不变）。"""
+    200＝两套 HTML 风险 → warn（7.2 不变）。
+    5xx＝na（同 soft-404 与本仓判定 HTTP 通则：5xx 是探针失败＝没看到）。
+    曾按「m 站活着但报错」给 warn，但代理 502 与源站 502 在 HTTP 层无从区分，
+    闸门一开就往 tier-1 优先级塞假警报；na 不撒谎，且会正确触发 NEED 的 Frog 搜集项。"""
     st, err = mh["status"], (mh.get("error") or "")
-    if st == 200 or st >= 500:
+    if st == 200:
         return "warn"
+    if st >= 500:
+        return "na"
     if st != 0:
         return "pass"
     if re.search(r"nodename|gaierror|not known|Name or service", err):

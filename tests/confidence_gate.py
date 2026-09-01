@@ -343,12 +343,43 @@ def test_mhost(au, bad):
     d = au.diagnose(au.interpret(b))
     if d["verdict"] == "at-risk":
         bad.append("P10 m-host 超时不得抬 at-risk（假 warn 假 pass 同害）")
+
+
+def test_mhost_http(au, bad):
+    """P10c m-host 的 HTTP 状态分流：5xx=na（同 soft-404 通则），200=warn（两套 HTML）。"""
+    b = full_bundle(home=200)
+    b["robots"] = [{"ua": "*", "disallow": [], "sitemap": []}]
+    b["sitemap"] = {"n": 100, "prefixes": [("a", 50), ("b", 50)]}
     b["m_host"] = {"host": "m.x.com", "status": 502, "error": None}
-    if _st(au.interpret(b), "m-subdomain") != "warn":
-        bad.append("P10 m-host 5xx 应 warn（m 站活着但报错）")
+    st5 = _st(au.interpret(b), "m-subdomain")
+    if st5 != "na":
+        bad.append(f"P10 m-host 5xx 应 na（同 soft-404：5xx=探针失败=没看到），实际 {st5}")
+    if au.diagnose(au.interpret(b))["verdict"] == "at-risk":
+        bad.append("P10 m-host 5xx 不得抬 at-risk（代理 502 与源站 502 无从区分，"
+                   "warn 会往 tier-1 优先级塞假警报）")
     b["m_host"] = {"host": "m.x.com", "status": 200, "error": None}
     if _st(au.interpret(b), "m-subdomain") != "warn":
         bad.append("P10 m-host 200 应 warn（两套 HTML 风险，7.2）")
+
+
+def test_display_none(au, bad):
+    """P10e display:none 是 tier-1，此前门禁零覆盖（17 条 rule 里唯一一条）。
+    隐藏文本只在首页 HTML 里数 inline style，首页没抓到就是没看到（na），
+    不许退化成 pass——首轮实测 peercare 首页超时即走这条。"""
+    b = full_bundle(home=200)
+    b["html"]["display_none"] = 0
+    if _st(au.interpret(b), "display:none") != "pass":
+        bad.append("P10 首页无 inline display:none 应 pass")
+    b["html"]["display_none"] = 7
+    st = _st(au.interpret(b), "display:none")
+    if st != "warn":
+        bad.append(f"P10 有 inline display:none 应 warn（7.2 隐藏文本），实际 {st}")
+    if au.diagnose(au.interpret(b))["verdict"] != "at-risk":
+        bad.append("P10 display:none warn 属 tier-1，应把 verdict 抬到 at-risk")
+    b2 = full_bundle(home=502)
+    b2["html"]["display_none"] = 0
+    if _st(au.interpret(b2), "display:none") != "na":
+        bad.append("P10 首页没抓到时 display:none 应 na（没看到），不是 pass")
 
 
 def test_mhost_dns(au, bad):
@@ -465,6 +496,8 @@ def main():
     test_soft404_na(au, bad)
     test_verdict_partial(au, bad)
     test_mhost(au, bad)
+    test_mhost_http(au, bad)
+    test_display_none(au, bad)
     test_mhost_dns(au, bad)
     test_wayback(au, bad)
     test_sampled_live(au, bad)
