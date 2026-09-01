@@ -1,12 +1,12 @@
 ---
 name: loki-seo
-version: 1.0.0
+version: 1.0.1
 description: >
-  Diagnose a live URL with Loki Yan (@loki_yan_seo) rules: run audit_url.py,
-  then give 3–7 site-specific next actions and what to export from GSC/Frog.
-  Use when the user pastes a URL, asks 检查网站 / 审计 / 流量下跌 / 软404 /
-  GEO / AIO / YMYL / EEAT / 外链, or says /loki-seo / 按 Loki 的口径.
-  Not a generic SEO encyclopedia.
+  用 Loki Yan (@loki_yan_seo) 的口径诊断一个线上网址：先跑 audit_url.py 探针，
+  再给 3–7 条贴合该站的可落地动作，并列出要从 GSC / Frog 导出的数据。
+  当用户粘贴 URL、问 检查网站 / 审计 / 流量下跌 / 软404 /
+  GEO / AIO / YMYL / EEAT / 外链，或说 /loki-seo / 按 Loki 的口径 时使用。
+  不是通用 SEO 百科全书。
 ---
 
 # Loki SEO（专家口径，不是通用手册）

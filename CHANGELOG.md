@@ -2,7 +2,7 @@
 
 ## 1.0.1 — 2026-09-01
 
-发布前二轮实测（peercare.cn 真站复跑）抓出三项并修复，均为**门禁全绿时抓不到**的语义错。
+发布前二、三轮实测（peercare.cn 真站复跑）共抓出七项并修复，均为**门禁全绿时抓不到**的语义错。
 
 - **Wayback `last200` 是假数据**：CDX 默认升序，`limit=3` 取到**最早** 3 条，字段名叫 `last200` 值却是第 3 早快照。peercare.cn 实测报 `20240528`，真实最新为 `20250323214856`，**差 10 个月**。改 `limit=-3` 取最新窗口；`statuscode` 取了要过滤，`-` 与非数字行不作候选（否则 `last200` 可能返回无状态码的时间戳）。
 - **m-host 的 NXDOMAIN 判定改用真实 DNS**：原按 urllib 错误文本正则分流，而错误文本随代理/本地化变——peercare.cn 同一主机、同一站点事实（socket 直查 errno=8 确认无 m 站），一次报 `nodename`→pass 真阳性，一次因沙箱代理隧道报 `Tunnel connection failed: 502`→文本不匹配→误判 na。**同一个站两种结论**，是 P9「抖动不该翻结论」的翻版。新增 `host_resolves()` 走 `socket.getaddrinfo`（不受 HTTP 代理影响），`gaierror`=确认没有 m 站→pass，解析得到但连不上=na。200 仍 warn（两套 HTML 风险）；
@@ -15,10 +15,16 @@
   full_bundle 工厂默认消毒（robots 非空+前缀均衡），删 4 处测试内重复消毒。
 - **test_mhost 拆分**（if 6>5 形态超标）为 test_mhost / test_mhost_http；新测试注册进 main。
 - **抽样分母只计活样本**：`sniffed=8` 里 502/超时的死样本没拿到正文，却计入原创度分母；8 个全 502 也报 pass（把代理噪声当站点事实）。改分母只算 `status==200`，全死→na，evidence 报 `live/dead` 分解让「看到几个」与「看到什么」分开读。peercare.cn 复跑实证 `sniffed=8 live=3 dead=5`——旧版会把 5 个死样本藏进分母。
-- **门禁层补 P10**：`test_mhost` / `test_mhost_dns` / `test_wayback`（倒序+dated 过滤）/ `test_sampled_live`，共 16 组 46 个静态断言点。
+- **门禁层补 P10**：`test_mhost` / `test_mhost_dns` / `test_wayback`（倒序+dated 过滤）/ `test_sampled_live`（此阶段收尾 16 组 46 个静态断言点；最终总数见下条）。
+- **三轮重测又抓出四项**（同样全是门禁全绿时抓不到）：
+  1) `parse_robots` 首个 User-agent 行 flush 出空 * 幽灵块（peercare.cn 实测 evidence 头部撒谎）；空/纯注释文件改返回 0 块，「解析不出 UA 块→warn」对真实解析器不再死断言；
+  2) `probe_well_known` 丢掉 200 sitemap 的 body，`sitemap_mix` 二抓同一 URL——实测 well_known 已 200(186B) 而二抓超时，险些把结论翻成 lost。改返回 (well_known, sm_bodies) 供复用，JSON 侧不变；
+  3) NXDOMAIN（DNS 确认没有 m 站）判定层落 pass、置信层却记「没看到」。`compute_confidence` 改计入拿到了数据；
+  4) sitemap 探针 0/5xx 落 warn、mix 假 pass，与 P9「0=na」对打。新增 `sitemap_presence`：混有 0/5xx=na，全 4xx=站点事实仍 warn；`sitemap-mix` 在 lost/fail 且 n=0 时走 na。
+- **门禁层补 P11**：`test_parse_robots` / `test_sm_reuse` / `test_wk_bodies` / `test_sm_timeout_na` / `test_mhost_conf`，最终 24 组、73 个静态断言点；5 变异（幽灵块 / body 二抓 / nx_seen / 超时 warn / mix 只认 lost）逐个回退全 CAUGHT，复原 byte-identical 复绿。
 - **门禁自身被实测纠了两次错**（都是「断言了不该断言的那一层」）：只查源码字符串的 `limit=-3` 断言会被**诱饵行**骗过（前置一行含 `limit=-3` 的赋值，真查询仍是 `limit=3`）→ 改为断言**实际发出的请求 URL**；只 patch **被测函数 `host_resolves` 自身**的断言让该函数一行都跑不到（`gaierror` 分支静默失效）→ 改为只 patch 下一层 `socket.getaddrinfo`。
 - **形态门禁 shape_check 归零**：1.0.0 提交的 `interpret_focus` 44 行 > 40 上限（当时只跑了语义门禁，形态这条轴没跑）。抽出 `originality_finding()`，两条轴现均全绿。
-- 文档：SKILL.md「探针 JSON 怎么读」补四条值级读法（`semantic main` 只看首页 / `soft-404` 的 na 语义 / `m-subdomain` 判据是 DNS 不是 error 文本、含 5xx=warn / `wayback` 是最新窗口不是完整历史），`sampled-originality` 补活样本口径；README 行数与验证声明改实数。
+- 文档：SKILL.md「探针 JSON 怎么读」补四条值级读法（`semantic main` 只看首页 / `soft-404` 的 na 语义 / `m-subdomain` 判据是 DNS 不是 error 文本、含 5xx=na / `wayback` 是最新窗口不是完整历史），`sampled-originality` 补活样本口径。本轮收尾：SKILL frontmatter 版本升 1.0.1、description 改中文；README 门禁组数/断言点/行数全部改实测（24 组 73 点、700/692 行），`shape_check.py` 明确为作者仓库的形态纪律、不随包发布；删「超时一律 na」的绝对化表述（robots 非 200=warn 是门禁刻意例外）。
 
 ## 1.0.0 — 2026-09-01
 
