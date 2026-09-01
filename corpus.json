@@ -1,6 +1,6 @@
 {
  "meta": {
-  "note": "134 条主张表原文语料。#n 与 expert_claims.md 文末索引表同序（同 SQL 生成）。原文版权归原作者(@loki_yan_seo)所有，此处收录仅为可回源核验；生成命令依赖作者本地库，见 expert_claims.md「索引」一节。",
+  "note": "134 条主张表原文语料。#n 与 expert_claims.md 文末索引表同序。原文版权归原作者(@loki_yan_seo)所有，此处收录仅为可回源核验；版权归属、收录边界与下架方式见 NOTICE.md。",
   "window": "2026-02-11 ~ 2026-08-29",
   "count": 134
  },

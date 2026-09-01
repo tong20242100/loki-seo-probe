@@ -7,6 +7,8 @@
 > 出处列 `#n` 对应文末索引表；原文全文见 `corpus.json`（#n 同序）。
 > **边界**：本表是按上述标准对语料快照（截至 2026-08-29）的筛选结果，不是全账号；
 > 此后的推文不在内。
+> **版权**：原文归原作者所有，收录仅为可回源核验；非官方蒸馏、无授权无背书。
+> 收录范围与下架方式见 `NOTICE.md`。
 
 ## 判定图例
 
@@ -431,20 +433,12 @@ T1 里看过、**不进判定规则**（避免再被当成「漏了」）：
 
 ---
 
-## 索引（编号 → tweet_id，脚本生成，勿手改）
+## 索引（编号 → tweet_id）
 
-生成命令（**作者环境专用**：依赖不随包发布的 labels 库；包内下表是 2026-09-01 的生成快照。核对原文：包内 `corpus.json` 按 #n 直接读全文，tweet_id/链接仅作 X 旁证——不登录常看不到内容、删推即断链）：
+下表是本包 2026-09-01 的生成快照，**勿手改**。
 
-```bash
-cd <你的语料库目录> && python3 - <<'PY'
-import sqlite3
-lab=sqlite3.connect('seo_labels.db')
-ids=[r[0] for r in lab.execute("""select tweet_id from tweet_label
- where topic='core' and authorship='authored' and confidence='strong' and is_main=1
- order by ts_unix""")]
-for n,i in enumerate(ids,1): print(n,i)
-PY
-```
+核对原文走 `corpus.json`：按 `#n` 直接读全文、日期与 X 链接，不依赖 X 平台可用性。
+下表 tweet_id 与外链仅作旁证——不登录常看不到内容、删推即断链。
 
 | # | tweet_id | 日期 | 类型 | # | tweet_id | 日期 | 类型 |
 |---:|---|---|---|---:|---|---|---|

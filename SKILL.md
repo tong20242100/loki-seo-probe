@@ -1,6 +1,6 @@
 ---
 name: loki-seo
-version: 1.0.1
+version: 1.0.2
 description: >
   用 Loki Yan (@loki_yan_seo) 的口径诊断一个线上网址：先跑 audit_url.py 探针，
   再给 3–7 条贴合该站的可落地动作，并列出要从 GSC / Frog 导出的数据。
@@ -10,6 +10,9 @@ description: >
 ---
 
 # Loki SEO（专家口径，不是通用手册）
+
+> **非官方蒸馏**：口径从 @loki_yan_seo 的公开推文提炼，无授权、无关联、无背书。
+> 误读由本文件负责，不由原作者负责。语料版权与下架方式见 `NOTICE.md`。
 
 主张全文 `expert_claims.md`（本包同目录，`#n` → 文末 tweet_id）。本文件是**调用规程**：探针 → 选判定规则 → 落地动作。禁止把下面判定规则全倒进回复。
 
@@ -22,7 +25,7 @@ description: >
 
 探针（路径相对本 skill 目录；装到别处就用绝对路径）：
 
-```
+```bash
 python3 scripts/audit_url.py https://example.com
 ```
 
@@ -49,8 +52,9 @@ python3 scripts/audit_url.py https://example.com
   - `seen` = 探针**看到了材料、但不自动打分**（`title-h1` / `json-ld` / `jsonld-types` /
     `linkedin`）。文案就在 `evidence` 里，**你该直接拿它开方**——不是缺数据，也不是已判过。
   - `pass` / `warn` / `fail` = 探针按规则判过的。只有 `warn` / `fail` 才进「先做 / 先停」。
-  （2026-09-01 拍板：`sitemap-mix` n=0 是 `na` 不是 `warn`；`title-h1` 恒 `na` 已拆成 `seen`——
-   材料都给了还叫「没看到」，只会逼你在「不敢用已看到的 title」和「破坏 na 纪律」之间二选一。）
+  （`sitemap-mix` n=0 是 `na` 不是 `warn`——「没看到分布」不许写成「集中度正常」；
+   `title-h1` 已从恒 `na` 拆成 `seen`：材料都给了还叫「没看到」，
+   只会逼你在「不敢用已看到的 title」和「破坏 na 纪律」之间二选一。）
 - 然后必须 `web_search`：`site:该域名`。
 
 ## 任务类型 → 先看什么（不要 1 到 7 走一遍）
@@ -125,9 +129,14 @@ python3 scripts/audit_url.py https://example.com
 | RF27 GSC AI citations / Bing Total Citations 当成功指标 | 2.x | 先拆 `no-procedure` |
 | RF28 编 Day 0 / 三连反转 /「写英文解决 LLM 劣势」 | 禁止编（全局元规则） | 停 |
 
+**编号缺口**：上表没有 RF18 / RF20——那两条整条不采用，理由见下。编号保留不回收，避免旧引用错位。
+
 **不采用（与「明确不进」冲突）**
 
-- **RF18「H1 不通顺 / H1 不是排名词」— 整条不采用。** 冲突点：「H1 放目标词」是我们明确不进判定规则的常识。我们只在 6.3 讲「这页说不出自己排什么」，不讲 H1 必须放哪个词。（2026-09-01 复核钉死：#125＝2093224389605261381 在 134 内、G7 已判「常识·不进判定规则」，跟帖 2093236681449332851 亦在库——**不采用是审过，不是漏采**，勿再当新缺口。诗意空 H1 的落点＝一页一词表里「这页说不出自己排什么」，作 6.3 反例，不升「H1 放目标词」判定规则。）
+- **RF18「H1 不通顺 / H1 不是排名词」— 整条不采用。** 冲突点：「H1 放目标词」是本口径明确不进判定规则的常识。本口径只在 6.3 讲「这页说不出自己排什么」，不讲 H1 必须放哪个词。
+  **不采用是审过、不是漏采**：#125（2093224389605261381）已在 134 条内，`expert_claims.md` G7 判为「常识·不进判定规则」，
+  跟帖 2093236681449332851 亦在库。**勿再当新缺口重开。**
+  诗意空 H1 的落点＝一页一词表里「这页说不出自己排什么」，作 6.3 反例，不升格成「H1 放目标词」判定规则。
 - **RF20「迁移无 1:1 301」— 不采用。** 冲突点：「301 一一对应」在明确不进里。迁移类问题走 1.1 / 4.1，不给 301 清单。
 - **RF09 部分采用：**「移动端空首屏 / 首屏遮罩」归 7.5（主内容要进 `<main>`、首屏要有主内容）；其中「H1 被埋」的 H1 部分同 RF18 不采用。
 - **RF11 用方向不用数字：** 方向归 3.2；`PR>51000` 这个数字在明确不进里，**不许写进报告**。
@@ -172,7 +181,7 @@ python3 scripts/audit_url.py https://example.com
 
 - `sitemap-mix` 某一类路径占比很高 → **7.4**，问站点被定性成什么。前缀 n 含子目录首页/列表/总览，不是篇数。
   带 `focus{n,top,share}` 时 `diagnosis.focus_reading` 已给一句话定性（如「站点可能被当成 posts 站」）——**那是定性不是风险**。
-  `n=0` 判 `na`：**跟丢 / 没看到分布，既不是健康，也不是集中度异常**（2026-09-01 拍板）。
+  `n=0` 判 `na`：**跟丢 / 没看到分布，既不是健康，也不是集中度异常**。
 - `sampled-originality` reprint/isBasedOn 多 → **6.2**。正文量用 `text_chars`，不要把 `html_chars` 当字数。
   分母只计 `status==200` 的活样本：evidence 报 `live/dead` 分解，`live=0` 判 `na`（抽样全死＝没看到，不是原创合格）。
 - `robots-ua` 某个 UA 单独 Disallow 一条路径 → 不是全站隔离；核对 `User-agent: *`。
@@ -185,8 +194,8 @@ python3 scripts/audit_url.py https://example.com
 - `semantic main` pass = 首页 HTML 有 `<main>`（7.5）。**只看首页**：整站结构要 Frog；fail 才是技术阻断。
 - `soft-404 probe` pass = 假 URL 返回真 404/410（1.4 7.1）。`na` = 探针没看到（超时/5xx），不是「没有软 404」。
 - `m-subdomain` **status=0 双义**，判据是**真实 DNS 解析**而非 evidence 的 error 文本——
-  文本随代理/本地化变，同一站点事实会出两种结论（peercare.cn 实测：同一主机一次报 nodename→pass，
-  一次因沙箱代理隧道报 `Tunnel connection failed: 502`→文本不匹配→误判 na）。
+  文本随代理/本地化变，同一站点事实会出两种结论（实测：同一主机一次报 nodename→pass，
+  一次因代理隧道报 `Tunnel connection failed: 502`→文本不匹配→误判 na）。
   DNS 查不到 = 没有 m 站（pass，站点事实）；解析得到但连不上 = 没看到（na）。
   200 = 两套 HTML 风险（warn，7.2）；5xx = 没看到（na，同 soft-404 通则——
   代理 502 与源站 502 在 HTTP 层无从区分，warn 会往 tier-1 塞假警报）。**别只看 status 数字。**
@@ -443,4 +452,4 @@ python3 scripts/audit_url.py https://example.com
 - PR>51000、高质量外链占比、品牌+KW 线性、Bing「没有」EEAT、Casino 站崩塌细节。
 - 转推、needs_review、短回复。
 
-核对原文：包内 `corpus.json`（#n → full_text / 日期 / X 链接，与 `expert_claims.md` 索引表同序）；`expert_claims.md` 文末 `#n → tweet_id`。作者本地 `twitter_analysis.db` 不随包发布。
+核对原文：包内 `corpus.json`（#n → full_text / 日期 / X 链接，与 `expert_claims.md` 索引表同序）；`expert_claims.md` 文末 `#n → tweet_id`。
