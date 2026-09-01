@@ -40,9 +40,20 @@
       b) diagnose 在 partial 且无 fail/warn 时不得字面输出 healthy——下游不守合同
          会读成「站没问题」。给 insufficient，配合 evidence_partial=true 表暂定。
          非 partial 时的 healthy 不变。
+  P10 2026-09-01 补钉（发布前实测抓到；m-subdomain/wayback 是 17 条 rule 里
+      门禁此前零覆盖的两条，sampled 分母是 P7 只钉一半）：
+      a) m-subdomain 的 status=0 双义分流：NXDOMAIN(nodename/gaierror)=站点事实
+         「没有 m 站」→ pass 真阳性（peercare.cn 实测）；超时/拒连=没看到 → na。
+         旧版「非 200 一律 pass」让代理隧道 502 假 pass 溜过。统一 responded() 收口
+         会把 NXDOMAIN 真阳性改坏，故必须按 error 文本分流。
+      b) wayback CDX 必须 limit=-3 取最新（默认升序 limit=3 拿最早 3 条，
+         last200 曾比真实最新早 10 个月）；'-' 状态行不作 dated 候选。
+      c) sampled-originality 分母只计 status==200 的活样本；
+         非空全死 → na（不是 pass），evidence 须报 live/dead 分解。
 
 用法: python3 confidence_gate.py    # 全通过 exit 0，有失败 exit 1
 """
+import inspect
 import os
 import sys
 import types
@@ -316,6 +327,82 @@ def test_verdict_partial(au, bad):
                    "（勿把修复扩大成全站禁 healthy）")
 
 
+def test_mhost(au, bad):
+    """P10a m-subdomain 双义分流：NXDOMAIN=pass 真阳性，超时=na。"""
+    b = full_bundle(home=200)
+    b["robots"] = [{"ua": "*", "disallow": [], "sitemap": []}]  # 否则 robots-ua warn 污染 verdict 断言
+    b["sitemap"] = {"n": 100, "prefixes": [("a", 50), ("b", 50)]}  # 均衡前缀，避免 sitemap-mix warn 污染
+    b["m_host"] = {"host": "m.x.com", "status": 0,
+                   "error": "<urlopen error [Errno 8] nodename nor servname provided>"}
+    if _st(au.interpret(b), "m-subdomain") != "pass":
+        bad.append("P10 NXDOMAIN 应 pass（站点事实：没有 m 站，peercare.cn 实测真阳性）")
+    b["m_host"] = {"host": "m.x.com", "status": 0, "error": "<urlopen error timed out>"}
+    st = _st(au.interpret(b), "m-subdomain")
+    if st != "na":
+        bad.append(f"P10 m-host 超时(0) 应 na（没看到），实际 {st}")
+    d = au.diagnose(au.interpret(b))
+    if d["verdict"] == "at-risk":
+        bad.append("P10 m-host 超时不得抬 at-risk（假 warn 假 pass 同害）")
+    b["m_host"] = {"host": "m.x.com", "status": 502, "error": None}
+    if _st(au.interpret(b), "m-subdomain") != "warn":
+        bad.append("P10 m-host 5xx 应 warn（m 站活着但报错）")
+    b["m_host"] = {"host": "m.x.com", "status": 200, "error": None}
+    if _st(au.interpret(b), "m-subdomain") != "warn":
+        bad.append("P10 m-host 200 应 warn（两套 HTML 风险，7.2）")
+
+
+def test_wayback(au, bad):
+    """P10b CDX 倒序取最新。合成本地 HttpEcho 层不好做，双保险：
+    (1) 查询行必须出现 limit=-3，且同一行不得出现 limit=3 结尾（docstring 提及不算）；
+    (2) 用 monkeypatch 的 fetch 直接喂合成 cdx 响应，端到端断言 last200=最新有效行。"""
+    import re as _re
+    src = inspect.getsource(au.wayback)
+    qline = [l for l in src.splitlines() if "fl=timestamp,statuscode" in l]
+    if not qline or "limit=-3" not in qline[0]:
+        bad.append("P10 wayback 查询行须 limit=-3（升序 limit=3 拿最早 3 条，last200 假数据）")
+    # (2) 端到端：monkeypatch fetch 返回合成响应（最新窗口，最末行是 '-' 非有效状态，
+    #     dated 过滤掉了它 last200 才取到 200 行；去掉过滤 last200 会变 '-'）
+    cdx = ('[["timestamp","statuscode"],["20250323214853","200"],'
+           '["20250323214855","301"],["20250323214856","-"]]')
+    saved = au.fetch
+    au.fetch = lambda url, method="GET", timeout=20: {"status": 200, "body": cdx, "url": url}
+    try:
+        wb = au.wayback("x.com")
+    finally:
+        au.fetch = saved
+    if wb.get("last200") != "20250323214855":
+        bad.append(f"P10 wayback last200 应为最新有效行 20250323214855，实际 {wb.get('last200')}"
+                   "（'-' 行未过滤会取到无效 timestamp）")
+    if wb.get("first200") != "20250323214853":
+        bad.append(f"P10 wayback first200 应为窗口内最早有效行，实际 {wb.get('first200')}")
+
+
+def test_sampled_live(au, bad):
+    """P10c 分母只计活样本；非空全死 → na 且 evidence 报 live/dead。"""
+    def sniff(status, reprint=False):
+        return {"url": "https://x.com/p", "status": status, "title": "",
+                "ld_types": [], "isBasedOn": reprint, "reprint_flag": reprint,
+                "text_chars": 0, "html_chars": 0, "ssr": False, "error": None}
+    b = full_bundle(home=200)
+    b["sniffs"] = [sniff(502) for _ in range(8)]
+    f = next(x for x in au.interpret(b) if x["rule"] == "sampled-originality")
+    if f["status"] != "na":
+        bad.append(f"P10 抽样非空全死应 na（曾 pass，代理噪声当站点事实），实际 {f['status']}")
+    if "live=0" not in f["evidence"] or "dead=8" not in f["evidence"]:
+        bad.append(f"P10 全死 evidence 须报 live/dead 分解，实际 {f['evidence']}")
+    # 混合：5 活 3 死，3 转载 → 分母按 5 算，fail 门槛 max(1, 5//2)=2，3>=2 → fail
+    b["sniffs"] = [sniff(200, reprint=True) for _ in range(3)] + \
+                  [sniff(200) for _ in range(2)] + [sniff(502) for _ in range(3)]
+    f = next(x for x in au.interpret(b) if x["rule"] == "sampled-originality")
+    if f["status"] != "fail":
+        bad.append(f"P10 混合样本分母应只计活样本(5)，3 转载应 fail，实际 {f['status']}")
+    # 全活无转载 → pass
+    b["sniffs"] = [sniff(200) for _ in range(6)]
+    f = next(x for x in au.interpret(b) if x["rule"] == "sampled-originality")
+    if f["status"] != "pass":
+        bad.append(f"P10 全活无转载应 pass，实际 {f['status']}（勿扩大修复误伤真阳性）")
+
+
 def main():
     if not Path(AU).exists():
         print("找不到 audit_url.py", AU, file=sys.stderr)
@@ -333,6 +420,9 @@ def main():
     test_probe_paths(au, bad)
     test_soft404_na(au, bad)
     test_verdict_partial(au, bad)
+    test_mhost(au, bad)
+    test_wayback(au, bad)
+    test_sampled_live(au, bad)
     for b in bad:
         print("  FAIL", b)
     print(f"置信度/研判门禁: {len(bad)} 项失败" if bad else "置信度/研判门禁: 全部通过")

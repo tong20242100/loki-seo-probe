@@ -55,7 +55,7 @@ agent 按 SKILL.md 的输出合同（任务类型 / 探针事实 / 先做先停 
 SKILL.md                    调用规程：路由表、碰撞表、输出合同、风险信号、判定规则全文
 expert_claims.md            134 条主张表（含 #n → tweet_id 映射）
 corpus.json                 134 条推文原文（#n 同序、日期、X 链接，可离线核验）
-scripts/audit_url.py        探针（592 行，纯标准库）
+scripts/audit_url.py        探针（633 行，纯标准库）
 tests/confidence_gate.py    语义门禁（compile 源码，绕过 pyc 缓存）
 ```
 

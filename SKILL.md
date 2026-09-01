@@ -174,6 +174,7 @@ python3 scripts/audit_url.py https://example.com
   带 `focus{n,top,share}` 时 `diagnosis.focus_reading` 已给一句话定性（如「站点可能被当成 posts 站」）——**那是定性不是风险**。
   `n=0` 判 `na`：**跟丢 / 没看到分布，既不是健康，也不是集中度异常**（2026-09-01 拍板）。
 - `sampled-originality` reprint/isBasedOn 多 → **6.2**。正文量用 `text_chars`，不要把 `html_chars` 当字数。
+  分母只计 `status==200` 的活样本：evidence 报 `live/dead` 分解，`live=0` 判 `na`（抽样全死＝没看到，不是原创合格）。
 - `robots-ua` 某个 UA 单独 Disallow 一条路径 → 不是全站隔离；核对 `User-agent: *`。
 - `jsonld-types` / `json-ld` 是 `seen`（首页）；内页只报 `sniffs[].ld_types`。只写 JSON 里出现的 `@type`。schema 很全也不等于能排（2.1）。
 - `linkedin` 是 `seen`：evidence 里的链接数就是材料。**`linkedin=0` 是站点事实**（首页没有 LinkedIn 链接），不是「没看到」。
@@ -181,6 +182,12 @@ python3 scripts/audit_url.py https://example.com
   不索要截图、不把「没有 LinkedIn」写成问题。这一步是类目判断，探针不做。
 - `title-h1` 是 `seen`：title/h1 文案在 evidence 里，**直接拿去填一页一词表**。品牌 slogan → **6.3**；
   首页可做信任背书（7.4），不要改成密度榜。**在第 4 条闭环，不进下一步搜集。**
+- `semantic main` pass = 首页 HTML 有 `<main>`（7.5）。**只看首页**：整站结构要 Frog；fail 才是技术阻断。
+- `soft-404 probe` pass = 假 URL 返回真 404/410（1.4 7.1）。`na` = 探针没看到（超时/5xx），不是「没有软 404」。
+- `m-subdomain` **status=0 双义**：evidence 带 `error`，`nodename/gaierror` = 没有 m 站（pass，站点事实）；
+  `timed out` = 没看到（na）。200 = 两套 HTML 风险（warn，7.2）。读 evidence 里的 error 文本，别只看 status。
+- `wayback` first/last200 是**最新窗口**内带有效状态码行的快照时间（4.1 域名历史）。只看得到 3 条样本，
+  不是完整历史；黑历史（spam/PBN）要用 Ahrefs/Wayback 网页版人工查。
 - 技术项全 pass → **7.1 边界**：下一刀砍内容策略，不是再堆 TDK。
 
 **`na` 一律读作「探针没看到」**：5xx / 网络错 / 子表跟丢 / 没抽样，都不许写成「没问题」。

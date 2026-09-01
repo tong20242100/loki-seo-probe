@@ -162,8 +162,12 @@ def parse_home(html):
 
 
 def wayback(host):
+    """P10：CDX limit=-3 取**最新** 3 条（默认升序，limit=3 拿到的是最早 3 条——
+    旧代码 last200 实为第 3 早快照，比真实最新早约 10 个月，属假数据）。
+    statuscode 取了要过滤：'-'（非 HTTP 抓取）与重定向行不代表该时刻的页面状态，
+    first/last 各取**带有效状态码**行的 timestamp。"""
     q = ("https://web.archive.org/cdx/search/cdx?url=" + host +
-         "&output=json&fl=timestamp,statuscode&limit=3")
+         "&output=json&fl=timestamp,statuscode&limit=-3")
     r = fetch(q, timeout=15)
     if r["status"] != 200 or not (r.get("body") or "").strip():
         return {"ok": False, "error": r.get("error") or f"http {r['status']}"}
@@ -171,9 +175,10 @@ def wayback(host):
         rows = json.loads(r["body"])
     except json.JSONDecodeError:
         return {"ok": False, "error": "cdx not json"}
-    hits = rows[1:] if rows else []
-    first = hits[0][0] if hits else None
-    last = hits[-1][0] if hits else None
+    hits = [h for h in (rows[1:] if rows else []) if len(h) > 1]
+    dated = [h for h in hits if h[1].isdigit()]
+    first = dated[0][0] if dated else (hits[0][0] if hits else None)
+    last = dated[-1][0] if dated else (hits[-1][0] if hits else None)
     return {"ok": bool(hits), "first200": first, "last200": last, "sample": len(hits)}
 
 
@@ -198,6 +203,22 @@ def soft404_verdict(s404):
     if st == 0 or st >= 500:
         return "na"
     return "pass" if st in (404, 410) else "warn"
+
+
+def mhost_verdict(mh):
+    """P10：m-host 的 status=0 是**双义**，按 error 文本分流，不能统一收口：
+    NXDOMAIN（nodename/gaierror/not known）＝站点事实「没有 m 站」→ pass 真阳性
+    （实测 peercare.cn：m 子域无 DNS 解析，pass 是对的）；超时/拒连＝探针没看到 → na。
+    统一 responded() 会把 NXDOMAIN 真阳性改坏成 na。5xx＝m 站活着但报错 → warn。
+    200＝两套 HTML 风险 → warn（7.2 不变）。"""
+    st, err = mh["status"], (mh.get("error") or "")
+    if st == 200:
+        return "warn"
+    if st == 0:
+        return "pass" if re.search(r"nodename|gaierror|not known|Name or service", err) else "na"
+    if st >= 500:
+        return "warn"
+    return "pass"
 
 
 def mobile_host(origin):
@@ -326,8 +347,8 @@ def interpret(bundle, conclusive=True):
     add("wayback", "na" if not wb.get("ok") else "pass",
         f"first200={wb.get('first200')} last200={wb.get('last200')}", "4.1")
     mh = bundle["m_host"]
-    add("m-subdomain", "warn" if mh["status"] == 200 else "pass",
-        f"{mh['host']} status={mh['status']}", "7.2")
+    add("m-subdomain", mhost_verdict(mh),
+        f"{mh['host']} status={mh['status']} error={mh.get('error')}", "7.2")
     out.extend(interpret_focus(bundle))
     if not conclusive:
         out = [{**f, "status": "na"} for f in out]
@@ -350,14 +371,18 @@ def interpret_focus(bundle):
                   else f"7.4 siteFocus；单一前缀 {top} 占 {share:.0%} 集中度过高=warn" if share >= 0.6
                   else "7.4 siteFocus；前缀分布均衡=pass")})
     samples = bundle.get("sniffs") or []
-    reprint = sum(1 for s in samples if s.get("isBasedOn") or s.get("reprint_flag"))
-    inner_ld = sorted({t for s in samples for t in (s.get("ld_types") or [])})
+    live = [s for s in samples if s.get("status") == 200]
+    reprint = sum(1 for s in live if s.get("isBasedOn") or s.get("reprint_flag"))
+    inner_ld = sorted({t for s in live for t in (s.get("ld_types") or [])})
+    dead = len(samples) - len(live)
     add({"rule": "sampled-originality",
-         "status": ("na" if not samples else
-                    "fail" if reprint >= max(1, len(samples)//2) else "pass"),
+         "status": ("na" if not samples else "na" if not live else
+                    "fail" if reprint >= max(1, len(live)//2) else "pass"),
          "evidence": (f"未抽样(探针未抓内页，非 sitemap 跟丢) sniffed=0" if not samples
-                      else f"sniffed={len(samples)} reprint={reprint} inner_ld={inner_ld}"),
-         "loki": "6.2 Effort/原创；未抽样是 na，不是 pass；跟丢归 sitemap_follow"})
+                      else f"sniffed={len(samples)} live={len(live)} dead={dead} reprint={reprint} inner_ld={inner_ld}"
+                      if dead else
+                      f"sniffed={len(samples)} reprint={reprint} inner_ld={inner_ld}"),
+         "loki": "6.2 Effort/原创；未抽样/抽样全死是 na，不是 pass；跟丢归 sitemap_follow"})
     add({"rule": "jsonld-types", "status": st_seen,
          "evidence": f"home @type={bundle.get('home_ld_types') or []}",
          "loki": "2.1 schema 非 GEO 必做；有也不等于能排"})
