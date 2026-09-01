@@ -1,0 +1,590 @@
+# 专家主张表 —— @loki_yan_seo
+
+> 从「本人原创 + 主题 core + 置信 strong」的 **134 条**里抽出。
+> 本表是 SKILL.md 的**前置筛料**：主张站得住才进 skill，站不住的不进。
+> 出处列 `#n` 对应文末索引表的编号，索引由脚本从库里生成，不手写。
+
+## 口径
+
+```sql
+SELECT tweet_id FROM tweet_label
+WHERE topic='core' AND authorship='authored'
+  AND confidence='strong' AND is_main=1
+ORDER BY ts_unix;          -- 134 行
+```
+
+- `authored`：排除转推（别人观点不进）
+- `is_main=1`：推主本人所写（827 条 main 里筛出）
+- `confidence='strong'`：P1 打标后 strong 要求「本推命中」或「本推信号 + 内层佐证」，
+  纯转引一律 weak —— 这层已经把二手观点滤掉一遍
+- 构成：original 96 / reply 38，2026-02-11 ~ 2026-08-29，合计 49,028 字
+- **语料边界**（2026-09-01 补）：tweets 库 dump 窗口 2025-07-11 11:33 ~ 2026-08-29 15:20（JST）。
+  上表 134 条是**门禁切片，不是全账号**——dump 与 lynnzc v0.4 同日起，窗内 2025-07-11 ~ 2026-02-11
+  的帖是没过门禁（core/authored/strong/is_main），不是没抓到；08-29 15:20 之后的推不在库，
+  断言「库里没有」前先回源核 id。
+
+**没进这张表的**：转推 32 条、mixed_quote 118 条、needs_review 199 条、短回复。
+按你的口径，转推是别人的观点，不进。
+
+## 判定图例
+
+| 标记 | 含义 |
+|---|---|
+| **进** | 反复出现（≥3 条或 ≥2 个独立场合）+ 有一手证据 → 可写成口诀 |
+| **降** | 方向可信，但证据是**推测 / 单次实验 / 小样本** → 进 skill 但**必须带限定语** |
+| **反** | 只作为「他反对什么」的反例进，不作正面规则 |
+| **常识** | 通用 SEO 就有，网上到处都是 → **不进**，避免把 skill 稀释成手册 |
+| **不进** | 站不住，或只是他的心智模型不能当事实写 |
+
+---
+
+## A 簇 · 外链与权重（全表反复度最高的一簇）
+
+**A1 · 权重指标是「结果」不是「原因」**
+- 出处：#2 #33 #34 #46 #61 #105 #121（7 条 / 5 个独立场合，2026-03 ~ 2026-08）
+- 证据：**亲历代价**（Agency 时期每月 20K USD 外链预算，最卷的 YMYL 行业）+
+  反例观察（KD70+ 词上小站赢 Amazon / Walmart / Canva / ESPN / Forbes / WaPo）
+- 判定：**进**
+- 待补边界：「跨过某个门槛以后」才成立 —— 他自己说"跨过门槛后比的是页面对页面"，
+  **不等于零权威新站可以不管外链**
+
+**A2 · 外链有质量门槛，付费外链的门槛是 PageRank > 51000**
+- 出处：#46 #107（2 条）
+- 证据：Content Warehouse API Leak 字段解读（`topPrOnsiteAnchorCount`、
+  `penguinPenalty`、`badbacklinksPenalized`、`demotedStart/End/All`）
+- 判定：**降** —— 方向（有门槛）可信；**具体数字不进**（见「站不住」第 1 条）
+
+**A3 · 停掉外链预算无可观测损失**
+- 出处：#33 #46 #61（3 条，同一亲历反复引用 3 次）
+- 证据：他自己的项目，停了以后"没有半毛钱影响"；**同一个人**在 #61 给出替代解释
+  （Angular 渲染超时导致大量 soft 404，**修渲染**流量才冲上去）
+- 判定：**降** —— 亲历代价（20K USD/月、YMYL）可进；「停了无损失」不能当通用规则。
+  n=1 且他自己点了混杂因素。口诀只能写成「别把流量涨跌单归因到外链」
+
+**A4 · 品牌搜索量比外链重要**
+- 出处：#109（1 条）+ #95（entity 达标）间接支持
+- 证据：观点陈述，无数据
+- 判定：**降**（只 1 条，且无数据支撑；但和他整套「实体 / EEAT」叙事自洽）
+
+**A5 · 定制 anchor text 的 guest post 是负债不是资产**
+- 出处：#10 #44（2 条）
+- 证据：观察反例（见过删掉 anchor guest post 后排名上涨；也见过不停买外链被清零）
+  + YMYL 场景下的可执行动作（disavow 或要求删除）
+- 判定：**进**（附带可执行动作，不是纯观点）
+
+**A6 · 免费、人人可提交的外链没有价值；badbacklinks 是一票否决**
+- 出处：#108 #107（2 条）
+- 证据：Leak 字段 `badbacklinksPenalized` 的语义（被标记后直接禁用 improvanchor 加权）
+- 判定：**降**（字段解读可信，"一票否决"这个强度是他的推断）
+
+**A7 · 【反】给 DR80+ 的产品站开「做外链 + cloaking」的药方是错的**
+- 出处：#121
+- 证据：一手（硅谷 50M MAU / 100M+ 下载的产品，无 in-house SEO，增长很好）
+- 判定：**进（反例）** —— 这条的力度来自"谁会需要"，不是"技术对错"
+
+**A8 · KW Difficulty 看的是对手弹药，不是词难不难**
+- 出处：#78
+- 证据：选词看 KD，看的是对手有多少人/装备。可执行：LinkedIn 搜 SEO title / content title
+  人数；看招聘动向（他举 Canva 在招多国 SEO）。「Canva 全球 SEO 相关 200+」是**他的估计**。
+- 判定：**进**（把 KD 从「词的难度」改成「对面编制」）；编制数字不写进口诀当事实
+
+---
+
+## B 簇 · 域名（门槛与历史绑在域名上，不只绑页面）
+
+**B1 · 买域名前必须查历史：spam 站 / PBN 站群 / 坏外链史 / 黄赌毒 / 肉机**
+- 出处：#24 #110（2 条，其中 #110 是他**自己踩过的坑**：域名上线后 Chrome 直接红色木马警报，
+  查出曾当肉机/垃圾站；而且"4、5 年前的事了，居然还存在"）
+- 工具：Ahrefs / SEMrush / Majestic 查外链，SimilarWeb 查流量趋势，Wayback 查历史
+- 判定：**进**（有亲历踩坑 + 具体工具链）
+
+**B2 · YMYL / EEAT 的门槛绑在域名上，不是只绑页面**
+- 出处：#55 #133 #6 #114（4 条）
+- 证据：观察（见过 Gov / Clinic / Medical / Restaurant / Education 域名
+  被用于排 Casino、Web3 关键字；黑帽在 Covid 后囤了一批）
+- 判定：**进**（这是他明确说"根据我的观察"且与通用 SEO 讲法不同的地方）
+
+**B3 · 过期域名承载原 topic，所以有 expired domain abuse 惩罚**
+- 出处：#133 #55 #23（3 条）
+- 证据：推导（域名应与行业类目绑定）+ 他自己 10K USD 买新闻类域名的实践
+- 判定：**进**（推论链完整：域名承载 topic → 所以有 abuse 惩罚 → 所以买前必查）
+
+**B4 · YMYL 类目只有对应职业背景的人做内容创作者才排得上去**
+- 出处：#114 #112 #6（3 条）
+- 证据：观点 + 推论（AIGC 包装的作者一查就露）
+- 判定：**进**
+
+---
+
+## C 簇 · 处罚与恢复（**全表最稀缺的一簇**，他走过完整周期）
+
+**C1 · Manual Action 和「直接 Deindex」是两回事，修法完全不同**
+- 出处：#19
+- Manual Action：被 flag 的子域/子目录做专门 404 页面 → 子域从源头全 404 → 提解除
+- Deindex：修复周期 **3–4 个月**；AIGC 页面从源头 noindex + 内链**分阶段** nofollow + 调 robots.txt
+- Subfolder 比 subdomain 麻烦得多
+- 判定：**进** —— 这条网上基本搜不到，且给的是**两套可操作步骤**，不是"要注意质量"这种废话
+
+**C2 · Core Update 就是 Manual Action 的结算周期**
+- 出处：#16 #17（2 条）
+- 证据：alibaba 这一次（从 11 月开始，他写"可以确认每次 Core Update 就是一次结算周期"
+  + "基本上可以确定是手动清理了"）+ 领英印度同行先发
+- 判定：**降** —— 他原话是针对**这一次千万级 AI 矩阵**，不是给 Core Update 下定义。
+  可进的只有观测法：怀疑大规模手动清理时，对齐 Core Update 日期。
+  不可进：「Core Update = Manual Action 结算」当定律
+
+**C3 · 完整走过 Site Reputation Abuse 的恢复周期**
+- 出处：#106 #61 #17（3 条）
+- 证据：他管的站就在被 K 的名单里；给出机制定义（第三方内容公司借大媒体 authority 做板块、分成）
+- 判定：**进**（这是"他本人经历过"和"他转述新闻"的分界线）
+
+**C4 · 规模化 AI 矩阵（10M+ 页面）会被收，先从子路径开始**
+- 出处：#17 #18 #21（3 条，同一事件连续跟踪 4 天）
+- 证据：一手跟踪（`/product-insights/*` 先没；12 个子域逐个记录存活状态；
+  SEMrush 峰值 1.6 traffic / 1.4M 关键字）
+- 判定：**进**（有连续时间线的过程记录，不是事后诸葛）
+
+**C5 · 软 404 会让「下架」失效 —— 页面下了但返回 200 等于没下**
+- 出处：#18 #17 #65（3 条）
+- 证据：他评 alibaba「整个网站几乎都是 soft 404，估计改成 404 网站会崩」
+- 判定：**进**（把 C1 的修法和 G2 的危害连起来的关键一环）
+
+**C6 · 【反】从 DNS 直接下架子域名是错的**
+- 出处：#20 #21（2 条）
+- 他的评价：「好歹做个 404 啊」「DNS 直接下子域名这个事儿我还是第一次见」
+- 判定：**进（反例）**
+
+---
+
+## D 簇 · 作者与 EEAT
+
+**D1 · 作者实体必须可交叉验证；学历 + 履历只有 LinkedIn 能承载**
+- 出处：#70 #6 #104（3 条）
+- 证据：QRG Section 3.3.4 五要素（Educational Degrees / Co-authors / Citations /
+  Employment History / Influencers on Social Media）
+  + 他的推论（前两项地球上只有 Linkedin 能承载；小红书、公众号**没用**）
+- 判定：**进**（文档引述 + 明确的"哪个平台有用哪个没用"，这是通用手册不会写的判断）
+
+**D2 · 作者 LinkedIn 要连到网站，网站要连到作者 LinkedIn（双向）**
+- 出处：#70 #60 #104（3 条）
+- 证据：他的实现路径（网站 A ↔ 开发者站 ↔ GitHub/Linkedin，他自己花几百刀买域名做了）
+  + 推论（"代码实现双向连接很简单：人家 Linkedin 没连你，就不算"）
+- 判定：**进**（有他自己的落地实践，不是转述）
+
+**D3 · 假作者必被识别，QRG 4.5.3 明确写了，谷歌有专利**
+- 出处：#70 #104 #103 #102（4 条）
+- 证据：QRG 原文引述（fake owner / AI generated author profiles）+ 专利号
+  + 行业判断（"但凡做过两年 SEO、平时研究谷歌的，都不可能允许假作者出现"）
+- 判定：**进**
+
+**D4 · 内容资产是人，不是内容量**
+- 出处：#49 #41 #118 #128（4 条）
+- 证据：Wirecutter（NYTimes 2016 年 30M 收购，Q2 赚 75.5M 美刀，**150+ editor**）
+  + 反证式论证（"为什么不砍 100 个 editor 上 AI Agent 省 10M 成本？
+  因为护城河就是这 150 个有名有姓的人"）
+- 判定：**进**（论证方式本身可复用：用"为什么不"反证价值）
+
+**D5 · 【反】AI 包装出来的作者一查就露**
+- 出处：#6 #103
+- 判定：**进（反例）**
+
+---
+
+## E 簇 · 内容与 Effort
+
+**E1 · Quality 是 site-wide signal，谷歌 2025 年起把 Quality 定为 Ranking Factor**
+- 出处：#66 #113（2 条）
+- 证据：官方 PPT（Search Central Live 上海）+ 他连去四场（曼谷/香港/上海/悉尼）的交叉确认。
+  #66：Quality 对立面是 Spam；可指 UX / 内容 / CWV / QRG 细节。
+- 判定：**进**。口诀里点名为 ranking factor 的是 **Quality**，不要写成「EEAT 是 ranking factor」。
+  EEAT 走 E2（Effort + Originality 门槛）。
+  2025-10「EEAT is not a ranking factor」那条推 **不在本 dump**，不编 id、不当出处。
+
+**E2 · Effort + Originality 是门槛，通用 SEO Automation 跨不过去**
+- 出处：#91 #92 #67 #90（4 条）
+- 证据：Leak 字段 `contentEffort - LLM-based effort estimation`
+  + 上海现场问 Gary 的回复（"mathematic calculation"，他自己说记不清原话）
+  + 反证（"如果每个站都要定制策略来实现 Effort 和原创，那你还要通用 Automation 做什么？
+  这不就是定制了么？"）
+- 判定：**进**（结论进；**5 个量化假设是他的推测，不进**，见「站不住」第 5 条）
+
+**E3 · Non-commodity Content：AI Search 更吃非商品化内容**
+- 出处：#75
+- 证据：2026 北美 Search Central Live 首次提出；他对 commodity 的举例
+  （"做外链提高权重""DA 不够要刷""写博客铺词""做 GEO 一定要做 Reddit"）
+- 判定：**进**（1 条但极稀缺；且他的举例正好能当 skill 的**反例段**）
+
+**E4 · 铺词、铺内容是伪命题**
+- 出处：#52 #38 #51 #122（4 条）+ #62（概念 ≠ 用户搜索词，Trends 按地区拆「AI Agent」）
+- 证据：观点 + 反面案例（铺内容的站流量掉到谷底；"网站权重不能抵消 AI Spam 的负面影响"）
+  + 正向做法（建站第一天就知道每页排什么词、写什么 title/h1/url，**而不是找到词再做页面**）
+- 判定：**进**
+
+**E5 · AI 批量生成博客站不住**
+- 出处：#28 #102 #14（3 条）
+- 证据：观察（国内头部 DTC 大牌搞这个，今年流量腰斩；lark 用 fake author 铺博客；
+  两家在小红书推「AI SEO 博客自动化」的站从去年 12 月排名断崖，他点名 EEAT/YMYL/HCU）
+- 判定：**进**（与 E2 合并成一条口诀更紧凑）
+
+**E6 · 大站的解法是内部 spam 过滤 + 主动 noindex**
+- 出处：#89
+- 证据：CyberAgent / Ameba Blog（9200 万博客、28 亿文章、50 亿 PV、5 亿搜索流量）
+  引入内部 ML 程序做 Quality / Spam 分类，**主动 noindex 低质与 AI slop**
+- 判定：**进**（有具体规模数字和实现机制，稀缺）
+
+---
+
+## F 簇 · GEO 与传统搜索（**第二稀缺**）
+
+**F1 · AI Mode / AI Overview 的 crawl + index 与传统 SEO 机制完全一致，差在 serving**
+- 出处：#68 #58 #43 #113 #69（5 条 / 4 个独立场合）
+- 证据：**上海现场问过谷歌官方人员**确认；serving 层新增 Grounding on Search Index + Query Fanout
+- 判定：**进**（全表证据等级最高的一条：现场 + 官方确认 + 反复 5 次）
+
+**F2 · Gemini 不归 Google Search 管，是不同部门、不同爬虫**
+- 出处：#68 #58 #43 #113 #69（同 F1 的 5 条）
+- 证据：现场确认（`indexing: Not part of search`）
+- 判定：**进**（这条直接决定了"谷歌官方发布的东西管不管 Gemini"）
+
+**F3 · 所以做 AIO 就是做 SEO，没区别；GEO 就是「更贵的 SEO」**
+- 出处：#68 #32 #69 #30（4 条）
+- 证据：现场机制（F1）+ 他自己的结果（"把传统 SEO 做到极致，ChatGPT 来的流量就涨了"；
+  没写博客、没发 Reddit、没做语义匹配、没发 PR 稿、没做 schema、没写 FAQ）
+- 判定：**进**（机制段进）；「没做 Reddit/schema/FAQ 也能涨」是 **n=1 他自己的站**，
+  口诀里只作反例（反商品化 GEO 清单），不当成「这些都不必做」
+
+**F4 · llms.txt 的口径陷阱：官方口径 ≠ 广义 GEO**
+- 出处：#29
+- 谷歌口径（从 Google Search 角度）：AI Overview / AI Mode 不管 llms.txt
+- 广义 GEO（含 ChatGPT / Claude 等所有平台）：还是要做
+- 前提：Google Search 不包括 Gemini，两个部门
+- 判定：**进** —— 1 条但极精细，网上绝大多数讨论把这两层混为一谈
+
+**F5 · AI 搜索目前是 Language Lock 双轨制（用户语言 + 英文）**
+- 出处：#100 #129（2 条）
+- 证据：他自己搭的观察工具（Query → 思考过程 → Fan-out → Citation）+ Gemini 3.1 Pro 实测
+- 判定：**降** —— 结论有价值（所以要做多语言），但**样本是他自己的查询 + 2026-05 的数据**，
+  时效风险高（见「站不住」第 6 条）
+
+**F6 · 成熟品牌在 GEO 里的好表现 = 传统 branding 换了个说法**
+- 出处：#30 #32（2 条）
+- 判定：**进**（拆解：SEO / SEM / YouTube / Instagram / Facebook / TikTok）
+
+**F7 · 【反】「做 GEO 一定要做 Reddit」是商品化说法**
+- 出处：#75 #31（2 条，#31 补充"Reddit 不该排 YMYL"）
+- 判定：**进（反例）**
+
+**F8 · （降·开放问题）Navboost 建在点击上，AIO 是 zero-click**
+- 出处：#25
+- 证据：Navboost leak 的基础是点击和搜索旅程；AIO / AI Mode 是 zero-click，数据源会枯竭。
+  两个假说：被语义/向量校验取代，或「点击」换成 hover / dwell / query steps。原文以提问结尾。
+- 判定：**降** —— 开放问题，他自己在问。口诀只作刹车：不要把经典 CTR / Navboost 直接套到 AIO。
+  不当定律。
+
+**F9 · 不要只盯谷歌；Bing / IndexNow / Copilot 同一张网**
+- 出处：#130
+- 证据：Bing 是微软默认搜索；ChatGPT、Copilot、Yahoo 会用到 Bing；英美公司电脑常强制 Edge+Bing。
+  做 Bing 别忘 IndexNow。
+- 判定：**进**（出海/英文流量的侦查项）；中文站主战场可能是百度，不强制改投 Bing。
+  #1（Bing AI Dashboard）是产品公告 + 0-click 反问，**挂这里作「有这个表」，不另开主张**。
+
+---
+
+## G 簇 · 技术地基
+
+**G1 · Technical SEO 是所有 foundation**
+- 出处：#61 #7（2 条）
+- 证据：**亲历**（Angular 站渲染超时 → 大量 soft 404 → 修完流量冲上去）
+  + 他的对外演讲命题（APAC 品牌不是 authority 问题，是技术问题）
+- 判定：**进**（带一手因果链，不是"技术 SEO 很重要"）
+
+**G2 · 软 404 的两个副作用：吃爬虫预算 + 被黑帽用 PBN 造出可收录垃圾页**
+- 出处：#65（1 条，但机制完整）
+- 第二条很少有人讲：前端模板没设好 404 的 title/h1，而是**从 URL 里取** →
+  黑帽可以造出一批能被收录的垃圾页 → 拉高你的 spam 分
+- 判定：**进**（机制稀缺，且和 C5 连成一条链）
+
+**G3 · Raw = Rendered，Desktop = Mobile；一份 HTML 只出现一次，不能 display:none**
+- 出处：#54 #77 #94（3 条）+ #94 给出 14 个爬虫清单
+- 判定：**降**（公式进；"m 站分离"本身是十年前的通用常识，**只作反例**）
+
+**G4 · SSR 是排名高的龙头站的共同点**
+- 出处：#132
+- 证据：历史复盘（2016 前后 React / Angular / Vue 重构潮，面向谷歌的站全崩 → Next.js 出现）
+  + 判错案例（lovable 创始人称"SSR 对 SEO 是长期迷思"，一年后做了 SSR）
+- 判定：**进**（行业判断 + 有时间线的自我修正证据）
+
+**G5 · CWV 官方措辞在退坡，Field Data 才是准的**
+- 出处：#119
+- 证据：逐字对比官方表述演变 ——
+  2020-05「page experience will become a ranking factor」→
+  2020-11 确认纳入 → 现在「aligns with what our core ranking systems seek to reward」
+- 结论：CWV 不是 Ranking Factor；Lighthouse / PageSpeed 只是 lab data 用于 debug；
+  谷歌官方 dashboard 的 Field Data 才是准的
+- 判定：**进**（这是他"读文档解谜"方法的产物，网上少见有人把三个时间点摆在一起）
+
+**G6 · 不是所有爬虫都能处理 JS（他列了 14 个）**
+- 出处：#94
+- 清单：Google / Bing / OpenAI / Claude / Grok / Meta / DuckDuckGo / Common Crawl /
+  DeepSeek / Doubao / ByteDance / Baidu / Yahoo / Naver
+- 判定：**进**（清单本身是可直接用的资产）
+
+**G8 · MC = `<main>`；很多即插即用设计库有问题**
+- 出处：#50
+- 证据：QRG Main Content + semantic HTML；div 到底会把无关块送进算法
+- 判定：**进**（「设计库有问题」是他特有的判断，不是「要用语义化」那句常识）
+
+**G9 · 整站审计他本人优先 Screaming Frog**
+- 出处：#116 #77
+- 证据：其他工具都可以不要，Frog 必须有；看 Raw vs Rendered、技术问题、页面数据。
+  平时更看 Frog 而不是 Ahrefs/SEMrush 监控。Lumar/Botify = 大企业版 Frog。
+- 判定：**进（搜集工具，不另开口诀）** —— skill 的「核不到怎么搜集」段用。
+  不把「去装 Frog」写成第 8 条技术口诀。
+
+**G7 · 【常识·不进口诀】**
+- #84 audit 第一看 robots.txt、第二看 crawl status（知乎案例有价值，但结论是常识）
+- #63 #96 migration 的 301 一一对应、301 会丢 link power 且增大爬虫预算
+- #56 #85 多语言不要按 IP 自动跳转（"谷歌说不要就是不要"）
+- #125 H1 放目标关键字、#79 title 案例
+- 判定：**常识 / 反例** —— 通用 SEO 手册全有，塞进来只会稀释
+
+---
+
+## H 簇 · 主题聚焦与实体
+
+**H1 · About Us 给站点定性；siteFocus 小半径是 leak 推论**
+- 出处：#3 #42 #87（3 条）
+- 证据：#3 英文长推（About Us 是 EEAT 里常被当事后页的那一页：who is behind the site /
+  what the business actually does / credentials / 内容是否对齐真实实体；
+  credibility is site-wide consistency，About 是一致性变得可见的地方）。
+  #42 把 About Us 当「给网站定性」的动作。#87 是 leak 字段
+  `siteFocusScore` / `siteRadius` / `pageEmbedding` / `siteEmbedding`，
+  举例 SEO 站突然写唱跳 Rap → focus 降、radius 变大。
+- 判定：**进**（#3 + #42 的页级动作）；「小半径更容易成功」仍是推论，口诀里必须标推论
+
+**H2 · 关键字是 Entity 不是 string；理解 entity 后 KW Density 是无稽之谈**
+- 出处：#59 #72（2 条）
+- 证据：2012 Knowledge Graph 文章 + 首页选词法（{定语} + Entity，如 Melbourne SEO Consultant）
+- 判定：**常识**（选词法进，entity 概念本身是常识）
+
+**H3 · Topical authority 来自 coverage 的时间 × 广度**
+- 出处：#71
+- 证据：News SEO（某记者/机构在某 topic 上发得够久够广，天然有优势；
+  国内媒体没做过 News SEO，在很多主题上是劣势）
+- 判定：**进**（有明确的"谁有优势、谁没优势"的对照）
+
+**H4 · PSEO 不是造垃圾页，是放大 authority；护城河是人 / 真实照片 / 真实 review**
+- 出处：#128
+- 证据：getyourguide（230+ 真实 travel 作者、海量真实 review 与照片、全语言翻译）
+- 判定：**进**（把 PSEO 从"程序化生成"里摘出来的判断）
+
+---
+
+## I 簇 · 方法论
+
+**I1 · 官方措辞要逐字读，谷歌爱玩文字游戏**
+- 出处：#127 #119 #67（3 条）
+- 三个实例：CWV 措辞演变（G5）、"AI 不管是不是 AI 写的" vs
+  "模型是用人类为人类创作的内容训练的"、以及"你细品。你再细品。"
+- 判定：**进**（这是他的**方法**，不是结论 —— 方法比结论耐用）
+
+**I2 · 黑盒下只能假设 → 测试 → 衡量 → 迭代**
+- 出处：#86 #123（2 条）
+- 证据：引 Klook 的 JD（"You don't believe in SEO magic"）
+  + 他的判断（即便官方发布了很多，日常工作仍是摸石头过河）
+- 判定：**进**（可当作 skill 的元规则：他的每条主张都是这个流程的产物，不是权威断言）
+
+**I3 · 他自己的排名模型：Ranking = (Technical Foundation + Quality) × Brand Reputation**
+- 出处：#123
+- 判定：**降** —— 是他的心智模型，**不是谷歌的公式**；
+  进 skill 时必须标明"这是他的模型"，否则会被当成官方权重读
+
+**I4 · GEO：建设 ≠ 污染**
+- 出处：#4
+- 证据：「帮助模型更准确理解你，和想办法让模型更偏向你，根本不是一回事。前者是建设。
+  后者很容易滑向污染。」GEO 会像 SEO 一样分化白帽/黑帽。附：他认为 Gemini / AI Mode /
+  AI Overview 因 EEAT 保底，投毒没那么容易（观察，不是实验）。
+- 判定：**进**（立场级声明，作 skill 元规则，不作一条「招」）
+
+**I5 · 有两种 SEO：打江山 vs 守江山**
+- 出处：#64
+- 证据：一种是做排名/流量/转化（增长）；另一种是 Canva / Zillow / Booking 这种
+  Maintain leadership——SEO 的作用是阻止别人瞎搞，改动有把领导地位和股价打掉的风险。
+- 判定：**进**（1 条但改变开方方向：先分清受众再给口诀）
+
+---
+
+## 站不住 / 必须带限定语（**不要当事实写进 skill**）
+
+| # | 主张 | 出处 | 为什么站不住 |
+|---|---|---|---|
+| 1 | 高质量域名占比 0.4%–4.75% | #117 | 他自己写了"仅是 SEO 的实验和假想"；且前提是「假设 API Leak 是真的」。
+三种分布给出**三个差 10 倍**的结果（正态 4.75% / Beta 1% / 零膨胀 0.4%）。
+**能进的只有方向**："外链有质量门槛"；数字一个都不要写 |
+| 2 | AI Mode 和 SEO「至少 66.6% 以上一致」 | #113 | 66.6% 是 2/3 的玩笑写法（crawl+index 两步一致、serving 不一致），
+**不是测量值**。写进 skill 会被当成百分比读 |
+| 3 | spam_score 是「for each spam found, +1」 | #44 | 措辞是"大概逻辑是"，属推测；Leak 文档里没有 `spam_score` 这个字段的直接证据。
+**只能当他的心智模型** |
+| 4 | {品牌+关键字} 搜索量与排名线性一致 | #45 | **n=5**，且前提是"网站们都极致好的情况下（神仙打架的级别）"，
+这个前提本身就难界定。样本量不支撑"线性" |
+| 5 | contentEffort 的 5 个量化假设 | #91 | 他自己写"我们可以一起来假设"；且引 Gary 的回答时说
+"回答没有特别正面，我也忘记具体每一个字"。**是假设清单，不是谷歌确认的机制** |
+| 6 | AI 搜索 Language Lock 双轨制 | #100 #129 | 样本是他自己的查询；数据是 **2026-05** 的（Gemini 3.1 Pro 时期）。
+AI 系统迭代快，**写进 skill 必须标时间戳**并提示可能已变 |
+| 7 | Bing 没有 EEAT 门槛 | #36 #131 | 来自他养的**一个**新闻站的观察，单点。
+方向（Bing 门槛低于谷歌）可用，"没有"这个绝对表述不进 |
+| 8 | Casino Affiliate 站的崩塌过程 | #48 | 一手但**不可独立核验**（"为啥我知道？因为来找我买过"）。
+可进，但标为"他经手的案例"，不要当公开可查的事实 |
+| 9 | SEO/GEO Agent「逻辑上不通」 | #90 | **#90 是判断不是事实**（「技术上实现不了，还是逻辑上不通？」）。
+#92 是另一条：Effort/Originality 跨不过通用 Automation，**可作论据**。不要把 #90 与 #92 并列成同一主张 |
+
+T1 里看过、**不进口诀**（避免再被当成「漏了」）：
+- **#1** Bing AI Performance Dashboard：产品公告 + 「citations 是不是 0-click 偷走的流量」反问。挂 F9 作「有这个表」，不另开。
+- **#97** 出海工作室选类目（搜索量/停留/app/对手子弹/effort）：个人创业剧本，不是审一个已有 URL 的口诀。
+- **#134** 中国《GEO 可信信息传播与信息生态治理规范》：他在提问「会不会中国 GEO vs 世界 GEO」，没有修法。
+
+门禁外、**不进口诀但输出可问用户的**：
+- 「做 SEO 是为了赚钱 / 优化 Money Page 和 Trust」（`2090983234146574708`）是 `core × authored × weak`，**未进 134**。
+  输出合同可以问「转化发生在哪几页」，不把这句话写成定律、不挂 `#n`。
+
+---
+
+## 索引（编号 → tweet_id，脚本生成，勿手改）
+
+生成命令（**作者环境专用**：依赖不随包发布的 labels 库；包内下表是 2026-09-01 的生成快照，核对请直接按 tweet_id 回 X 查原推）：
+
+```bash
+cd <你的语料库目录> && python3 - <<'PY'
+import sqlite3
+lab=sqlite3.connect('seo_labels.db')
+ids=[r[0] for r in lab.execute("""select tweet_id from tweet_label
+ where topic='core' and authorship='authored' and confidence='strong' and is_main=1
+ order by ts_unix""")]
+for n,i in enumerate(ids,1): print(n,i)
+PY
+```
+
+| # | tweet_id | 日期 | 类型 | # | tweet_id | 日期 | 类型 |
+|---:|---|---|---|---:|---|---|---|
+| 1 | 2021379383303471595 | 2026-02-11 | original | 68 | 2091364706703581191 | 2026-08-23 | original |
+| 2 | 2033189225483677758 | 2026-03-15 | original | 69 | 2091368931353362479 | 2026-08-23 | reply |
+| 3 | 2033192558889963680 | 2026-03-15 | original | 70 | 2091381622616797394 | 2026-08-23 | original |
+| 4 | 2033335605925654664 | 2026-03-16 | original | 71 | 2091387930963263678 | 2026-08-23 | original |
+| 5 | 2033383720305230314 | 2026-03-16 | original | 72 | 2091399665241759915 | 2026-08-23 | reply |
+| 6 | 2033390752001335397 | 2026-03-16 | original | 73 | 2091453544683729230 | 2026-08-23 | original |
+| 7 | 2033414646775083406 | 2026-03-16 | original | 74 | 2091463375003983897 | 2026-08-23 | reply |
+| 8 | 2033812415503339622 | 2026-03-17 | reply | 75 | 2091487107806323136 | 2026-08-23 | original |
+| 9 | 2033816600642785483 | 2026-03-17 | reply | 76 | 2091492121186635988 | 2026-08-23 | original |
+| 10 | 2033817449922245047 | 2026-03-17 | original | 77 | 2091508567119642847 | 2026-08-23 | original |
+| 11 | 2034060421578297579 | 2026-03-18 | original | 78 | 2091668405367791619 | 2026-08-24 | original |
+| 12 | 2034484410637283356 | 2026-03-19 | reply | 79 | 2091682678261375106 | 2026-08-24 | original |
+| 13 | 2034784854009946123 | 2026-03-20 | original | 80 | 2091716914599067838 | 2026-08-24 | original |
+| 14 | 2034868852602151058 | 2026-03-20 | original | 81 | 2091727382726205949 | 2026-08-24 | original |
+| 15 | 2037101323024556384 | 2026-03-26 | reply | 82 | 2091741166094213429 | 2026-08-24 | reply |
+| 16 | 2037876679922856353 | 2026-03-28 | reply | 83 | 2091770029687935427 | 2026-08-24 | reply |
+| 17 | 2037884887307526631 | 2026-03-28 | original | 84 | 2091795112745689273 | 2026-08-24 | original |
+| 18 | 2037898118898012638 | 2026-03-28 | reply | 85 | 2091805576611471526 | 2026-08-24 | original |
+| 19 | 2038199743797690529 | 2026-03-29 | reply | 86 | 2091844216980979877 | 2026-08-24 | original |
+| 20 | 2038831420039467027 | 2026-03-31 | reply | 87 | 2091894056687431704 | 2026-08-24 | original |
+| 21 | 2038873129012134374 | 2026-03-31 | reply | 88 | 2091995138864406654 | 2026-08-25 | reply |
+| 22 | 2039641960601043096 | 2026-04-02 | reply | 89 | 2092027807719444899 | 2026-08-25 | original |
+| 23 | 2064883047825395749 | 2026-06-11 | original | 90 | 2092067172021608918 | 2026-08-25 | original |
+| 24 | 2064981657497813013 | 2026-06-11 | original | 91 | 2092090944648581505 | 2026-08-25 | original |
+| 25 | 2065232184374645078 | 2026-06-12 | original | 92 | 2092095823731462302 | 2026-08-25 | reply |
+| 26 | 2065685991499985131 | 2026-06-13 | reply | 93 | 2092100375239438810 | 2026-08-25 | original |
+| 27 | 2065688886270108027 | 2026-06-13 | reply | 94 | 2092105285955473656 | 2026-08-25 | original |
+| 28 | 2070420648900403202 | 2026-06-26 | original | 95 | 2092108099628769390 | 2026-08-25 | original |
+| 29 | 2071840010593358218 | 2026-06-30 | reply | 96 | 2092113071745769731 | 2026-08-25 | reply |
+| 30 | 2072681906228121745 | 2026-07-02 | reply | 97 | 2092174932323311912 | 2026-08-25 | original |
+| 31 | 2076337271381598396 | 2026-07-13 | reply | 98 | 2092210684503503245 | 2026-08-25 | original |
+| 32 | 2079109647160734202 | 2026-07-20 | original | 99 | 2092238655909920985 | 2026-08-25 | reply |
+| 33 | 2088623359366209644 | 2026-08-15 | reply | 100 | 2092248676324520232 | 2026-08-25 | original |
+| 34 | 2088627560033009736 | 2026-08-15 | reply | 101 | 2092272309528900070 | 2026-08-26 | original |
+| 35 | 2088635124187529218 | 2026-08-15 | reply | 102 | 2092409990413975891 | 2026-08-26 | original |
+| 36 | 2088803453565059194 | 2026-08-16 | original | 103 | 2092413146774560864 | 2026-08-26 | reply |
+| 37 | 2088839484083404844 | 2026-08-16 | original | 104 | 2092468221794513075 | 2026-08-26 | reply |
+| 38 | 2089165558516437461 | 2026-08-17 | original | 105 | 2092487752776556895 | 2026-08-26 | reply |
+| 39 | 2090051220425839091 | 2026-08-19 | original | 106 | 2092557180755144890 | 2026-08-26 | original |
+| 40 | 2090225718877905322 | 2026-08-20 | original | 107 | 2092595964888699272 | 2026-08-26 | original |
+| 41 | 2090289091011391554 | 2026-08-20 | original | 108 | 2092601636241953071 | 2026-08-26 | reply |
+| 42 | 2090291222556578070 | 2026-08-20 | original | 109 | 2092603291092021479 | 2026-08-26 | reply |
+| 43 | 2090307375836315959 | 2026-08-20 | reply | 110 | 2092604590067970417 | 2026-08-26 | original |
+| 44 | 2090396597066899635 | 2026-08-20 | original | 111 | 2092610440823980420 | 2026-08-26 | original |
+| 45 | 2090684152328945976 | 2026-08-21 | original | 112 | 2092612192122405067 | 2026-08-26 | original |
+| 46 | 2090685656079241520 | 2026-08-21 | original | 113 | 2092615876222849492 | 2026-08-26 | original |
+| 47 | 2090686787534598639 | 2026-08-21 | original | 114 | 2092625249619882312 | 2026-08-26 | reply |
+| 48 | 2090697074153283687 | 2026-08-21 | original | 115 | 2092718329178059004 | 2026-08-27 | reply |
+| 49 | 2090735573443158517 | 2026-08-21 | original | 116 | 2092784685650997342 | 2026-08-27 | original |
+| 50 | 2090738619808088255 | 2026-08-21 | original | 117 | 2092791651349713156 | 2026-08-27 | original |
+| 51 | 2090938323284185332 | 2026-08-22 | original | 118 | 2092829063127949629 | 2026-08-27 | original |
+| 52 | 2090954259680694666 | 2026-08-22 | original | 119 | 2092889660783722868 | 2026-08-27 | original |
+| 53 | 2090960111447794111 | 2026-08-22 | original | 120 | 2092955713916281053 | 2026-08-27 | original |
+| 54 | 2091008050262110227 | 2026-08-22 | original | 121 | 2093149251341881693 | 2026-08-28 | original |
+| 55 | 2091011325438955723 | 2026-08-22 | original | 122 | 2093181903579087176 | 2026-08-28 | reply |
+| 56 | 2091014853863637176 | 2026-08-22 | original | 123 | 2093195666847879327 | 2026-08-28 | original |
+| 57 | 2091060807065117104 | 2026-08-22 | original | 124 | 2093217297284645300 | 2026-08-28 | original |
+| 58 | 2091071455350169891 | 2026-08-22 | original | 125 | 2093224389605261381 | 2026-08-28 | original |
+| 59 | 2091185632202883243 | 2026-08-23 | original | 126 | 2093250963549430072 | 2026-08-28 | original |
+| 60 | 2091198495197913207 | 2026-08-23 | original | 127 | 2093255513266122998 | 2026-08-28 | original |
+| 61 | 2091301352463102268 | 2026-08-23 | original | 128 | 2093334205669499139 | 2026-08-28 | original |
+| 62 | 2091304086608236745 | 2026-08-23 | original | 129 | 2093347878098042898 | 2026-08-28 | original |
+| 63 | 2091309003397902703 | 2026-08-23 | original | 130 | 2093355461303218245 | 2026-08-29 | original |
+| 64 | 2091321150127366357 | 2026-08-23 | original | 131 | 2093370148598255624 | 2026-08-29 | reply |
+| 65 | 2091349098553295075 | 2026-08-23 | original | 132 | 2093537842945245671 | 2026-08-29 | original |
+| 66 | 2091353930425127142 | 2026-08-23 | original | 133 | 2093547820808896687 | 2026-08-29 | reply |
+| 67 | 2091362717907251353 | 2026-08-23 | original | 134 | 2093578005176353204 | 2026-08-29 | original |
+
+## 附录B：第三方 red flags 吸收 + provenance 轴（不推翻现有 134 判定）
+
+> 来源：lynnzc/loki-yan-seo-skill（非官方蒸馏，与本项目同源但独立）。仅作维度补充，
+> 不替换正文 134 条 claim。新增两维：red flags 清单 + 出处分级轴（provenance）。
+
+### B.1 Red flags（命中即停 / 先拆，28 条，逐字来自第三方 SKILL.md:240-267）
+
+- RF01 Fake authors, AIGC author skins, decorative author boxes
+- RF02 Generic / sellable SEO·GEO Agent; “tokens spent = Effort spent”
+- RF03 Increment-free batch blogs, stitch-wash, AI Slope as growth
+- RF04 铺词 / 铺内容 / “publish more and you win”
+- RF05 Chase links, buy links to recover, custom-anchor Guest Posts, DA as a target
+- RF06 IP auto language-switch / auto-redirect
+- RF07 Separate m-site, H5 / mini-program template as the export stack, `display:none` hidden copy
+- RF08 Soft 404 (error page 200)
+- RF09 Empty mobile first screen / H1 buried / overlay on the fold
+- RF10 Cloaking, cloaking-for-crawlers / “show different versions to crawlers,” AI flooding, Link Spam
+- RF11 Cheap bulk links; chasing PR>51000 you cannot buy
+- RF12 Ghost-writing / site-reputation-abuse (third-party content on a publisher’s authority)
+- RF13 GBP / local listings with no on-site NAP (map, address, phone, schema, Contact)
+- RF14 Core content that only exists after JS; effects that cannot survive a JS-off pass
+- RF15 JS-heavy core content that chatbots do not render
+- RF16 Tracking parameters on internal links (even with canonical)
+- RF17 千人千面 / personalization vs crawler — which face does the crawler see (cloaking-adjacent)
+- RF18 Poetic / beautiful-empty H1 Google cannot parse; H1 that is not the ranking query
+- RF19 Blog-only site with no money page as AI Mode answers
+- RF20 Migration with no 1:1 301; boss “just change it”
+- RF21 Dirty domain (spam / PBN / porn-gambling history) as a start
+- RF22 Ordinary marketing not running, then GEO; popular GEO kit as the work; GEO-tracker-first
+- RF23 Pollution-GEO (make the model lean toward you; buy the answer layer)
+- RF24 Mechanical SOP; domestic-giant JD as the outline
+- RF25 Product SEO-named “XXX AI Agent” while Trends shows users do not search that
+- RF26 A Reddit thread / ChatGPT blog as high-ticket acquisition
+- RF27 GSC AI citations / Bing Total Citations written as success metrics
+- RF28 Inventing Day 0 / three reversals / “write English to fix LLM disadvantage”
+
+### B.2 Provenance 轴（出处分级，第二维，不推翻判定）
+
+第三方用四级标一条 claim 的证据强度。我们正文 134 条均出自 Loki 本人已标推文（= in-corpus），
+新 claim 入库时按此轴打标，避免把「他提过一次」当「铁律」。
+
+| 档位 | 定义 | 我们的处置 |
+|---|---|---|
+| in-corpus rule | 负载句带 (id=…) 可回查 methodology | 可直接进口诀，标 in-corpus |
+| [once] | 一次性硬律（不可能三角 / 迁移最复杂 / 空折叠会挨打 / KW Density nonsense / YMYL 绑域 / Shopify-only / HK 繁体 100% Drop） | 可用但标 [once]，不升格为默认 SOP |
+| [asserted] | “我见过 / 我测过” 无工件（无站名 / 无 GSC / 无图） | 标 [asserted]，永远写「他这么看」，不写「已验证」 |
+| no procedure in corpus | 他点名概念但不给 how-to（如 AEO/GEO 步骤） | 标 no-procedure，禁止编步骤 |
+
+### B.3 应用约定（不回溯改 134，只规范以后）
+
+1. 新 claim 进正文时，在口诀四段（他说/边界/反例/出处）的「出处」里加 provenance 档。
+2. 现有 134 条默认 in-corpus（来源已核），无需回填；若某条实为 [once]/[asserted] 已在正文边界里注明。
+3. 输出报告时：diagnosis 的每条 finding 已带 loki 编号；若引用到 [asserted] 案例，文字里保留「[asserted]」不升级。
+4. red flags（B.1）是「停 / 先拆」清单，命中即挡，不进覆盖率统计。

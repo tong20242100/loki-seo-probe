@@ -1,0 +1,343 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""置信度 / 研判语义门禁（第六行）。
+
+为什么不能只靠 shape_check：
+  shape_check 只证明函数没超行数，不证明诊断语义对。「首页 502 仍报 ok」
+  「sitemap 跟丢藏在一条 na 里」「7.4 定性被打成 at-risk」都是形态全绿下发生的。
+  这里把语义钉成可执行断言，改代码改回去会在 exit code 上暴露。
+
+断言来源（2026-09-01 拍板）：
+  P0  5xx / 网络错(0) = 探针失败=没看到；4xx = 站点事实(确实没有)，不算没看到。
+  P1  研判按碰撞表五档排序，不用口诀号当致命度。
+      at-risk 只由 fail 或 tier<=2（技术阻断/信任红线）触发；
+      只剩定性/常识类 warn 时是 needs-focus，并在 focus_reading 给定性解读。
+  P1b next_collect 只留「探针核不到」的项，不得出现「再拉 sitemap」这类重跑同一探针。
+      linkedin 不进 NEED：探针数到的链接数是材料，5.1 的类目边界探针判不了，
+      不做会按站无差别索要截图。
+  P3  sitemap index 200 但子表跟丢(n=0) → sitemap_follow=lost 且不算 seen。
+  P4  2026-09-01 拆 na 双义：na=探针没看到；seen=看到了材料但不自动打分。
+      seen 的四条（title-h1/json-ld/jsonld-types/linkedin）必须进 to_judge[]，
+      既不进 gaps（不是缺数据）也不进 priority（不是风险）。
+      llms.txt 404 是站点事实（4xx），不得标 na。
+  P5  CLI 退出码跟 status 对齐：ok/partial=0，inconclusive=1。
+      partial 不得 exit 1，否则调用方会丢掉可用的降级诊断。
+  P6  interpret 也要罩住：首页 502（空 HTML）时 semantic main / h1 / title-h1
+      必须 na，不得把空 HTML 写成站点事实（fail）。
+  P7  2026-09-01 补钉（实跑 peercare 抓到、之前只改代码没进门禁）：
+      sitemap 路径变体（/sitemap-index.xml）任一 200 即 pass——门禁必须抓住
+      「回退旧两路径写法」的回归；http 源 https=fail→warn→at-risk，不一刀 critical；
+      抽样空须显式与 sitemap 跟丢分开说；inconclusive 的 diagnosis 必须带
+      to_judge=[] 空数组（否则调用方读键 KeyError）。
+  P8  发现层单独钉：test_sitemap_path 用合成 bundle 直接塞 well_known 键，测的是
+      interpret 会不会扫全部含 sitemap 的路径，看不到 probe_well_known 到底抓不抓
+      /sitemap-index.xml。清单（PROBE_PATHS）若丢该变体，真实抓取永不产键、门禁却仍绿。
+      故断言三个 sitemap 变体必须在 PROBE_PATHS 里。
+  P9  2026-09-01 补钉（实跑 peercare 抓到、用户以合成 bundle 复算确认）：
+      a) soft-404 探针网络失败(0)/5xx = 没看到 = na。旧版 status==0 落 warn(tier1)
+         → diagnose 打 at-risk：站点没变，抖动就把结论从 pass 翻成 at-risk，
+         与已拍板的「0/5xx=没看到=na」直接冲突。真 404 仍 pass、疑似软 404 仍 fail。
+      b) diagnose 在 partial 且无 fail/warn 时不得字面输出 healthy——下游不守合同
+         会读成「站没问题」。给 insufficient，配合 evidence_partial=true 表暂定。
+         非 partial 时的 healthy 不变。
+
+用法: python3 confidence_gate.py    # 全通过 exit 0，有失败 exit 1
+"""
+import os
+import sys
+import types
+from pathlib import Path
+
+# 相对本文件定位 ../../scripts/audit_url.py，仓库根 / skill 目录都能跑；
+# 环境变量 LOKI_SEO_AUDIT 可覆盖（把门禁指向另一份安装时用）。
+AU = os.environ.get(
+    "LOKI_SEO_AUDIT",
+    str(Path(__file__).resolve().parent.parent / "scripts" / "audit_url.py"))
+
+
+def load():
+    """直接 compile 源码，**不走 __pycache__**。
+
+    SourceFileLoader 的 pyc 失效只看 mtime(整秒) + size。变异测试实测：
+    把 `partial": 0` 改成 `1` 再改回来，字节数不变、且两次都在同一秒内完成，
+    pyc 被判定仍然有效——门禁于是拿**旧字节码**出结果，文件明明已复原却报失败。
+    语义门禁被缓存骗过比没有门禁更危险，所以这里绕开缓存。"""
+    src = Path(AU).read_text(encoding="utf-8")
+    mod = types.ModuleType("audit_url")
+    mod.__file__ = AU
+    exec(compile(src, AU, "exec"), mod.__dict__)
+    return mod
+
+
+def bundle(home, robots, sm, n):
+    return {"home": {"status": home}, "sitemap": {"n": n},
+            "well_known": {"/robots.txt": {"status": robots},
+                           "/sitemap.xml": {"status": sm}},
+            "wayback": {"ok": True}, "soft_404": {"status": 404},
+            "m_host": {"status": 0}}
+
+
+def full_bundle(home=200, title="PeerCare 首页", h1_text="私董会", ld=("Organization",),
+                linkedin=0, n=444, sm=200, ll=404):
+    """interpret() 全字段 bundle：只喂 compute_confidence 那套最小 bundle 会 KeyError。"""
+    empty = home != 200
+    return {"home": {"status": home},
+            "html": {"title": "" if empty else title, "h1": 0 if empty else 1,
+                     "semantic": {"main": not empty, "header": not empty},
+                     "jsonld": 0 if empty else 1, "display_none": False,
+                     "linkedin": linkedin, "about": []},
+            "well_known": {"/robots.txt": {"status": 200}, "/sitemap.xml": {"status": sm},
+                           "/sitemap_index.xml": {"status": 0}, "/llms.txt": {"status": ll}},
+            "sitemap": {"n": n, "prefixes": [("posts", n)] if n else []},
+            "sniffs": [], "robots": [], "origin": "https://x.com",
+            "soft_404": {"status": 404, "bytes": 10, "suspect_soft_404": False},
+            "wayback": {"ok": True, "first200": "20230101", "last200": "20260101"},
+            "m_host": {"host": "m.x.com", "status": 0},
+            "home_ld_types": list(ld), "title_text": "" if empty else title,
+            "h1_text": "" if empty else h1_text}
+
+
+def _st(fs, rule):
+    return next((f["status"] for f in fs if f["rule"] == rule), None)
+
+
+SEEN_RULES = ("title-h1", "linkedin", "json-ld", "jsonld-types")
+
+CASES = [
+    ("P0 首页 502 不能当 seen，且必须降级（旧 got() 把 502 当 seen）",
+     dict(home=502, robots=200, sm=200, n=444),
+     lambda c: not c["probes"]["home"] and (c["partial"] or c["inconclusive"])),
+    ("P3 index 200 但子表跟丢(n=0) → lost 且不算 seen 且降置信度",
+     dict(home=200, robots=200, sm=200, n=0),
+     lambda c: c["sitemap_follow"] == "lost" and not c["probes"]["sitemap"]
+     and c["partial"]),
+    ("P0 sitemap 404 是站点事实，不算没看到（否则误判 inconclusive）",
+     dict(home=200, robots=200, sm=404, n=0),
+     lambda c: c["sitemap_follow"] == "absent" and c["probes"]["sitemap"]),
+    ("P0 核心探针全 5xx → inconclusive",
+     dict(home=502, robots=503, sm=503, n=0),
+     lambda c: c["inconclusive"]),
+    ("P0 三核都好 → 不 inconclusive、不 partial",
+     dict(home=200, robots=200, sm=200, n=444),
+     lambda c: not c["inconclusive"] and not c["partial"]),
+]
+
+
+def test_confidence(au, bad):
+    for name, kw, ok in CASES:
+        if not ok(au.compute_confidence(bundle(**kw))):
+            bad.append(name)
+
+
+def test_diagnose(au, bad):
+    def f(rule, status, loki="", focus=None):
+        return {"rule": rule, "status": status, "loki": loki, "evidence": "e",
+                "focus": focus}
+    d = au.diagnose([f("sitemap-mix", "warn", "7.4", {"top": "posts",
+                                                      "share": .75, "n": 444}),
+                     f("sitemap", "warn", "常识")])
+    if d["verdict"] == "at-risk":
+        bad.append("P1 7.4 定性被打成 at-risk（应 needs-focus）")
+    if "posts" not in (d.get("focus_reading") or ""):
+        bad.append("P1 缺 focus_reading 定性解读（应说站点可能被当成 posts 站）")
+    if d["priority"] and d["priority"][0]["rule"] != "sitemap-mix":
+        bad.append("P1 档位排序错：常识(档4) 压过了 7.4 定性(档3)")
+    d = au.diagnose([f("soft-404 probe", "fail", "1.4 7.1")])
+    if d["verdict"] != "critical":
+        bad.append("P1 tier1 fail 应 critical")
+    d = au.diagnose([f("wayback", "warn", "4.1")])
+    if d["verdict"] != "at-risk":
+        bad.append("P1 信任类(tier2) warn 应 at-risk")
+
+
+NO_NEED = ("sitemap", "sitemap-mix", "title-h1", "linkedin",
+           "llms.txt", "json-ld", "jsonld-types")
+
+
+def test_need(au, bad):
+    for k in NO_NEED:
+        if k in au.NEED:
+            bad.append(f"P1b {k} 不该在 NEED 里（有数据/非搜集项/类目判断在合同，"
+                       "进了=重跑同一探针或无差别索要）")
+    for k, v in au.NEED.items():
+        if "再拉 sitemap" in v[0] or "重数" in v[0]:
+            bad.append(f"P1b NEED[{k}] 是重跑同一探针：{v[0]}")
+
+
+def test_interpret(au, bad):
+    f502 = au.interpret(full_bundle(home=502))
+    ok = au.interpret(full_bundle())
+    d = au.diagnose(ok)
+    tj = [x["rule"] for x in d.get("to_judge") or []]
+    gp = [x["rule"] for x in d.get("gaps") or []]
+    pr = [x["rule"] for x in d.get("priority") or []]
+    cases = [
+        ("首页 502：semantic main 必须 na（空 HTML 不是站点事实，不得 fail）",
+         lambda: _st(f502, "semantic main") == "na"),
+        ("首页 502：h1 必须 na（空 HTML 不是站点事实，不得 warn/fail）",
+         lambda: _st(f502, "h1") == "na"),
+        ("首页 502：title-h1 必须 na（没抓到文案，材料不在手）",
+         lambda: _st(f502, "title-h1") == "na"),
+        ("首页 200：title-h1 必须 seen（材料在 evidence，不自动打分）",
+         lambda: _st(ok, "title-h1") == "seen"),
+        ("首页 200 且 linkedin=0：是站点事实，必须 seen 不是 na",
+         lambda: _st(ok, "linkedin") == "seen"),
+        ("llms.txt 404 是站点事实（4xx），不得标 na",
+         lambda: _st(ok, "llms.txt") == "seen"),
+        ("seen 项不得进 gaps（不是缺数据）",
+         lambda: not [r for r in SEEN_RULES if r in gp]),
+        ("seen 项不得进 priority（不是风险）",
+         lambda: not [r for r in SEEN_RULES if r in pr]),
+        ("seen 项必须进 to_judge[]（判断权归输出合同第 4 条）",
+         lambda: set(SEEN_RULES) <= set(tj)),
+    ]
+    for name, cond in cases:
+        if not cond():
+            bad.append("P4/P6 " + name)
+
+
+def test_exit(au, bad):
+    e = getattr(au, "EXIT", {})
+    if e.get("partial") == 1:
+        bad.append("P5 partial 不得 exit 1（调用方会整份丢掉可用的降级诊断）")
+    if e.get("ok") != 0 or e.get("inconclusive") != 1:
+        bad.append("P5 退出码应 ok=0 / inconclusive=1")
+    n = getattr(au, "NOTE", {})
+    if "inconclusive" in n and "仍有" in n["inconclusive"]:
+        bad.append("P5 inconclusive 的 stderr 提示不得说「仍有输出」（那时 findings 全 na）")
+    if set(n) - {"ok", "partial", "inconclusive"}:
+        bad.append("P5 NOTE 只应覆盖 ok/partial/inconclusive")
+
+
+def test_sitemap_path(au, bad):
+    """P7 钉死：站点用 /sitemap-index.xml（非 /sitemap.xml）时仍应 pass。
+    interpret() 改成扫全部含 sitemap 的路径；若回退旧两路径写法会漏，门禁必须抓到。"""
+    b = full_bundle(home=200, sm=404)
+    wk = b["well_known"]
+    wk["/sitemap_index.xml"] = {"status": 404}
+    wk["/sitemap-index.xml"] = {"status": 200}
+    b["sitemap"] = {"n": 444, "prefixes": [("posts", 444)], "samples": {}, "fetch_fail": []}
+    fs = au.interpret(b)
+    st = next(f["status"] for f in fs if f["rule"] == "sitemap")
+    if st != "pass":
+        bad.append("P7 仅 /sitemap-index.xml=200 也应 pass（回退旧两路径写法会误报 warn）")
+
+
+def test_https(au, bad):
+    """P7 http 源不得一刀 critical：https=fail→warn(tier1)→at-risk。"""
+    b = full_bundle(home=200)
+    b["origin"] = "http://x.com"
+    fs = au.interpret(b)
+    hs = next(f["status"] for f in fs if f["rule"] == "https")
+    if hs != "warn":
+        bad.append(f"P7 http 源 https 应为 warn，实际 {hs}")
+    d = au.diagnose(fs)
+    if d["verdict"] == "critical":
+        bad.append("P7 http 源不应一刀 critical（应 at-risk）")
+    elif d["verdict"] not in ("at-risk", "needs-focus"):
+        bad.append(f"P7 http 源 verdict 应 at-risk/needs-focus，实际 {d['verdict']}")
+
+
+def test_sampled(au, bad):
+    """P7 抽样空须显式与 sitemap 跟丢分开说。"""
+    b = full_bundle(home=200)
+    b["sniffs"] = []
+    f = next(x for x in au.interpret(b) if x["rule"] == "sampled-originality")
+    if f["status"] != "na":
+        bad.append("P7 未抽样应 na")
+    if "未抽样" not in f["evidence"]:
+        bad.append("P7 sampled-originality 证据须显式写「未抽样」")
+    if "跟丢" not in f["evidence"]:
+        bad.append("P7 未抽样的证据须同时点明「非 sitemap 跟丢」，"
+                   "否则「没抓到内页」会被读成「子表跟丢」，两条缺口混淆")
+
+
+def test_inconclusive(au, bad):
+    """P7 三核全挂走 inconclusive 分支时，diagnosis 必须带 to_judge=[]（否则调用方 KeyError）。"""
+    b = full_bundle(home=502)
+    b["well_known"]["/robots.txt"] = {"status": 503}
+    b["well_known"]["/sitemap.xml"] = {"status": 503}
+    b["well_known"]["/sitemap_index.xml"] = {"status": 503}
+    b["sitemap"] = {"n": 0}
+    out = au.attach_report(b)
+    if out["status"] != "inconclusive":
+        bad.append(f"P7 三核全挂应 inconclusive，实际 {out['status']}")
+        return
+    dx = out["diagnosis"]
+    if "to_judge" not in dx:
+        bad.append("P7 inconclusive diagnosis 缺 to_judge 键（调用方 KeyError）")
+    elif dx["to_judge"] != []:
+        bad.append("P7 inconclusive diagnosis to_judge 应为空数组")
+
+
+def test_probe_paths(au, bad):
+    """P8 发现层门禁：清单丢 sitemap 变体时，test_sitemap_path 的合成 bundle 会掩盖，
+    只有这里能红——probe_well_known 不再抓，真实 well_known 永不产该键。"""
+    for p in ("/sitemap.xml", "/sitemap_index.xml", "/sitemap-index.xml"):
+        if p not in au.PROBE_PATHS:
+            bad.append(f"P8 PROBE_PATHS 少了 {p}（发现层回归：interpret 扫描测不到）")
+
+
+def test_soft404_na(au, bad):
+    """P9a 网络失败(0)/5xx 是「没看到」，不是站点风险。"""
+    b = full_bundle(home=200)
+    b["robots"] = [{"ua": "*", "disallow": [], "sitemap": []}]  # 否则 robots-ua warn(tier1) 污染 at-risk 断言
+    b["soft_404"] = {"status": 0, "bytes": 0, "suspect_soft_404": False,
+                     "error": "timed out"}
+    fs = au.interpret(b)
+    st = _st(fs, "soft-404 probe")
+    if st != "na":
+        bad.append(f"P9 soft-404 网络失败(0)应 na（没看到），实际 {st}")
+    d = au.diagnose(fs)
+    if d["verdict"] == "at-risk":
+        bad.append("P9 soft-404 网络失败不得抬成 at-risk（站点没变，抖动翻结论）")
+    b["soft_404"] = {"status": 502, "bytes": 0, "suspect_soft_404": False}
+    if _st(au.interpret(b), "soft-404 probe") != "na":
+        bad.append("P9 soft-404 5xx 应 na（同 P0 口径：没看到）")
+    b["soft_404"] = {"status": 404, "bytes": 13707, "suspect_soft_404": False}
+    if _st(au.interpret(b), "soft-404 probe") != "pass":
+        bad.append("P9 soft-404 真 404 仍应 pass（站点事实，勿被误伤）")
+    b["soft_404"] = {"status": 200, "bytes": 999, "suspect_soft_404": True}
+    if _st(au.interpret(b), "soft-404 probe") != "fail":
+        bad.append("P9 疑似软 404(200 带 not-found 文案)仍应 fail")
+
+
+def test_verdict_partial(au, bad):
+    """P9b partial 且无 fail/warn 时 verdict 不得字面 healthy。"""
+    d = au.diagnose([], partial=True)
+    if d["verdict"] != "insufficient":
+        bad.append(f"P9 partial 无 fail/warn 应 insufficient，实际 {d['verdict']}"
+                   "（healthy 字面值会被下游读成站没问题）")
+    if not d.get("evidence_partial"):
+        bad.append("P9 insufficient 必须同时 evidence_partial=true（表暂定）")
+    d2 = au.diagnose([], partial=False)
+    if d2["verdict"] != "healthy":
+        bad.append(f"P9 非 partial 无 fail/warn 仍应 healthy，实际 {d2['verdict']}"
+                   "（勿把修复扩大成全站禁 healthy）")
+
+
+def main():
+    if not Path(AU).exists():
+        print("找不到 audit_url.py", AU, file=sys.stderr)
+        return 1
+    au, bad = load(), []
+    test_confidence(au, bad)
+    test_diagnose(au, bad)
+    test_need(au, bad)
+    test_interpret(au, bad)
+    test_exit(au, bad)
+    test_sitemap_path(au, bad)
+    test_https(au, bad)
+    test_sampled(au, bad)
+    test_inconclusive(au, bad)
+    test_probe_paths(au, bad)
+    test_soft404_na(au, bad)
+    test_verdict_partial(au, bad)
+    for b in bad:
+        print("  FAIL", b)
+    print(f"置信度/研判门禁: {len(bad)} 项失败" if bad else "置信度/研判门禁: 全部通过")
+    return 1 if bad else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
