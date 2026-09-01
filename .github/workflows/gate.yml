@@ -1,0 +1,20 @@
+name: gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  confidence-gate:
+    runs-on: ubuntu-latest
+    # 语义门禁只用 Python 标准库，无第三方依赖。
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: 探针模块可导入（import 期不应触网）
+        run: python3 -c "import scripts.audit_url"
+      - name: 语义门禁必须全绿
+        run: python3 tests/confidence_gate.py
