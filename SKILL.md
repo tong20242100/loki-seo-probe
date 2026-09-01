@@ -1,6 +1,6 @@
 ---
 name: loki-seo
-version: 1.0.2
+version: 1.0.3
 description: >
   用 Loki Yan (@loki_yan_seo) 的口径诊断一个线上网址：先跑 audit_url.py 探针，
   再给 3–7 条贴合该站的可落地动作，并列出要从 GSC / Frog 导出的数据。
@@ -143,6 +143,16 @@ python3 scripts/audit_url.py https://example.com
 
 ## 输出合同（每次都要）
 
+### 可读性（写给不懂 SEO 的人）
+
+报告是给人看的，不是给维护者看的。以下红线命中即改：
+
+- **第一句必须是一段大白话（≤120 字）**：站现在什么状态 + 最该做的一件事。不懂 SEO 的人读完要知道「我现在该干啥」，不是看到一串术语。
+- **verdict 四值翻成人话再写，不准直接贴英文**：`critical`→有必须修的硬伤；`at-risk`→有高风险项先处理；`needs-focus`→技术没硬伤，但 Google 可能搞不清你是干嘛的——去把「关于我们」/首页定位写清楚（**不是「站有问题」**）；`insufficient`→这次看的不够、下不了结论，先补数据。
+- **状态值翻译**：`na`→探针没看到（≠没问题）；`seen`→看到了材料、要你判断；`pass`/`warn`/`fail`→按规则判过（`warn`/`fail` 才要处理）。
+- **去内部溯源**：JSON 里的 `loki`/`#n`/`口诀`/`G7`/`siteFocus` 是给维护者看的，**报告正文一律不出现**；只留能落地的动作和证据数字（如 `n=444`、`posts 占 75%`）。
+- **术语首次出现翻成人话**：sitemap→网站地图文件；soft-404→错误页却返回 200 的假 404；EEAT→谷歌对「作者是否够专业可信」的要求；`<main>`→页面主内容区；focus_reading→「Google 给你的站定的类目」。
+
 1. **任务类型**
 2. **探针事实（含置信度）**：`status` / `run_confidence` / `sitemap_follow` 一行打头，然后只列 fail/warn 和会影响开方的 `na`。数字全部来自 JSON。`partial` / `inconclusive` 时先把 `core_missing[]` 和 `na` 项列出来，明说「以下是没看到，不是没问题」。**`seen` 不是缺数据，不许列进「没看到」。**
 3. **先做 / 先停（3–7 条）**：`diagnosis` 是**排序草稿，不是结论**——
@@ -163,7 +173,7 @@ python3 scripts/audit_url.py https://example.com
 
 禁止：走完全部判定规则；编造 tweet_id；把降级案例升级成定律；GEO 作业清单；把 DA/citations 当原因。
 
-发稿前自查（合同闸门，命中即改，改不了的在证据等级行暴露）：**编造**——id / 数字 / 站点名无源；**进口**——常识 checklist 混进判定规则（密度榜、外链建设、GEO 作业、title 字符数）；**升格**——（降）/ 单点 / asserted 被写成定律；**传记**——用户要审站、回复在讲 Loki 本人；**GEO 幻觉**——语料明说无 how-to 的领域给出了作业清单。
+发稿前自查（合同闸门，命中即改，改不了的在证据等级行暴露）：**编造**——id / 数字 / 站点名无源；**进口**——常识 checklist 混进判定规则（密度榜、外链建设、GEO 作业、title 字符数）；**升格**——（降）/ 单点 / asserted 被写成定律；**传记**——用户要审站、回复在讲 Loki 本人；**GEO 幻觉**——语料明说无 how-to 的领域给出了作业清单；**黑话**——loki/#n/口诀/G7/siteFocus 等内部溯源或术语未翻译进报告；verdict 四值没翻成人话；开头没给一段大白话总结。
 
 对照通用 SEO 诊断：Title 塞词、H1 对准搜索词、关键词密度打分，是 Loki 标过的 **commodity**。用 6.3 / 2.1 顶回去。
 
