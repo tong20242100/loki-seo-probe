@@ -19,7 +19,8 @@
 - status            ok | partial | inconclusive
                     核心探针(home/robots/sitemap)全没看到→inconclusive，findings 全 na
                     5xx/网络错=没看到；4xx=站点事实(确实没有)，不算没看到
-- run_confidence    探针拿到数据的比例。partial 时 <1，代表「看到的少」不是「站差」
+- run_confidence    探针拿到数据的比例。partial 时 <1，代表「看到的少」不是「站差」。
+                    m 站 NXDOMAIN（DNS 确认没有）是站点事实，计入「拿到了」
 - sitemap_follow    ok=跟到(n>0) / lost=index200但子表n=0 / absent=站点没有(404) / fail=探针失败
 - core_missing[]    核心探针里没看到的是哪几个
 - findings[]        每条带 rule/status/evidence/loki 编号。status 五值，别混：
@@ -97,12 +98,18 @@ PROBE_PATHS = ("/robots.txt", "/sitemap.xml", "/sitemap_index.xml",
 
 
 def probe_well_known(origin):
-    out = {}
+    """探 well-known 路径，返回 (well_known, sm_bodies)。
+    JSON 侧只留 status/bytes/error；200 的 sitemap body **另行留住**，
+    供 sitemap_mix 复用——实测 well_known 已 200(186B) 而 sitemap_mix 二抓
+    同一 URL 超时，双次 fetch 让本可避免的抖动翻掉结论。"""
+    out, sm_bodies = {}, {}
     for path in PROBE_PATHS:
         r = fetch(origin + path)
         out[path] = {"status": r["status"], "bytes": len(r.get("body") or ""),
                      "error": r.get("error")}
-    return out
+        if r["status"] == 200 and "sitemap" in path:
+            sm_bodies[origin + path] = r.get("body") or ""
+    return out, sm_bodies
 
 
 class HomeParse(HTMLParser):
@@ -264,8 +271,11 @@ def _robots_flush(blocks, ua, acc):
 
 
 def parse_robots(text):
-    """按 User-agent 块拆 Allow/Disallow/Sitemap。"""
-    blocks, ua, acc = [], "*", {"disallow": [], "sitemap": []}
+    """按 User-agent 块拆 Allow/Disallow/Sitemap。
+    首个 User-agent 行不 flush 初始累加器——旧版会在这里先吐一个空 * 幽灵块，
+    让几乎每个 robots 的 evidence 头部撒谎，且 parse 永不返回空列表
+    （「解析不出 UA 块→warn」对真实解析器成了死断言）。"""
+    blocks, ua, acc, started = [], "*", {"disallow": [], "sitemap": []}, False
     for raw in (text or "").splitlines():
         line = raw.split("#", 1)[0].strip()
         if not line or ":" not in line:
@@ -273,29 +283,35 @@ def parse_robots(text):
         k, v = [x.strip() for x in line.split(":", 1)]
         k = k.lower()
         if k == "user-agent":
-            _robots_flush(blocks, ua, acc)
-            ua, acc = v, {"disallow": [], "sitemap": []}
+            if started:
+                _robots_flush(blocks, ua, acc)
+            started, ua = True, v
+            acc = {"disallow": [], "sitemap": []}
             continue
-        if k == "disallow" and v:
-            acc["disallow"].append(v)
-        if k == "sitemap" and v:
-            acc["sitemap"].append(v)
-    _robots_flush(blocks, ua, acc)
+        if k in ("disallow", "sitemap") and v:
+            acc[k].append(v)
+    if started:
+        _robots_flush(blocks, ua, acc)
     return blocks
 
 
-def sitemap_mix(origin, well_known):
-    """跟 sitemap index，统计路径前缀并各抽 2 个内页。"""
+def sitemap_mix(origin, well_known, sm_bodies=None):
+    """跟 sitemap index，统计路径前缀并各抽 2 个内页。
+    种子 body 优先复用 well_known 层已抓到的 200 结果（sm_bodies），
+    不再对同一 URL 二次请求——二抓撞上抖动会把已确认 200 的站翻成 lost。"""
     seeds, seen, locs, fails = [], set(), [], []
     for path, meta in well_known.items():
         if "sitemap" in path and meta.get("status") == 200:
             seeds.append(origin + path)
     for s in seeds:
-        r = fetch(s)
-        if r["status"] != 200:
-            fails.append(f"{s.split('/')[-1]}={r['status']}")
-            continue
-        kids = re.findall(r"<loc>\s*(.*?)\s*</loc>", r["body"] or "", re.I)
+        body = (sm_bodies or {}).get(s)
+        if body is None:
+            r = fetch(s)
+            if r["status"] != 200:
+                fails.append(f"{s.split('/')[-1]}={r['status']}")
+                continue
+            body = r.get("body") or ""
+        kids = re.findall(r"<loc>\s*(.*?)\s*</loc>", body, re.I)
         _ingest_locs(kids, seen, locs, seeds)
         if len(locs) >= 4000:
             break
@@ -339,6 +355,22 @@ def sniff_page(url):
     }
 
 
+def sitemap_presence(wk):
+    """sitemap 存在性三值：任一 200=pass；全 4xx=站点事实(确实没有)=warn；
+    混有 0/5xx=探针没看到=na。旧版把 0/5xx 也落 warn，是拿「探针超时」
+    装扮成「站点没有 sitemap」，与 P9「0/5xx=没看到=na」对打。"""
+    sm_paths = [p for p in wk if "sitemap" in p]
+    stats = [(wk[p] or {}).get("status") for p in sm_paths]
+    if any(s == 200 for s in stats):
+        st = "pass"
+    elif stats and all(isinstance(s, int) and 400 <= s < 500 for s in stats):
+        st = "warn"
+    else:
+        st = "na"
+    ev = f"sitemap paths={ {p: (wk[p] or {}).get('status') for p in sm_paths} }"
+    return st, ev
+
+
 def interpret(bundle, conclusive=True):
     """把探针事实映射到 Loki 口诀编号。status: pass/warn/fail/na。
     conclusive=False（核心探针全挂）时所有 rule 强制 na——没真看到站就不下结论。"""
@@ -352,10 +384,7 @@ def interpret(bundle, conclusive=True):
     ok = home.get("status") == 200
     robots = wk["/robots.txt"]["status"]
     add("robots.txt", "pass" if robots == 200 else "warn", f"HTTP {robots}", "常识·不进口诀，仅作探针")
-    sm_paths = [p for p in wk if "sitemap" in p]
-    sm_ok = any((wk[p] or {}).get("status") == 200 for p in sm_paths)
-    add("sitemap", "pass" if sm_ok else "warn",
-        f"sitemap paths={ {p: (wk[p] or {}).get('status') for p in sm_paths} }", "常识")
+    add("sitemap", *sitemap_presence(wk), "常识")
     ll = wk["/llms.txt"]["status"]
     add("llms.txt", "seen" if 0 < ll < 500 else "na", f"HTTP {ll}（谷歌 AIO 不管；广义 GEO 可能要）", "2.3")
     add("semantic main", "na" if not ok else ("pass" if sem.get("main") else "fail"),
@@ -408,12 +437,12 @@ def interpret_focus(bundle):
     st_seen = "seen" if bundle["home"].get("status") == 200 else "na"
     top = prefs[0][0] if prefs else ""
     share = (prefs[0][1] / n) if n and prefs else 0
-    sm_ok = any("sitemap" in p and (m or {}).get("status") == 200 for p, m in (bundle.get("well_known") or {}).items())
+    unseen = n == 0 and bundle.get("sitemap_follow") in ("lost", "fail")
     add({"rule": "sitemap-mix",
-         "status": ("na" if (n == 0 and sm_ok) else "warn" if share >= 0.6 else "pass"),
+         "status": ("na" if unseen else "warn" if share >= 0.6 else "pass"),
          "evidence": f"n={n} prefixes={prefs[:8]} top={top} share={share:.0%} fail={mix.get('fetch_fail')}",
          "focus": {"top": top, "share": share, "n": n},
-         "loki": ("7.4 siteFocus；sitemap 200 但子表跟丢(n=0)=没看到=na，不是健康" if (n == 0 and sm_ok)
+         "loki": ("7.4 siteFocus；没看到分布(子表跟丢或探针失败)=na，不是健康" if unseen
                   else f"7.4 siteFocus；单一前缀 {top} 占 {share:.0%} 集中度过高=warn" if share >= 0.6
                   else "7.4 siteFocus；前缀分布均衡=pass")})
     add(originality_finding(bundle.get("sniffs") or []))
@@ -472,13 +501,17 @@ def compute_confidence(bundle):
     n = mix.get("n") or 0
     follow = ("fail" if not seen_any else "absent" if not ok_any
               else "lost" if n == 0 else "ok")
+    mh = bundle["m_host"]
+    # NXDOMAIN 是真实 DNS 确认的站点事实（判定层已落 pass），同样算「看到了」，
+    # 否则判定层与置信层对同一事实各说各话（实测 conf 0.5 应为 0.67）。
+    nx_seen = mh.get("status") == 0 and mhost_verdict(mh) == "pass"
     probes = {
         "home": responded(bundle["home"]),
         "robots": responded(wk.get("/robots.txt")),
         "sitemap": follow in ("ok", "absent"),
         "wayback": bool(bundle["wayback"].get("ok")),
         "soft_404": responded(bundle["soft_404"]),
-        "m_host": responded(bundle["m_host"]),
+        "m_host": responded(mh) or nx_seen,
     }
     core = ("home", "robots", "sitemap")
     seen = sum(1 for v in probes.values() if v)
@@ -615,9 +648,9 @@ def audit(url):
     home = fetch(origin + "/")
     html = parse_home(home.get("body") or "")
     host = urlparse(origin).netloc
-    wk = probe_well_known(origin)
+    wk, sm_bodies = probe_well_known(origin)
     rb = fetch(origin + "/robots.txt")
-    mix = sitemap_mix(origin, wk)
+    mix = sitemap_mix(origin, wk, sm_bodies)
     h1s = re.findall(r"<h1[^>]*>(.*?)</h1>", home.get("body") or "", re.I | re.S)
     h1_txt = re.sub(r"<[^>]+>", "", h1s[0] if h1s else "")
     bundle = {

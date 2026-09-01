@@ -50,6 +50,16 @@
          last200 曾比真实最新早 10 个月）；'-' 状态行不作 dated 候选。
       c) sampled-originality 分母只计 status==200 的活样本；
          非空全死 → na（不是 pass），evidence 须报 live/dead 分解。
+  P11 2026-09-01 三轮实测补钉（四项都是门禁全绿时抓到的）：
+      a) parse_robots 首个 User-agent 行不再 flush 空 * 幽灵块；空文件/纯注释
+         返回 0 块——否则「解析不出 UA 块→warn」对真实解析器是死断言。
+      b) probe_well_known 留住 200 sitemap body（sm_bodies），sitemap_mix 复用，
+         同一 URL 不二抓（现场：well_known 已 200(186B)，二抓超时险些翻成 lost）。
+      c) NXDOMAIN（DNS 确认没有 m 站）计入 run_confidence「看到了」——
+         判定层落 pass 而置信层记「没看到」，是两层对同一事实各说各话。
+      d) sitemap 探针 0/5xx=没看到=na（sitemap 与 sitemap-mix 都是），
+         不得装扮成「站点没有 sitemap」+ mix 假 pass（旧版与 P9「0=na」对打）；
+         全 4xx 仍是站点事实 → warn；sitemap-mix 在 lost/fail 且 n=0 时走 na。
 
 用法: python3 confidence_gate.py    # 全通过 exit 0，有失败 exit 1
 """
@@ -494,6 +504,155 @@ def test_sampled_live(au, bad):
         bad.append(f"P10 全活无转载应 pass，实际 {f['status']}（勿扩大修复误伤真阳性）")
 
 
+def test_parse_robots(au, bad):
+    """P11a 解析器不再吐幽灵空 * 块（现场：peercare.cn 输出头部多一块
+    {ua:'*', disallow:[], sitemap:[]}），且空文件/纯注释返回 0 块——
+    旧版 parse 永不返回 []，「解析不出 UA 块→warn」对真实解析器是死断言。"""
+    txt = ("User-agent: Baiduspider\nDisallow: /api/\nSitemap: https://x.cn/b.xml\n\n"
+           "User-agent: *\nDisallow: /me/\nSitemap: https://x.cn/s.xml\n")
+    blocks = au.parse_robots(txt)
+    if len(blocks) != 2:
+        bad.append(f"P11 两个 UA 行应解析出 2 块，实际 {len(blocks)}（空 * 幽灵块）")
+    elif blocks[0]["ua"] != "Baiduspider" or blocks[1]["ua"] != "*":
+        bad.append(f"P11 块序应按文件（先 Baiduspider 后 *），实际 {[b['ua'] for b in blocks]}")
+    if au.parse_robots(""):
+        bad.append("P11 空文件应解析出 0 块（旧版必先吐一个空 *）")
+    if au.parse_robots("# 只有注释\n"):
+        bad.append("P11 纯注释文件应解析出 0 块")
+    b = full_bundle(home=200)
+    b["robots"] = au.parse_robots("")
+    if _st(au.interpret(b), "robots-ua") != "warn":
+        bad.append("P11 空 robots 文件 → robots-ua warn 应能经 parse_robots('') 到达")
+
+
+def test_sm_reuse(au, bad):
+    """P11b well_known 已抓到 200 的 sitemap 必须被 sitemap_mix 复用，不二抓同一 URL。
+    现场：well_known['/sitemap.xml']=200(186B) 而 fetch_fail=['sitemap.xml=0']——
+    二抓超时；站点若只有一个 index，本轮就从 ok 翻成 lost。"""
+    calls, saved = [], au.fetch
+
+    def fake_fetch(url, method="GET", timeout=20):
+        calls.append(url)
+        return {"url": url, "status": 0, "ctype": "", "body": "", "error": "fake timeout"}
+
+    au.fetch = fake_fetch
+    wk = {"/sitemap.xml": {"status": 200, "bytes": 40},
+          "/sitemap_index.xml": {"status": 404}}
+    cached = {"https://x.cn/sitemap.xml": "<sitemapindex></sitemapindex>"}
+    try:
+        mix = au.sitemap_mix("https://x.cn", wk, cached)
+        if calls:
+            bad.append(f"P11 有缓存 body 的种子不得二抓，实际发出 {len(calls)} 个请求")
+        if mix["fetch_fail"]:
+            bad.append(f"P11 缓存命中不得产生 fetch_fail，实际 {mix['fetch_fail']}")
+        calls.clear()
+        mix2 = au.sitemap_mix("https://x.cn", wk, None)
+        if len(calls) != 1:
+            bad.append(f"P11 无缓存时种子应抓一次，实际 {len(calls)}")
+        if mix2["fetch_fail"] != ["sitemap.xml=0"]:
+            bad.append(f"P11 抓取失败应按状态记入 fetch_fail，实际 {mix2['fetch_fail']}")
+    finally:
+        au.fetch = saved
+
+
+def test_wk_bodies(au, bad):
+    """P11b 产出端：probe_well_known 返回 (well_known, sm_bodies)——200 sitemap
+    的 body 留住供复用，且不进 JSON 侧（巨大 urlset 会撑爆输出）。"""
+    saved = au.fetch
+    body = "<sitemapindex><sitemap><loc>https://x.cn/s0.xml</loc></sitemap></sitemapindex>"
+
+    def fake_fetch(url, method="GET", timeout=20):
+        hit = "sitemap" in url
+        return {"url": url, "status": 200 if hit else 404,
+                "ctype": "", "body": body if hit else "", "error": None}
+
+    au.fetch = fake_fetch
+    try:
+        got = au.probe_well_known("https://x.cn")
+        if not (isinstance(got, tuple) and len(got) == 2):
+            bad.append("P11 probe_well_known 应返回 (well_known, sm_bodies)")
+        else:
+            wk, bodies = got
+            if "body" in wk.get("/sitemap.xml", {}):
+                bad.append("P11 well_known JSON 侧不得带 body（撑爆输出）")
+            if bodies.get("https://x.cn/sitemap.xml") != body:
+                bad.append("P11 200 sitemap body 必须进 sm_bodies 供 sitemap_mix 复用")
+    finally:
+        au.fetch = saved
+
+
+def test_sm_timeout_na(au, bad):
+    """P11d sitemap 探针 0/5xx=没看到=na（sitemap 与 sitemap-mix 都是），
+    不得装扮成「站点没有 sitemap」+ mix 假 pass（旧版与 P9「0=na」对打）。
+    全 4xx 是站点事实（确实没有）→ warn / mix pass 不变。"""
+    b = full_bundle(home=200, sm=0, n=0)
+    b["sitemap"] = {"n": 0, "prefixes": [], "samples": {}, "fetch_fail": ["sitemap.xml=0"]}
+    out = au.attach_report(b)
+    fs = out["findings"]
+    b2 = full_bundle(home=200, sm=404, n=0)
+    b2["well_known"]["/sitemap_index.xml"] = {"status": 404}
+    b2["sitemap"] = {"n": 0, "prefixes": [], "samples": {}, "fetch_fail": []}
+    fs2 = au.attach_report(b2)["findings"]
+    cases = [
+        (f"P11 sitemap 全 0/5xx 应 na（没看到），实际 {_st(fs, 'sitemap')}",
+         _st(fs, "sitemap") == "na"),
+        (f"P11 没看到分布(n=0 且探针失败) sitemap-mix 应 na，实际 {_st(fs, 'sitemap-mix')}",
+         _st(fs, "sitemap-mix") == "na"),
+        (f"P11 sitemap 全 0/5xx follow 应 fail，实际 {out['sitemap_follow']}",
+         out["sitemap_follow"] == "fail"),
+        (f"P11 partial 且无 fail/warn 应 insufficient，实际 {out['diagnosis']['verdict']}",
+         out["diagnosis"]["verdict"] == "insufficient"),
+        (f"P11 sitemap 全 4xx 是站点事实应 warn，实际 {_st(fs2, 'sitemap')}",
+         _st(fs2, "sitemap") == "warn"),
+        (f"P11 确实没有 sitemap 无集中度问题，mix 应 pass，实际 {_st(fs2, 'sitemap-mix')}",
+         _st(fs2, "sitemap-mix") == "pass"),
+        ("P11 一路径 200 一路径 0 混有仍应 pass（勿扩大修复误伤已看到）",
+         _st(au.interpret(full_bundle(home=200)), "sitemap") == "pass"),
+    ]
+    for name, okc in cases:
+        if not okc:
+            bad.append(name)
+
+
+def test_mhost_conf(au, bad):
+    """P11c NXDOMAIN 是 DNS 确认的站点事实：判定层落 pass，置信层必须计「看到了」。
+    现场：m.peercare.cn verdict=pass 而 probes.m_host=false，conf 0.5 应为 0.67。"""
+    import socket as _sk
+    b = full_bundle(home=200)
+    b["well_known"] = {"/robots.txt": {"status": 200}, "/sitemap.xml": {"status": 200},
+                       "/sitemap_index.xml": {"status": 404}, "/llms.txt": {"status": 404}}
+    b["sitemap"] = {"n": 444, "prefixes": [("a", 222), ("b", 222)]}
+    b["m_host"] = {"host": "m.x.com", "status": 0,
+                   "error": "<urlopen error [Errno 8] nodename nor servname provided>"}
+    c = au.compute_confidence(b)
+    if not c["probes"]["m_host"]:
+        bad.append("P11 NXDOMAIN（文本路径）应计入拿到了数据")
+    elif c["score"] != 1.0:
+        bad.append(f"P11 六探针全看到时置信应为 1.0，实际 {c['score']}")
+    saved = au.socket.getaddrinfo
+
+    def gai(host, port, *a, **k):
+        raise _sk.gaierror(8, "nodename nor servname")
+
+    au.socket.getaddrinfo = gai
+    b["m_host"] = {"host": "m.x.com", "status": 0, "error": "Tunnel connection failed: 502"}
+    if not au.compute_confidence(b)["probes"]["m_host"]:
+        bad.append("P11 DNS 确认 NXDOMAIN（不靠文本）应计入拿到了数据")
+
+    def dns_oserr(host, port, *a, **k):
+        raise OSError("dns probe failed")
+
+    au.socket.getaddrinfo = dns_oserr
+    b["m_host"] = {"host": "m.x.com", "status": 0, "error": "<urlopen error timed out>"}
+    if au.compute_confidence(b)["probes"]["m_host"]:
+        bad.append("P11 超时且 DNS 也没做成应保持没看到（勿扩大到所有 status=0）")
+    au.socket.getaddrinfo = lambda host, port, *a, **k: [(2, 1, 6, "", ("1.2.3.4", 443))]
+    b["m_host"] = {"host": "m.x.com", "status": 0, "error": "Tunnel connection failed: 502"}
+    if au.compute_confidence(b)["probes"]["m_host"]:
+        bad.append("P11 解析得到但连不上应保持没看到")
+    au.socket.getaddrinfo = saved
+
+
 def main():
     if not Path(AU).exists():
         print("找不到 audit_url.py", AU, file=sys.stderr)
@@ -518,6 +677,11 @@ def main():
     test_mhost_dns(au, bad)
     test_wayback(au, bad)
     test_sampled_live(au, bad)
+    test_parse_robots(au, bad)
+    test_sm_reuse(au, bad)
+    test_wk_bodies(au, bad)
+    test_sm_timeout_na(au, bad)
+    test_mhost_conf(au, bad)
     for b in bad:
         print("  FAIL", b)
     print(f"置信度/研判门禁: {len(bad)} 项失败" if bad else "置信度/研判门禁: 全部通过")
