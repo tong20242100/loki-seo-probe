@@ -19,7 +19,7 @@ ORDER BY ts_unix;          -- 134 行
   纯转引一律 weak —— 这层已经把二手观点滤掉一遍
 - 构成：original 96 / reply 38，2026-02-11 ~ 2026-08-29，合计 49,028 字
 - **语料边界**（2026-09-01 补）：tweets 库 dump 窗口 2025-07-11 11:33 ~ 2026-08-29 15:20（JST）。
-  上表 134 条是**门禁切片，不是全账号**——dump 与 lynnzc v0.4 同日起，窗内 2025-07-11 ~ 2026-02-11
+  上表 134 条是**门禁切片，不是全账号**——窗内 2025-07-11 ~ 2026-02-11
   的帖是没过门禁（core/authored/strong/is_main），不是没抓到；08-29 15:20 之后的推不在库，
   断言「库里没有」前先回源核 id。
 
@@ -534,57 +534,48 @@ PY
 | 66 | 2091353930425127142 | 2026-08-23 | original | 133 | 2093547820808896687 | 2026-08-29 | reply |
 | 67 | 2091362717907251353 | 2026-08-23 | original | 134 | 2093578005176353204 | 2026-08-29 | original |
 
-## 附录B：第三方 red flags 吸收 + provenance 轴（不推翻现有 134 判定）
+## 附录B：红旗清单（自正文 134 条口诀反推，命中即停 / 先拆）
 
-> 来源：lynnzc/loki-yan-seo-skill（非官方蒸馏，与本项目同源但独立）。仅作维度补充，
-> 不替换正文 134 条 claim。新增两维：red flags 清单 + 出处分级轴（provenance）。
+> 本节由正文口诀反推而成（「他说/边界/反例」段落里已判定的红线行为），不引外部清单；
+> 每条右侧是正文出处，可回查对应口诀与 `#n`。判定冲突时以正文为准。
 
-### B.1 Red flags（命中即停 / 先拆，28 条，逐字来自第三方 SKILL.md:240-267）
+### B.1 红旗（停）
 
-- RF01 Fake authors, AIGC author skins, decorative author boxes
-- RF02 Generic / sellable SEO·GEO Agent; “tokens spent = Effort spent”
-- RF03 Increment-free batch blogs, stitch-wash, AI Slope as growth
-- RF04 铺词 / 铺内容 / “publish more and you win”
-- RF05 Chase links, buy links to recover, custom-anchor Guest Posts, DA as a target
-- RF06 IP auto language-switch / auto-redirect
-- RF07 Separate m-site, H5 / mini-program template as the export stack, `display:none` hidden copy
-- RF08 Soft 404 (error page 200)
-- RF09 Empty mobile first screen / H1 buried / overlay on the fold
-- RF10 Cloaking, cloaking-for-crawlers / “show different versions to crawlers,” AI flooding, Link Spam
-- RF11 Cheap bulk links; chasing PR>51000 you cannot buy
-- RF12 Ghost-writing / site-reputation-abuse (third-party content on a publisher’s authority)
-- RF13 GBP / local listings with no on-site NAP (map, address, phone, schema, Contact)
-- RF14 Core content that only exists after JS; effects that cannot survive a JS-off pass
-- RF15 JS-heavy core content that chatbots do not render
-- RF16 Tracking parameters on internal links (even with canonical)
-- RF17 千人千面 / personalization vs crawler — which face does the crawler see (cloaking-adjacent)
-- RF18 Poetic / beautiful-empty H1 Google cannot parse; H1 that is not the ranking query
-- RF19 Blog-only site with no money page as AI Mode answers
-- RF20 Migration with no 1:1 301; boss “just change it”
-- RF21 Dirty domain (spam / PBN / porn-gambling history) as a start
-- RF22 Ordinary marketing not running, then GEO; popular GEO kit as the work; GEO-tracker-first
-- RF23 Pollution-GEO (make the model lean toward you; buy the answer layer)
-- RF24 Mechanical SOP; domestic-giant JD as the outline
-- RF25 Product SEO-named “XXX AI Agent” while Trends shows users do not search that
-- RF26 A Reddit thread / ChatGPT blog as high-ticket acquisition
-- RF27 GSC AI citations / Bing Total Citations written as success metrics
-- RF28 Inventing Day 0 / three reversals / “write English to fix LLM disadvantage”
+| 红旗 | 正文出处 |
+|---|---|
+| 假作者 / AIGC 作者壳 / 装饰性作者框 | 5.1 + 6.2 |
+| 通用可贩卖 SEO·GEO Agent；「token 花得多 = Effort 花得多」 | 6.2 |
+| 无增量批量博客 / 洗稿拼接 / AI slop 当增长 | 6.2 |
+| 铺词铺内容 /「多发就赢」 | 6.3 |
+| 追外链 / 买链恢复 / 定制 anchor guest post / DA 当目标 | 3.1 + 3.2 |
+| IP 自动切语言 / 自动跳转 | 7.2（cloaking 相邻，见 B.2 先拆） |
+| 独立 m 站 / H5 小程序当导出栈 / `display:none` 藏文 | 7.2 |
+| 软 404（错误页 200） | 1.4 + 7.1 |
+| Cloaking / 给爬虫看不同版本 / AI 灌页 / Link Spam | 7.2 + 1.4 |
+| 廉价批量外链（方向归 3.2，数字不写） | 3.2 |
+| Ghost-writing / site reputation abuse | 1.3 |
+| 核心内容只在 JS 后出现 / 关 JS 活不下来 | 7.2 |
+| 纯博客站、没有 money page | 7.4 + 6.3 |
+| 脏域名起步（spam / PBN / 黄赌毒） | 4.1 |
+| 常规营销没跑就上 GEO / GEO 套件当作业 | 2.1 + 2.4 |
+| 污染型 GEO（让模型偏向你 / 买答案层） | 元规则 #4 |
+| 机械 SOP / 大厂 JD 当大纲 | 6.2 non-commodity |
+| 产品自称 XXX AI Agent，Trends 显示用户不这么搜 | 6.3 |
+| 一个 Reddit 帖 / ChatGPT 博客当高客单获客 | 2.1 |
+| 编 Day 0 / 三连反转 /「写英文解决 LLM 劣势」 | 全局元规则 |
 
-### B.2 Provenance 轴（出处分级，第二维，不推翻判定）
+### B.2 先拆（语料点名但无 how-to，拆完再动手，禁止编步骤）
 
-第三方用四级标一条 claim 的证据强度。我们正文 134 条均出自 Loki 本人已标推文（= in-corpus），
-新 claim 入库时按此轴打标，避免把「他提过一次」当「铁律」。
+| 待拆项 | 处置 |
+|---|---|
+| IP 自动切语言 / 自动跳转 | 拆「跳转是站点行为还是 UA 条件输出」，后者才触 7.2 |
+| GBP / 本地列表无站内 NAP | 语料无，先核对 GBP 与站内 NAP 一致性再判 |
+| 内链带追踪参数（有 canonical 也算） | 语料无 how-to；核对参数是否区分 UA 输出（同上拆法） |
+| 千人千面 / 个性化 vs 爬虫看到哪一面 | cloaking 相邻；拆「爬虫看到的是哪一面」 |
+| GSC AI citations / Bing Total Citations 当成功指标 | 2.x；拆「指标是否映射转化」 |
 
-| 档位 | 定义 | 我们的处置 |
-|---|---|---|
-| in-corpus rule | 负载句带 (id=…) 可回查 methodology | 可直接进口诀，标 in-corpus |
-| [once] | 一次性硬律（不可能三角 / 迁移最复杂 / 空折叠会挨打 / KW Density nonsense / YMYL 绑域 / Shopify-only / HK 繁体 100% Drop） | 可用但标 [once]，不升格为默认 SOP |
-| [asserted] | “我见过 / 我测过” 无工件（无站名 / 无 GSC / 无图） | 标 [asserted]，永远写「他这么看」，不写「已验证」 |
-| no procedure in corpus | 他点名概念但不给 how-to（如 AEO/GEO 步骤） | 标 no-procedure，禁止编步骤 |
+### B.3 判定纪律
 
-### B.3 应用约定（不回溯改 134，只规范以后）
-
-1. 新 claim 进正文时，在口诀四段（他说/边界/反例/出处）的「出处」里加 provenance 档。
-2. 现有 134 条默认 in-corpus（来源已核），无需回填；若某条实为 [once]/[asserted] 已在正文边界里注明。
-3. 输出报告时：diagnosis 的每条 finding 已带 loki 编号；若引用到 [asserted] 案例，文字里保留「[asserted]」不升级。
-4. red flags（B.1）是「停 / 先拆」清单，命中即挡，不进覆盖率统计。
+1. 红旗与正文口诀冲突时，以正文为准——本节是正文的红线行为汇总，不是独立法源。
+2. 「先拆」项＝语料只点了名、没给修法（no-procedure），拆完仍无依据的按无数据写，禁止编步骤。
+3. 本节不进覆盖率统计；命中即挡，红线动作写进报告「先做 / 先停」。
