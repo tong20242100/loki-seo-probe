@@ -1,8 +1,8 @@
 # loki-seo-probe
 
-> Loki Yan SEO 口径的可验证实现：探针（客观 HTTP 事实）＋ 研判（专家口诀映射）＋ 语义门禁（回归即红）。
+> Loki Yan SEO 口径的可验证实现：探针（客观 HTTP 事实）＋ 研判（专家判定规则映射）＋ 语义门禁（回归即红）。
 >
-> **非官方蒸馏，无授权、无关联。** 本项目从 @loki_yan_seo 的公开推文蒸馏口径，未获本人授权或背书。语料是门禁切片（134 条 core×authored×strong），不是全账号；原文全文收录在 `corpus.json`（#n 与主张表同序，含 X 链接），可离线回源核对每条口诀。原文版权归原作者所有。
+> **非官方蒸馏，无授权、无关联。** 本项目从 @loki_yan_seo 的公开推文蒸馏口径，未获本人授权或背书。语料是门禁切片（134 条 core×authored×strong），不是全账号；原文全文收录在 `corpus.json`（#n 与主张表同序，含 X 链接），可离线回源核对每条判定规则。原文版权归原作者所有。
 
 这不是通用 SEO 手册。关键词密度、H1 塞目标词、外链建设、GEO 作业清单这类 commodity 建议，在本口径里是被明确顶回去的（见 SKILL.md「明确不进」）。
 
@@ -12,9 +12,9 @@
 
 | 层 | 文件 | 作用 |
 |---|---|---|
-| 口径层 | `SKILL.md` + `expert_claims.md` | 134 条专家主张：口诀、边界、反例、出处 tweet_id；碰撞表决定口诀叠加顺序 |
+| 口径层 | `SKILL.md` + `expert_claims.md` | 134 条专家主张：判定规则、边界、反例、出处 tweet_id；碰撞表决定判定规则叠加顺序 |
 | 探针层 | `scripts/audit_url.py` | 未登录 HTTP 事实采集：robots/sitemap/软404/`<main>`/m 站/Wayback，输出带置信度的 JSON。五值状态机 `na / seen / pass / warn / fail`：**没看到 ≠ 没问题** |
-| 门禁层 | `tests/confidence_gate.py` | P0–P9 十组语义断言（含变异测试验证）：口诀语义回归直接 exit 1，不靠模型阅读自觉 |
+| 门禁层 | `tests/confidence_gate.py` | P0–P9 十组语义断言（含变异测试验证）：判定规则语义回归直接 exit 1，不靠模型阅读自觉 |
 
 关键设计（都在门禁里钉着，回退必红）：
 
@@ -52,7 +52,7 @@ agent 按 SKILL.md 的输出合同（任务类型 / 探针事实 / 先做先停 
 ## 仓库结构
 
 ```
-SKILL.md                    调用规程：路由表、碰撞表、输出合同、红旗、口诀全文
+SKILL.md                    调用规程：路由表、碰撞表、输出合同、风险信号、判定规则全文
 expert_claims.md            134 条主张表（含 #n → tweet_id 映射）
 corpus.json                 134 条推文原文（#n 同序、日期、X 链接，可离线核验）
 scripts/audit_url.py        探针（592 行，纯标准库）
