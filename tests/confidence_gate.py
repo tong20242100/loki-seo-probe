@@ -99,8 +99,12 @@ def full_bundle(home=200, title="PeerCare 首页", h1_text="私董会", ld=("Org
                      "linkedin": linkedin, "about": []},
             "well_known": {"/robots.txt": {"status": 200}, "/sitemap.xml": {"status": sm},
                            "/sitemap_index.xml": {"status": 0}, "/llms.txt": {"status": ll}},
-            "sitemap": {"n": n, "prefixes": [("posts", n)] if n else []},
-            "sniffs": [], "robots": [], "origin": "https://x.com",
+            # 默认消毒：robots 非空（robots-ua 不 warn）、前缀均衡（sitemap-mix 不 warn）。
+            # 需要这两条 warn 时由测试显式覆写——此前 4 个测试各自消毒，漏一个就是假红。
+            "sitemap": {"n": n, "prefixes": ([("a", n // 2), ("b", n - n // 2)]
+                                             if n >= 2 else ([("posts", n)] if n else []))},
+            "sniffs": [], "robots": [{"ua": "*", "disallow": [], "sitemap": []}],
+            "origin": "https://x.com",
             "soft_404": {"status": 404, "bytes": 10, "suspect_soft_404": False},
             "wayback": {"ok": True, "first200": "20230101", "last200": "20260101"},
             "m_host": {"host": "m.x.com", "status": 0},
@@ -292,7 +296,6 @@ def test_probe_paths(au, bad):
 def test_soft404_na(au, bad):
     """P9a 网络失败(0)/5xx 是「没看到」，不是站点风险。"""
     b = full_bundle(home=200)
-    b["robots"] = [{"ua": "*", "disallow": [], "sitemap": []}]  # 否则 robots-ua warn(tier1) 污染 at-risk 断言
     b["soft_404"] = {"status": 0, "bytes": 0, "suspect_soft_404": False,
                      "error": "timed out"}
     fs = au.interpret(b)
@@ -330,8 +333,6 @@ def test_verdict_partial(au, bad):
 def test_mhost(au, bad):
     """P10a m-subdomain 双义分流：NXDOMAIN=pass 真阳性，超时=na。"""
     b = full_bundle(home=200)
-    b["robots"] = [{"ua": "*", "disallow": [], "sitemap": []}]  # 否则 robots-ua warn 污染 verdict 断言
-    b["sitemap"] = {"n": 100, "prefixes": [("a", 50), ("b", 50)]}  # 均衡前缀，避免 sitemap-mix warn 污染
     b["m_host"] = {"host": "m.x.com", "status": 0,
                    "error": "<urlopen error [Errno 8] nodename nor servname provided>"}
     if _st(au.interpret(b), "m-subdomain") != "pass":
@@ -348,8 +349,6 @@ def test_mhost(au, bad):
 def test_mhost_http(au, bad):
     """P10c m-host 的 HTTP 状态分流：5xx=na（同 soft-404 通则），200=warn（两套 HTML）。"""
     b = full_bundle(home=200)
-    b["robots"] = [{"ua": "*", "disallow": [], "sitemap": []}]
-    b["sitemap"] = {"n": 100, "prefixes": [("a", 50), ("b", 50)]}
     b["m_host"] = {"host": "m.x.com", "status": 502, "error": None}
     st5 = _st(au.interpret(b), "m-subdomain")
     if st5 != "na":
@@ -360,6 +359,25 @@ def test_mhost_http(au, bad):
     b["m_host"] = {"host": "m.x.com", "status": 200, "error": None}
     if _st(au.interpret(b), "m-subdomain") != "warn":
         bad.append("P10 m-host 200 应 warn（两套 HTML 风险，7.2）")
+
+
+def test_robots(au, bad):
+    """P10f robots-ua / robots.txt 双条补门禁（tier-1，此前零覆盖——robots 是
+    流量下跌场景的第一探针，这两条回退必须红）。"""
+    b = full_bundle(home=200)
+    b["well_known"]["/robots.txt"] = {"status": 200}
+    fs = au.interpret(b)
+    if _st(fs, "robots.txt") != "pass":
+        bad.append("P10 robots.txt 200 应 pass")
+    if _st(fs, "robots-ua") != "pass":
+        bad.append("P10 robots 块非空时 robots-ua 应 pass")
+    b["well_known"]["/robots.txt"] = {"status": 502}
+    if _st(au.interpret(b), "robots.txt") != "warn":
+        bad.append("P10 robots.txt 非 200 应 warn（下跌场景第一探针，回退必须红）")
+    b["well_known"]["/robots.txt"] = {"status": 200}
+    b["robots"] = []  # 探到 200 但解析出 0 个 UA 块 → warn
+    if _st(au.interpret(b), "robots-ua") != "warn":
+        bad.append("P10 robots 解析不出 UA 块应 warn（分 UA 屏蔽读不到）")
 
 
 def test_display_none(au, bad):
@@ -386,12 +404,10 @@ def test_mhost_dns(au, bad):
     """P10d NXDOMAIN 走真实 DNS，不靠 urllib 错误文本：文本随环境变（沙箱代理/本地化），
     同一站点事实会出两种结论——peercare.cn 二轮实测即被代理隧道 502 误判成 na，
     而 socket 直查该主机 errno=8 确认是 NXDOMAIN（站点事实：没有 m 站）。
-    只 patch **下一层** socket.getaddrinfo：patch 被测函数 host_resolves 本身会让它的
+    只 patch **下一层** socket.getaddrinfo：patch 被测函数 is_nxdomain 本身会让它的
     分支一行都跑不到（曾因此漏掉 gaierror→False 分支，变异 N6 静默通过）。"""
     import socket as _sk
     b = full_bundle(home=200)
-    b["robots"] = [{"ua": "*", "disallow": [], "sitemap": []}]
-    b["sitemap"] = {"n": 100, "prefixes": [("a", 50), ("b", 50)]}
     noise = "<urlopen error Tunnel connection failed: 502 Bad Gateway>"
     saved = au.socket.getaddrinfo
 
@@ -498,6 +514,7 @@ def main():
     test_mhost(au, bad)
     test_mhost_http(au, bad)
     test_display_none(au, bad)
+    test_robots(au, bad)
     test_mhost_dns(au, bad)
     test_wayback(au, bad)
     test_sampled_live(au, bad)

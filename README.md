@@ -45,7 +45,7 @@ agent 按 SKILL.md 的输出合同（任务类型 / 探针事实 / 先做先停 
 
 ## 验证声明
 
-- `tests/confidence_gate.py`：18 组门禁全绿、51 个静态断言点（P0 置信度语义 / P1 研判排序 / P4 seen-na 拆分 / P7 sitemap 变体 / P8 发现层 / P9 抖动与假 healthy / P10 m-host 双义、Wayback 倒序、抽样活样本分母、display:none 覆盖）。
+- `tests/confidence_gate.py`：20 组门禁全绿、55 个静态断言点（P0 置信度语义 / P1 研判排序 / P4 seen-na 拆分 / P7 sitemap 变体 / P8 发现层 / P9 抖动与假 healthy / P10 m-host 双义、Wayback 倒序、抽样活样本分母、display:none 与 robots 双条覆盖）。
 - 变异测试：11 个变异（含 3 个诱导性变异：源码诱饵行、只 patch 被测函数、等价变异）逐个回退，10 个 CAUGHT；剩下 1 个是等价变异（`True`/`None` 在唯一调用点同归 `na`，行为无差别）。复原后 byte-identical 复绿。
 - 实测：peercare.cn（本机到该服务器链路间歇超时 30–45s 的恶劣环境）下，`partial` 降级路径与 `insufficient` verdict 均按设计落盘。
 - 发布前二轮实测另抓出三项并已修：Wayback `last200` 取到最早第 3 条（假数据，比真实最新早 10 个月）、m-host 靠 urllib 错误文本判 NXDOMAIN 致同一站点事实随代理环境出两种结论、抽样分母把死样本计入。详见 CHANGELOG 1.0.1。

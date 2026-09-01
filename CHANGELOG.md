@@ -9,6 +9,10 @@
   **5xx 改 na**（同 soft-404 通则：代理 502 与源站 502 在 HTTP 层无从区分，warn 会往 tier-1 塞假警报，
   na 会正确触发 NEED 的 Frog 搜集项）。
 - **display:none 补门禁**（tier-1，此前是 17 条 rule 里唯一零覆盖）：warn/pass/na 三态 + at-risk 断言。
+- **robots.txt / robots-ua 补门禁**（均为 tier-1、零覆盖；robots 是下跌场景第一探针）：
+  200/非200、解析不出 UA 块回退全 CAUGHT。
+- **重构**：host_resolves 三态收敛为 is_nxdomain 双态（单消费者不留等价分支）；
+  full_bundle 工厂默认消毒（robots 非空+前缀均衡），删 4 处测试内重复消毒。
 - **test_mhost 拆分**（if 6>5 形态超标）为 test_mhost / test_mhost_http；新测试注册进 main。
 - **抽样分母只计活样本**：`sniffed=8` 里 502/超时的死样本没拿到正文，却计入原创度分母；8 个全 502 也报 pass（把代理噪声当站点事实）。改分母只算 `status==200`，全死→na，evidence 报 `live/dead` 分解让「看到几个」与「看到什么」分开读。peercare.cn 复跑实证 `sniffed=8 live=3 dead=5`——旧版会把 5 个死样本藏进分母。
 - **门禁层补 P10**：`test_mhost` / `test_mhost_dns` / `test_wayback`（倒序+dated 过滤）/ `test_sampled_live`，共 16 组 46 个静态断言点。

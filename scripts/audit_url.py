@@ -206,22 +206,24 @@ def soft404_verdict(s404):
     return "pass" if st in (404, 410) else "warn"
 
 
-def host_resolves(mh):
+def is_nxdomain(mh):
     """P10b（2026-09-01 二轮实测抓到）：NXDOMAIN 必须走真实 DNS，不能靠 urllib 的
     错误文本正则。错误文本随环境变——peercare.cn 同一主机、同一站点事实（m 子域无
     DNS 解析，socket 直查 errno=8），一次报 nodename（→pass 真阳性）、一次因沙箱代理
     隧道报 "Tunnel connection failed: 502"（文本不匹配→误判 na）。同一个站两种结论，
     正是 P9「抖动不该翻结论」的翻版。DNS 解析不受 HTTP 代理影响，才是站点事实。
-    返回 True=解析到 / False=确认 NXDOMAIN / None=解析本身没做成（当没看到）。"""
+    布尔返回：True=确认 NXDOMAIN（gaierror）；解析到/解析没做成都返 False
+    （后者按「没看到」处理，由调用方落 na——单消费者双态，不留三态等价分支）。"""
     host = (mh.get("host") or "").split("://")[-1].split("/")[0].strip()
     if not host:
-        return None
-    try:
-        return bool(socket.getaddrinfo(host, None))
-    except socket.gaierror:
         return False
+    try:
+        socket.getaddrinfo(host, None)
+        return False
+    except socket.gaierror:
+        return True
     except (OSError, UnicodeError):
-        return None
+        return False
 
 
 def mhost_verdict(mh):
@@ -241,7 +243,7 @@ def mhost_verdict(mh):
         return "pass"
     if re.search(r"nodename|gaierror|not known|Name or service", err):
         return "pass"
-    return "pass" if host_resolves(mh) is False else "na"
+    return "pass" if is_nxdomain(mh) else "na"
 
 
 def mobile_host(origin):
