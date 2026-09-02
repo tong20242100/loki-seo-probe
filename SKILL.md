@@ -1,6 +1,6 @@
 ---
 name: loki-seo
-version: 1.0.7
+version: 1.0.8
 description: >
   用 Loki Yan (@loki_yan_seo) 的口径诊断一个线上网址：先跑 audit_url.py 探针，
   再给 3–7 条贴合该站的可落地动作，并列出要从 GSC / Frog 导出的数据。
@@ -158,6 +158,17 @@ python3 scripts/audit_url.py https://example.com
 - **状态值翻译**：`na`→探针没看到（≠没问题）；`seen`→看到了材料、要你判断；`pass`/`warn`/`fail`→按规则判过（`warn`/`fail` 才要处理）。
 - **去内部溯源**：JSON 里的 `loki`/`#n`/`口诀`/`G7`/`siteFocus` 是给维护者看的，**报告正文一律不出现**；只留能落地的动作和证据数字（如 `n=444`、`posts 占 75%`）。
 - **术语首次出现翻成人话**：sitemap→网站地图文件；soft-404→错误页却返回 200 的假 404；EEAT→谷歌对「作者是否够专业可信」的要求；`<main>`→页面主内容区；focus_reading→「Google 给你的站定的类目」。
+
+### AI 闭环（agent 只读 JSON.agent）
+
+自动报告是「人话投影」，JSON 里的 `agent` 块才是机器可读合同。改站闭环时：
+
+- agent 是源、md/html 是投影：动作只算一遍（在 `attach_report` 内 `build_agent`），md/html 从 `agent.actions` 渲染；二者一旦分叉，`tests/report_gate.py` 即红。
+- AI 改站前**只读 JSON.agent**，不要只读 md——md 故意删掉 `loki`/`#n`，对不上闭环键。
+- `actions[].verify.kind` 三态是 moat：`probe`=同一命令复跑对 `rule+status`（软404/`<main>`/https/m站/display:none）；`human`=探针打不绿（About 定性、一页一词、成交页），**AI 禁止为了绿而改 sitemap 比例或堆标题**；`collect`=GSC/Frog/site:，没文件就停、不准编。
+- `reprobe.cmd` 是复测命令，`agent.reprobe.diff` 是稳定对账键；修复循环只改一项、复跑、对 `diff` 比对，na↔pass 抖动标「可能是代理抖动」不当成修复成功。
+- `may_conclude=false`（inconclusive/partial）时只报没看到，不开方。
+- 不用 MCP 假接 GSC/Frog；不把 md 再喂给模型当 prompt；不给探针加 LLM（口径已在规则里，加层只会编 query/DR）。
 
 1. **任务类型**
 2. **探针事实（含置信度）**：`status` / `run_confidence` / `sitemap_follow` 一行打头，然后只列 fail/warn 和会影响开方的 `na`。数字全部来自 JSON。`partial` / `inconclusive` 时先把 `core_missing[]` 和 `na` 项列出来，明说「以下是没看到，不是没问题」。**`seen` 不是缺数据，不许列进「没看到」。**

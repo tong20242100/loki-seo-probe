@@ -2,7 +2,7 @@
 
 [![语义门禁](https://github.com/tong20242100/loki-seo-probe/actions/workflows/gate.yml/badge.svg)](https://github.com/tong20242100/loki-seo-probe/actions/workflows/gate.yml)
 
-**当前版本 1.0.7（2026-09-02）· MIT · 语料版权另见 [`NOTICE.md`](NOTICE.md)**
+**当前版本 1.0.8（2026-09-02）· MIT · 语料版权另见 [`NOTICE.md`](NOTICE.md)**
 
 > Loki Yan SEO 口径的可验证实现：探针（客观 HTTP 事实）＋ 研判（专家判定规则映射）＋ 语义门禁（回归即红）。
 >
@@ -53,6 +53,7 @@ cp -r loki-seo-probe ~/.workbuddy/skills/loki-seo      # ~/.claude/skills/、~/.
 
 ```bash
 python3 scripts/audit_url.py https://example.com   # 输出 JSON，并自动生成 <域名>_audit_report.md / .html 人话版报告
+python3 scripts/audit_url.py https://example.com --diff prev.json   # 只打印 findings/sitemap 变化，复测对账（na↔pass 抖动会标「可能是代理抖动」）
 python3 tests/confidence_gate.py                   # 语义门禁，应全绿
 python3 tests/report_gate.py                       # 报告可读性门禁，应全绿
 python3 tests/fetch_retry_gate.py                  # 抓取重试门禁（502/超时退避重试），应全绿
@@ -60,8 +61,10 @@ python3 tests/fetch_retry_gate.py                  # 抓取重试门禁（502/�
 
 所有外网抓取统一走 `fetch()`，对 502/503/504 与网络超时自动退避重试（最多 3 次，间隔 1s→2s→4s），单次代理/隧道抖动不再把 sitemap/robots 打成 `na`；站点真 502 则如实报 502（上游仍按「没看到」处理，不假装探测失败）。
 
+**AI 闭环**：探针输出的 JSON 里带一个 `agent` 块（`schema: loki-seo-agent/v1`），是机器可读合同——动作只算一遍（在 `attach_report` 里 `build_agent`），md/html 只是它的投影。AI 改站前只读 `JSON.agent`，不要只读 md；`agent.actions[].verify.kind` 三态（probe/human/collect）定死「哪些能复测验收、哪些探针打不绿、哪些没文件就停」。详见 SKILL.md「AI 闭环」一节。
+
 agent 按 SKILL.md 的输出合同（任务类型 / 探针事实 / 先做先停 / 一页一词表 / 证据等级 / 下一步搜集）出报告。
-人肉使用也成立：跑探针，对着 JSON 里的 `status` / `run_confidence` / `diagnosis` 读。
+人肉使用也成立：跑探针，对着 JSON 里的 `status` / `run_confidence` / `diagnosis` / `agent` 读。
 
 ## 语料与版权
 
@@ -101,9 +104,9 @@ agent 按 SKILL.md 的输出合同（任务类型 / 探针事实 / 先做先停 
 SKILL.md                    调用规程：路由表、碰撞表、输出合同、风险信号、判定规则全文
 expert_claims.md            134 条主张表（含 #n → tweet_id 映射）
 corpus.json                 134 条推文原文（#n 同序、日期、X 链接，可离线核验）
-scripts/audit_url.py        探针（纯标准库，运行后自动生成人话 md/html 报告；fetch 含 502/超时退避重试）
+scripts/audit_url.py        探针（纯标准库，运行后自动生成人话 md/html 报告；含 build_agent 产出 JSON.agent 机器合同 + --diff 复测对账；fetch 含 502/超时退避重试）
 tests/confidence_gate.py    语义门禁（692 行，compile 源码，绕过 pyc 缓存）
-tests/report_gate.py        报告可读性门禁（钉死渲染层去黑话 / verdict 人话 / 四列表）
+tests/report_gate.py        报告可读性门禁（钉死渲染层去黑话 / verdict 人话 / 四列表 / JSON.agent↔md 投影一致）
 tests/fetch_retry_gate.py   抓取重试门禁（patch 下一层 urlopen，断言真实重试行为）
 NOTICE.md                   语料归属、非官方声明、下架方式
 ```

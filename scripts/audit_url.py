@@ -47,6 +47,7 @@
                                    **不进 gaps（不是缺数据）、不进 priority（不是风险）**
                     evidence_partial  证据不全（status=partial）时为 true
 """
+import argparse
 import json
 import re
 import sys
@@ -657,7 +658,162 @@ def attach_report(bundle):
                                "n_fail": 0, "n_warn": 0, "evidence_partial": True}
     else:
         bundle["diagnosis"] = diagnose(bundle["findings"], partial=conf["partial"])
+    bundle["agent"] = build_agent(bundle)
     return bundle
+
+
+# ===== AI 原生层：动作只算一遍，JSON.agent 为源，md/html 仅投影 =====
+# 四个 kind：do / stop / collect / ask。verify.kind 三态是闭环的 moat：
+#   probe   = 同一命令复跑，对 rule+status（软404/<main>/https/m站/display:none）
+#   human   = 探针打不绿（About 定性、一页一词、成交页），AI 禁止为绿而改 sitemap 比例/堆标题
+#   collect = GSC/Frog/site:，没文件就停，不准编
+# 注意：agent 块允许保留 loki/#n（AI 闭环要的键）；md/html 投影时才去黑话。
+
+def _slug(s):
+    return re.sub(r"[^a-z0-9]+", "-", (s or "").lower()).strip("-") or "x"
+
+
+def _stop_loki(where):
+    return {"外链预算": "3.1", "AI 结果 / 清单": "2.1 2.3",
+            "分数和处罚": "7.3 1.1"}.get(where, "")
+
+
+def _accept_text(a):
+    v = a.get("verify") or {}
+    k = v.get("kind")
+    if k == "probe":
+        return f"重跑探针看 {a.get('rule','')} 项是否转 pass"
+    if k == "human":
+        return v.get("accept", "")
+    if k == "none":
+        return v.get("note", "")
+    return ""
+
+
+def _agent_do_sitemap(bundle):
+    out = [
+        {"id": "do-about", "kind": "do", "rule": "sitemap-mix", "loki": "7.4",
+         "who": "内容", "where": "关于我们 + 首页",
+         "change": "写清谁在做、实际交付什么、凭据；首页口号不能代替定位",
+         "verify": {"kind": "human", "reprobe_can_pass": False,
+                    "accept": "外人能否一句话说出你是什么机构"}},
+        {"id": "do-convert-blog", "kind": "do", "rule": "sitemap-mix", "loki": "7.4",
+         "who": "内容/运营", "where": "成交页 vs 博客",
+         "change": "博客目录多不等于该删博客；先标转化发生在哪几页，再用同一面板看谁在掉",
+         "verify": {"kind": "human", "reprobe_can_pass": False,
+                    "accept": "效果报告：成交页掉、博客涨 ≠ 站好了"}},
+    ]
+    if _looks_blog_only(bundle):
+        out.append({"id": "do-money-page", "kind": "do", "rule": "sitemap-mix",
+            "loki": "7.4", "who": "内容", "where": "成交页",
+            "change": "地图里几乎只有博客/新闻目录，看不到成交或产品目录。先确认有没有能成交的页；没有就先停铺博客。",
+            "verify": {"kind": "human", "reprobe_can_pass": False,
+                       "accept": "标出转化发生在哪几页"}})
+    return out
+
+
+def _agent_do(bundle):
+    out = []
+    for item in (bundle.get("diagnosis") or {}).get("priority") or []:
+        rule = item.get("rule", "")
+        if rule == "sitemap-mix":
+            out += _agent_do_sitemap(bundle)
+            continue
+        f = _finding(bundle, rule)
+        spec = ACTIONS.get(rule)
+        if spec and f and f.get("status") in ("fail", "warn"):
+            out.append({"id": f"do-{rule}", "kind": "do", "rule": rule,
+                "loki": f.get("loki", ""), "who": spec[0], "where": spec[1],
+                "change": spec[2],
+                "verify": {"kind": "probe", "reprobe_can_pass": True,
+                           "expect": {"rule": rule, "status": "pass"}}})
+    out.append({"id": "do-onepage", "kind": "do", "rule": "title-h1", "loki": "6.3",
+        "who": "内容", "where": "首页 + 抽样内页",
+        "change": "每页只认一个要排的词；说不清就写「这页说不出自己排什么」，不要把内部行话当搜索词",
+        "verify": {"kind": "human", "reprobe_can_pass": False,
+                   "accept": "填下面的一页一词表，另标出成交发生在哪几页"}})
+    if not any((x or {}).get("status") == "fail" for x in bundle.get("findings") or []):
+        out.append({"id": "do-after-tech", "kind": "do", "rule": None, "loki": "7.4",
+            "who": "内容", "where": "改完技术之后",
+            "change": "技术地基过了，决定性因素是每一页的微观形态，不是再堆标题。改一项，用同一面板复测。",
+            "verify": {"kind": "human", "reprobe_can_pass": False,
+                       "accept": "不要同时改十处还问是不是外链的问题"}})
+    return out
+
+
+def _agent_stop(bundle):
+    out = [{"id": "stop-h1", "kind": "stop", "loki": "6.3", "who": "先停",
+            "where": "标题和主标题",
+            "change": "不要把主标题改成目标词，不要做关键词密度榜",
+            "verify": {"kind": "none", "note": "一页一词表能说清即可"}}]
+    for stop in ALWAYS_STOP:
+        out.append({"id": f"stop-{_slug(stop[1])}", "kind": "stop",
+            "loki": _stop_loki(stop[1]), "who": stop[0], "where": stop[1],
+            "change": stop[2], "verify": {"kind": "none", "note": stop[3]}})
+    ll = _finding(bundle, "llms.txt")
+    if ll and ll.get("status") == "seen" and "HTTP 200" in (ll.get("evidence") or ""):
+        out.append({"id": "stop-llms", "kind": "stop", "loki": "2.3", "who": "先停",
+            "where": "给 AI 看的说明文件",
+            "change": "本站已经有这份文件。谷歌 AI 结果不一定读。有文件 ≠ 做完 AI 收录。",
+            "verify": {"kind": "none", "note": "不要再加社区帖/问答/公关作业包"}})
+    return out
+
+
+def _agent_collect(bundle):
+    out = []
+    for item in bundle.get("next_collect") or []:
+        out.append({"id": f"collect-{item.get('trigger','x')}", "kind": "collect",
+            "loki": item.get("loki", ""), "where": "搜集",
+            "need": item.get("need", ""), "read_as": item.get("read_as", ""),
+            "verify": {"kind": "collect"}})
+    host = urlparse(bundle.get("origin") or "").netloc or "该域名"
+    if host.startswith("www."):
+        host = host[4:]
+    out.append({"id": "collect-site", "kind": "collect", "loki": "", "where": "搜集",
+        "need": f"必须补一步：搜索 site:{host} 看收录结构。自动报告做不了搜索，这一步要你来做。不要把「已收录总数」当健康分。",
+        "read_as": "搜索引擎结果", "verify": {"kind": "collect"}})
+    return out
+
+
+def _agent_ask():
+    return [
+        {"id": "ask-convert", "kind": "ask", "who": "你",
+         "question": "转化发生在哪几页（探针看不到成交）"},
+        {"id": "ask-query", "kind": "ask", "who": "你",
+         "question": "每页要排的 query（探针不发明关键词）"},
+    ]
+
+
+def _agent_actions(bundle):
+    return (_agent_do(bundle) + _agent_stop(bundle)
+            + _agent_collect(bundle) + _agent_ask())
+
+
+def build_agent(bundle):
+    origin = bundle.get("origin", "")
+    host = urlparse(origin).netloc or origin
+    disp = host[4:] if host.startswith("www.") else host
+    may = not (bundle.get("inconclusive")
+               or bundle.get("status") == "inconclusive")
+    cannot = [{"id": f"no-{i+1:02d}", "forbid": _plain(c)}
+              for i, c in enumerate(bundle.get("cannot") or [])]
+    return {
+        "schema": "loki-seo-agent/v1",
+        "source_of_truth": "this_json",
+        "human_projection": f"{disp}_audit_report.md",
+        "may_conclude": may,
+        "reprobe": {
+            "cmd": ["python3", "scripts/audit_url.py", origin + "/"],
+            "diff": ["findings.rule", "findings.status",
+                     "sitemap.n", "sitemap.prefixes"],
+        },
+        "actions": _agent_actions(bundle),
+        "cannot": cannot,
+        "ask_human": [
+            "转化发生在哪几页（探针看不到成交）",
+            "每页要排的 query（探针不发明关键词）",
+        ],
+    }
 
 
 def audit(url):
@@ -843,14 +999,6 @@ def _opening(data, host, vh):
     return f"探针结论：{vh}"
 
 
-def _add_row(rows, seen, who, where, change, check):
-    key = (where, change[:24])
-    if key in seen or len(rows) >= 12:
-        return
-    seen.add(key)
-    rows.append([len(rows) + 1, who, where, change, check])
-
-
 def _finding(data, rule):
     return next((f for f in data.get("findings") or [] if f["rule"] == rule), None)
 
@@ -864,51 +1012,34 @@ def _looks_blog_only(data):
     return not any(any(k in n for k in money) for n in names)
 
 
-def _add_from_rule(rows, seen, rule, data=None):
-    if rule == "sitemap-mix":
-        _add_row(rows, seen, "内容", "关于我们 + 首页",
-                 "写清谁在做、实际交付什么、凭据；首页口号不能代替定位",
-                 "外人能否一句话说出你是什么机构")
-        _add_row(rows, seen, "内容/运营", "成交页 vs 博客",
-                 "博客目录多不等于该删博客；先标转化发生在哪几页，再用同一面板看谁在掉",
-                 "效果报告：成交页掉、博客涨 ≠ 站好了")
-        if data is not None and _looks_blog_only(data):
-            _add_row(rows, seen, "内容", "成交页",
-                     "地图里几乎只有博客/新闻目录，看不到成交或产品目录。"
-                     "先确认有没有能成交的页；没有就先停铺博客。",
-                     "标出转化发生在哪几页")
-        return
-    spec = ACTIONS.get(rule)
-    if spec:
-        _add_row(rows, seen, *spec)
-
-
 def _do_rows(data):
+    ag = (data.get("agent") or {}).get("actions") or []
     rows, seen = [], set()
-    for item in (data.get("diagnosis") or {}).get("priority") or []:
-        _add_from_rule(rows, seen, item.get("rule", ""), data)
-    _add_row(rows, seen, "内容", "首页 + 抽样内页",
-             "每页只认一个要排的词；说不清就写「这页说不出自己排什么」，不要把内部行话当搜索词",
-             "填下面的一页一词表，另标出成交发生在哪几页")
-    if not any(f.get("status") == "fail" for f in data.get("findings") or []):
-        _add_row(rows, seen, "内容", "改完技术之后",
-                 "技术地基过了，决定性因素是每一页的微观形态，不是再堆标题。改一项，用同一面板复测。",
-                 "不要同时改十处还问是不是外链的问题")
+    for a in ag:
+        if a.get("kind") != "do":
+            continue
+        key = (a.get("where", ""), a.get("change", "")[:24])
+        if key in seen or len(rows) >= 12:
+            continue
+        seen.add(key)
+        rows.append([len(rows) + 1, a.get("who", "内容"),
+                     a.get("where", ""), a.get("change", ""), _accept_text(a)])
     return rows
 
 
 def _stop_rows(data):
+    ag = (data.get("agent") or {}).get("actions") or []
     rows, seen = [], set()
-    _add_row(rows, seen, "先停", "标题和主标题",
-             "不要把主标题改成目标词，不要做关键词密度榜",
-             "一页一词表能说清即可")
-    for stop in ALWAYS_STOP:
-        _add_row(rows, seen, *stop)
-    ll = _finding(data, "llms.txt")
-    if ll and ll.get("status") == "seen" and "HTTP 200" in (ll.get("evidence") or ""):
-        _add_row(rows, seen, "先停", "给 AI 看的说明文件",
-                 "本站已经有这份文件。谷歌 AI 结果不一定读。有文件 ≠ 做完 AI 收录。",
-                 "不要再加社区帖/问答/公关作业包")
+    for a in ag:
+        if a.get("kind") != "stop":
+            continue
+        note = (a.get("verify") or {}).get("note", "")
+        key = (a.get("where", ""), a.get("change", "")[:24])
+        if key in seen or len(rows) >= 12:
+            continue
+        seen.add(key)
+        rows.append([len(rows) + 1, a.get("who", "先停"),
+                     a.get("where", ""), a.get("change", ""), note])
     return rows
 
 
@@ -1093,11 +1224,39 @@ def render_html(data):
             f"<body>{''.join(p)}</body></html>")
 
 
+def diff_json(prev, now):
+    out = []
+    pf = {f["rule"]: f.get("status") for f in prev.get("findings", [])}
+    nf = {f["rule"]: f.get("status") for f in now.get("findings", [])}
+    for rule in sorted(set(pf) | set(nf)):
+        ps, ns = pf.get(rule), nf.get(rule)
+        if ps != ns:
+            jitter = (ps, ns) in (("na", "pass"), ("pass", "na"))
+            tag = " [可能是代理抖动,非真实修复]" if jitter else ""
+            out.append(f"{rule}: {ps} -> {ns}{tag}")
+    pn = (prev.get("sitemap") or {}).get("n")
+    nn = (now.get("sitemap") or {}).get("n")
+    if pn != nn:
+        out.append(f"sitemap.n: {pn} -> {nn}")
+    pp = (prev.get("sitemap") or {}).get("prefixes")
+    np_ = (now.get("sitemap") or {}).get("prefixes")
+    if pp != np_:
+        out.append(f"sitemap.prefixes: {pp} -> {np_}")
+    return out
+
+
 def main():
-    if len(sys.argv) < 2 or not sys.argv[1].strip():
-        print("用法: python3 audit_url.py https://example.com", file=sys.stderr)
-        return 2
-    data = audit(sys.argv[1].strip())
+    ap = argparse.ArgumentParser(description="未登录 SEO 探针：输出 JSON + 人话 md/html 报告")
+    ap.add_argument("url")
+    ap.add_argument("--diff", metavar="PREV_JSON",
+                    help="对比上一次探针 JSON，只打印 findings/sitemap 的变化（复测对账）")
+    args = ap.parse_args()
+    data = audit(args.url.strip())
+    if args.diff:
+        prev = json.load(open(args.diff, encoding="utf-8"))
+        for line in diff_json(prev, data):
+            print(line)
+        return 0
     json.dump(data, sys.stdout, ensure_ascii=False, indent=2)
     print()
     host = urlparse(data.get("origin", "")).netloc or "site"

@@ -101,6 +101,42 @@ NEED = (("探针没看到", "md", "na 状态未翻译（应出现「探针没看
 GENERIC = ("探针未抽样", "待你填", "降低单一前缀", "结构更均衡", "增加业务页")
 
 
+def _table_rows(md, header):
+    in_sec, n = False, 0
+    for ln in md.splitlines():
+        if ln.startswith("## "):
+            in_sec = ln.startswith(header)
+            continue
+        if in_sec and ln.strip().startswith("|"):
+            if "谁改" in ln or set(ln) <= set("|- "):
+                continue
+            n += 1
+    return n
+
+
+def check_agent(au, d, bad):
+    """JSON.agent 是源、md 是其投影：动作只算一遍，二者必须逐条一致。
+
+    也钉死 agent 块的结构契约：schema / kind 白名单 / cannot 为 {id,forbid}。
+    AI 闭环只读这块，不读 md；md 只是给人看的投影，二者一旦分叉即红。
+    """
+    a = d.get("agent") or au.build_agent(d)
+    md = au.render_markdown(d)
+    kinds = {x.get("kind") for x in a.get("actions", [])}
+    if (a.get("schema") != "loki-seo-agent/v1"
+            or not kinds <= {"do", "stop", "collect", "ask"}
+            or not all(isinstance(x, dict) and "id" in x and "forbid" in x
+                       for x in a.get("cannot", []))):
+        bad.append("agent 结构契约破坏：schema / kind 白名单 / cannot{id,forbid} 之一不符")
+    unproj = [x["id"] for x in a["actions"]
+              if x["kind"] in ("do", "stop") and x.get("change", "") not in md]
+    bad += [f"agent 动作未投影到 md: {i}" for i in unproj]
+    do_n = sum(1 for x in a["actions"] if x["kind"] == "do")
+    stop_n = sum(1 for x in a["actions"] if x["kind"] == "stop")
+    if _table_rows(md, "## 二、先做") != do_n or _table_rows(md, "## 三、先停") != stop_n:
+        bad.append("先做/先停表行数与 agent do/stop 数不一致")
+
+
 def check(md, html, bad, au=None):
     blob = md + "\n" + html
     bad += [f"黑话/英文 verdict 泄漏：{b}" for b in LEAK + VERDICT_EN if b in blob]
@@ -114,6 +150,7 @@ def check(md, html, bad, au=None):
         return
     d = sample()
     d["sitemap"] = {"n": 444, "prefixes": [("posts", 333), ("cases", 65)]}
+    d["agent"] = au.build_agent(d)
     if "成交或产品目录" in au.render_markdown(d):
         bad.append("有成交目录时不应点亮纯博客缺成交页")
 
@@ -124,10 +161,12 @@ def main():
         return 1
     au = load()
     d = sample()
+    d["agent"] = au.build_agent(d)
     md = au.render_markdown(d)
     html = au.render_html(d)
     bad = []
     check(md, html, bad, au)
+    check_agent(au, d, bad)
     for b in bad:
         print("  FAIL", b)
     print(f"报告可读性门禁: {len(bad)} 项失败" if bad else "报告可读性门禁: 全部通过")

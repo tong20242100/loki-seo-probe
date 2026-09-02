@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.8 — 2026-09-02（AI 原生：JSON.agent 机器合同 + --diff 复测）
+
+报告只给人看、AI 若读 md 就丢掉闭环键（loki/#n/cannot）。本版把动作算一遍进 `JSON.agent`，md/html 仅投影，判定语义不动。
+
+- 新增 `build_agent()`：在 `attach_report` 里产出 `agent` 块（`schema: loki-seo-agent/v1`），含 `actions`（do/stop/collect/ask 四态）、`cannot`（`{id,forbid}`）、`ask_human`、`reprobe.cmd`+`reprobe.diff`、`may_conclude`。
+- `verify.kind` 三态是闭环 moat：`probe`=同命令复跑对 rule+status（软404/`<main>`/https/m站/display:none）；`human`=探针打不绿（About 定性、一页一词、成交页），AI 禁止为绿而改 sitemap 比例或堆标题；`collect`=GSC/Frog/site:，没文件就停不准编。
+- `_do_rows`/`_stop_rows` 改为从 `agent.actions` 投影（动作只算一遍），md 与机器合同逐条一致，分叉即红（report_gate 新增一致性断言）。
+- `--diff prev.json`：只打印 findings rule/status + sitemap.n/prefixes 的变化，na↔pass 抖动标「可能是代理抖动，非真实修复」，不当成修复成功。
+- 判定层未动；门禁全绿：confidence 24 组 + report_gate（含 agent 一致性）+ fetch_retry_gate + shape_check（4 py 超标 0）。
+
 ## 1.0.7 — 2026-09-02（报告写入 per-run 禁区、site: 提醒、按数据触发先停）
 
 上一版报告「长得像口径、深度停在探针天花板」。本版把已经在 JSON 里的东西写进给人看的报告，判定语义不动。
