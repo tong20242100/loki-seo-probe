@@ -2,7 +2,7 @@
 
 [![语义门禁](https://github.com/tong20242100/loki-seo-probe/actions/workflows/gate.yml/badge.svg)](https://github.com/tong20242100/loki-seo-probe/actions/workflows/gate.yml)
 
-**当前版本 1.0.5（2026-09-02）· MIT · 语料版权另见 [`NOTICE.md`](NOTICE.md)**
+**当前版本 1.0.6（2026-09-02）· MIT · 语料版权另见 [`NOTICE.md`](NOTICE.md)**
 
 > Loki Yan SEO 口径的可验证实现：探针（客观 HTTP 事实）＋ 研判（专家判定规则映射）＋ 语义门禁（回归即红）。
 >

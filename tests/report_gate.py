@@ -71,6 +71,9 @@ def sample():
              "loki": "6.2 6.1", "trigger": "sampled-originality",
              "read_as": "探针只 sniff 抽样页，全站原创度要 GSC 或人工看"},
         ],
+        "title_text": "友伴 PeerCare｜口号", "h1_text": "为学校做可验证的教育交付",
+        "sniffs": [{"url": "https://x.com/a/event", "status": 200, "title": "一场活动"}],
+        "html": {"linkedin": 0},
     }
 
 
@@ -81,7 +84,16 @@ NEED = (("探针没看到", "md", "na 状态未翻译（应出现「探针没看
         ("博客文章", "md", "术语未首翻：posts 应翻成「博客文章」"),
         ("| 谁改 |", "md", "markdown 缺少四列动作表（| 谁改 |）"),
         ("<table", "html", "html 缺少四列动作表"),
-        ("谁改", "html", "html 动作表缺表头"))
+        ("谁改", "html", "html 动作表缺表头"),
+        ("先停", "md", "技术全绿时仍须有先停（别追外链 / 别上作业清单 / 别充分数）"),
+        ("这页说不出自己排什么", "md", "一页一词说不清须照写，不许「待你填」"),
+        ("证据等级", "md", "缺证据等级"),
+        ("实验室打分", "md", "缺「不要用实验室打分充真实体验」"),
+        ("不是硬伤", "md", "栏目集中须标定性不是硬伤"),
+        ("/a/event", "md", "有抽样却没进一页一词表"),
+        ("测不到也要注意", "md", "缺测不到也要说的注意项"))
+
+GENERIC = ("探针未抽样", "待你填", "降低单一前缀", "结构更均衡", "增加业务页")
 
 
 def check(md, html, bad):
@@ -92,8 +104,11 @@ def check(md, html, bad):
     for tok, where, msg in NEED:
         if tok not in src_of[where]:
             bad.append(msg)
+    for g in GENERIC:
+        if g in md or g in html:
+            bad.append(f"通用体检腔调：{g}")
     lines = [l for l in md.splitlines() if l.strip()]
-    if not md.startswith("# 网站 SEO 体检报告") or len(lines) < 2 or "技术" not in lines[1]:
+    if not md.startswith("# 站点诊断") or len(lines) < 2 or "技术" not in lines[1]:
         bad.append("开头缺少大白话总结")
 
 

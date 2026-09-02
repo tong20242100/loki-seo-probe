@@ -1,6 +1,6 @@
 ---
 name: loki-seo
-version: 1.0.5
+version: 1.0.6
 description: >
   用 Loki Yan (@loki_yan_seo) 的口径诊断一个线上网址：先跑 audit_url.py 探针，
   再给 3–7 条贴合该站的可落地动作，并列出要从 GSC / Frog 导出的数据。
@@ -147,7 +147,9 @@ python3 scripts/audit_url.py https://example.com
 
 报告是给人看的，不是给维护者看的。以下红线命中即改：
 
-现在 `audit_url.py` 运行后**自动**生成人话版报告：`<域名>_audit_report.md` 与 `<域名>_audit_report.html`（默认随 JSON 一起落盘）。agent 不必再手动把 JSON 翻译成散文；若用户要更贴合的动作建议，可在此合同基础上补充。上述红线同样约束自动报告（回归由 `tests/report_gate.py` 钉死）。
+现在 `audit_url.py` 运行后**自动**生成人话版报告：`<域名>_audit_report.md` 与 `<域名>_audit_report.html`（默认随 JSON 一起落盘）。agent 不必再手动把 JSON 翻译成散文。上述红线同样约束自动报告（回归由 `tests/report_gate.py` 钉死）。
+
+技术项全 pass 时，自动报告**仍须**给出 3–7 条先做/先停，其中必须包含测不到的刹车（别追外链、别上 GEO 作业清单、别用实验室分数充体验、别把主标题改成密度榜）。**不得只剩一条「把栏目比例做均衡」**——那是通用体检，不是本口径。一页一词表必须写入首页 + 抽样内页；说不清就写「这页说不出自己排什么」，禁止「待你填 / 探针未抽样」这种空表。
 
 - **第一句必须是一段大白话（≤120 字）**：站现在什么状态 + 最该做的一件事。不懂 SEO 的人读完要知道「我现在该干啥」，不是看到一串术语。
 - **verdict 四值翻成人话再写，不准直接贴英文**：`critical`→有必须修的硬伤；`at-risk`→有高风险项先处理；`needs-focus`→技术没硬伤，但 Google 可能搞不清你是干嘛的——去把「关于我们」/首页定位写清楚（**不是「站有问题」**）；`insufficient`→这次看的不够、下不了结论，先补数据。

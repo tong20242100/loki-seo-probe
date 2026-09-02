@@ -725,33 +725,42 @@ RULE_HUMAN = {
     "jsonld-types": "结构化数据类型", "title-h1": "标题与 H1 文案",
     "robots-ua": "robots 分用户屏蔽", "https": "HTTPS",
 }
-# 每条 rule 的标准动作（谁改/改哪页/改成什么/怎么验收）。诊断层只给 rule+evidence，
-# 「改成什么」固化为 skill 能力，不再靠 agent 临场想。
+# 探针 fail/warn 的动作。sitemap-mix 不走「把栏目比例做均衡」——那是通用体检。
 ACTIONS = {
     "robots-ua": ("站长/技术", "/robots.txt",
-        "逐 User-agent 读全文 Disallow，核对有没有误屏蔽重要目录（尤其分 UA 的屏蔽）",
-        "重跑探针看 robots-ua 是否从 warn 转 pass"),
-    "sitemap-mix": ("内容/运营", "全站内容规划",
-        "降低单一前缀（如博客）占比，增加业务页，让站点结构更均衡",
-        "重跑探针看集中度（share）是否下降"),
-    "semantic main": ("前端", "首页及内页",
-        "把主内容放进 <main> 标签，确保爬虫能识别页面主体",
-        "重跑探针看 semantic main 是否 pass"),
+        "逐 User-agent 读全文屏蔽，核对有没有误挡重要目录",
+        "重跑探针看该项是否转 pass"),
+    "semantic main": ("前端", "首页",
+        "把主内容放进页面主内容区标签，确保爬虫认的是主体而不是侧栏页脚",
+        "重跑探针；整站结构另用整站爬"),
     "display:none": ("前端", "含隐藏文本的页面",
-        "移除 inline display:none 的隐藏文本（可能被判 cloaking/作弊）",
-        "重跑探针看 display:none 是否 pass"),
-    "m-subdomain": ("前端/架构", "m. 子域或主域",
-        "避免两套 HTML（移动端优先用响应式，而非独立 m 站）",
-        "重跑探针看 m-subdomain 状态"),
+        "去掉用隐藏样式藏起来的正文（一份 HTML 只出现一次）",
+        "重跑探针看该项是否转 pass"),
+    "m-subdomain": ("前端/架构", "移动端",
+        "不要做独立移动站两套页面；用同一份 HTML",
+        "重跑探针看移动端子域状态"),
     "soft-404 probe": ("后端", "错误页",
-        "404 页面返回正确状态码 404，不要把错误页当成 200 正常页返回",
-        "重跑探针看 soft-404 是否 pass"),
-    "https": ("运维", "全站", "启用 HTTPS 并做 http→https 的 301 跳转",
-        "重跑探针看 https 是否 pass"),
-    "sampled-originality": ("内容", "转载/洗稿页",
-        "移除转载、拼接、AI 生成无增量内容，改为原创可验证交付",
-        "重跑探针看原创度"),
+        "错误页返回真正的 404/410，不要 200 下一张「找不到」皮",
+        "重跑探针看软 404 项"),
+    "https": ("运维", "全站", "启用 HTTPS，http 跳到 https",
+        "重跑探针看 HTTPS 项"),
+    "sampled-originality": ("内容", "转载/拼接页",
+        "拿掉无增量转载和拼接，改成可核对的原创交付",
+        "重跑抽样；全站还要看效果报告里谁在掉"),
 }
+
+# 测不到也要说的刹车。技术全 pass 时报告仍靠这几条，不许只剩「结构均衡」。
+ALWAYS_STOP = (
+    ("先停", "外链预算",
+     "不要把权重分数当排名原因去追，更不要买链恢复",
+     "没有外链工具就写无数据，禁止编数字"),
+    ("先停", "AI 结果 / 清单",
+     "不要做社区帖/问答/公关/结构化数据作业包；说明文件有了，谷歌 AI 结果也不一定读",
+     "做 AI 引用就是做普通收录，没有另一套作业"),
+    ("先停", "分数和处罚",
+     "不要用实验室打分充真实用户体验；没有后台截图禁止说被处罚",
+     "体验看官方近 28 天真实用户数据"),
+)
 
 
 # 各 rule 的人话事实文案（warn / na / pass）。seen 不在 facts 里，不列。
@@ -782,8 +791,9 @@ def _factual_evidence(f):
         if st == "na":
             return "探针没拿到网站地图的页面分布（可能超时或被挡），无法判断结构"
         if st == "warn" and n:
-            return (f"约 {foc.get('share', 0):.0%} 的页面是「{_term(foc.get('top'))}」类"
-                    f"（共 {n} 页），结构偏单一，业务页占比偏低")
+            return (f"约 {foc.get('share', 0):.0%} 的地址落在「{_term(foc.get('top'))}」目录"
+                    f"（共 {n} 个，含子目录首页/列表，不是篇数）。"
+                    "这是搜索可能怎么给站点定性，不是叫你去把比例做均衡。")
         return "页面结构分布均衡，无明显单类独大"
     t = EVID.get(rule)
     if t:
@@ -820,30 +830,54 @@ def _opening(data, host, vh):
         f = (mix or {}).get("focus") or {}
         n, share = f.get("n") or 0, f.get("share") or 0
         if n:
-            return ("技术面没查到硬伤，但搜索引擎可能搞不清你是干嘛的——"
-                    f"你 {n} 个页面里约 {share:.0%} 是博客文章，业务页偏少。"
-                    "最该做的一件事：把首页和「关于我们」写清楚「你是做什么的机构」，别只像个博客。")
-        return ("技术面没查到硬伤，但站点定位还需要写清楚——"
-                "把首页和「关于我们」明确写出来「你是做什么的、服务谁」，别只堆内容。")
+            return ("技术面没硬伤。搜索可能按「博客站」来认识你——"
+                    f"{n} 个地址里约 {share:.0%} 落在博客目录。"
+                    "最该做的一件事：把「关于我们」和首页写成谁、做什么、凭据；"
+                    "不要靠再发一批文章解决问题。")
+        return ("技术面没硬伤。最该做的一件事：把「关于我们」和首页写成谁、做什么、凭据，"
+                "每页只认一个要排的词。")
     if dx.get("verdict") in ("at-risk", "critical"):
-        return ("你的站有需要先处理的高风险项，不解决可能影响收录。"
-                "先看「最该做的几件事」里标红的几条。")
+        return "有必须先处理的硬伤或高风险项。先看「先做 / 先停」表，不要同时改十处。"
     if dx.get("verdict") == "insufficient":
-        return "这次探针看的不够全，下不了结论。先按「下一步搜集」把数据补齐，再研判。"
+        return "这次看的不够全，下不了结论。先补「下一步搜集」，再研判。"
     return f"探针结论：{vh}"
 
 
+def _add_row(rows, seen, who, where, change, check):
+    key = (where, change[:20])
+    if key in seen or len(rows) >= 7:
+        return
+    seen.add(key)
+    rows.append([len(rows) + 1, who, where, change, check])
+
+
+def _add_from_rule(rows, seen, rule):
+    if rule == "sitemap-mix":
+        _add_row(rows, seen, "内容", "关于我们 + 首页",
+                 "写清谁在做、实际交付什么、凭据；首页口号不能代替定位",
+                 "外人能否一句话说出你是什么机构")
+        _add_row(rows, seen, "内容/运营", "成交页 vs 博客",
+                 "博客目录多不等于该删博客；先标转化发生在哪几页，再用同一面板看谁在掉",
+                 "效果报告：成交页掉、博客涨 ≠ 站好了")
+        return
+    spec = ACTIONS.get(rule)
+    if spec:
+        _add_row(rows, seen, *spec)
+
+
 def _priority_rows(data):
+    rows, seen = [], set()
     dx = data.get("diagnosis") or {}
-    pri = dx.get("priority") or []
-    if not pri:
-        return [["—", "（无 fail/warn，技术面相对健康）", "见下方一页一词表与下一步搜集", "—"]]
-    rows = []
-    for i, item in enumerate(pri, 1):
-        rule = item.get("rule", "")
-        who, where, change, check = ACTIONS.get(
-            rule, ("你", "对应页面", "按该规则处理", "重跑探针看状态"))
-        rows.append([i, who, where, change, check])
+    for item in dx.get("priority") or []:
+        _add_from_rule(rows, seen, item.get("rule", ""))
+    _add_row(rows, seen, "内容", "首页 + 抽样内页",
+             "每页只认一个要排的词；说不清就写「这页说不出自己排什么」，不要把内部行话当搜索词",
+             "填下面的一页一词表，另标出成交发生在哪几页")
+    _add_row(rows, seen, "先停", "标题和主标题",
+             "不要把主标题改成目标词，不要做关键词密度榜",
+             "一页一词表能说清即可")
+    for stop in ALWAYS_STOP:
+        _add_row(rows, seen, *stop)
     return rows
 
 
@@ -853,27 +887,66 @@ def _facts_rows(data):
     shown = [f for f in fs if f["status"] in ("fail", "warn")
              or (f["status"] == "na" and f["rule"] in na_show)]
     if not shown:
-        return ["（探针未标记 fail/warn；na 项见下方 gaps）"]
+        return ["（没有 fail/warn。不等于站没问题——见先停与证据等级。）"]
     out = []
     for f in shown:
         rule = RULE_HUMAN.get(f["rule"], f["rule"])
-        st = STATUS_HUMAN.get(f["status"], f["status"])
+        st = ("定性（不是硬伤）" if f["rule"] == "sitemap-mix" and f["status"] == "warn"
+              else STATUS_HUMAN.get(f["status"], f["status"]))
         out.append(f"{rule}：{st}。{_factual_evidence(f)}")
     return out
 
 
+def _home_th(data):
+    title = (data.get("title_text") or "").strip()
+    h1 = (data.get("h1_text") or "").strip()
+    if title or h1:
+        return title, h1
+    th = next((f for f in data.get("findings") or [] if f["rule"] == "title-h1"), None)
+    ev = (th or {}).get("evidence") or ""
+    m, mh = re.search(r"title='([^']*)'", ev), re.search(r"h1='([^']*)'", ev)
+    return (m.group(1) if m else ""), (mh.group(1) if mh else "").strip()
+
+
 def _onepage_rows(data):
-    fs = data.get("findings", [])
-    th = next((f for f in fs if f["rule"] == "title-h1"), None)
-    title = h1 = ""
-    if th:
-        ev = th.get("evidence", "")
-        m = re.search(r"title='([^']*)'", ev)
-        mh = re.search(r"h1='([^']*)'", ev)
-        title = m.group(1) if m else ""
-        h1 = mh.group(1) if mh else ""
-    return [["首页", "（待你填：这页要排的核心词）", f"标题：{title}；H1：{h1}"],
-            ["内页", "探针未抽样，不在此列", "全站一词表需 GSC 效果页或人工看"]]
+    unclear = "这页说不出自己排什么"
+    title, h1 = _home_th(data)
+    rows = [["首页", unclear, f"标题：{title}；H1：{h1}"]]
+    live = 0
+    for s in data.get("sniffs") or []:
+        if s.get("status") != 200:
+            continue
+        live += 1
+        path = urlparse(s.get("url") or "").path or (s.get("url") or "")
+        rows.append([path, unclear, f"标题：{(s.get('title') or '')[:80]}"])
+    if not live:
+        rows.append(["内页", "这次没抽到活样本", "全站一词表需效果报告或人工看"])
+    rows.append(["转化页", "（你填：成交发生在哪几页）", "探针看不到成交"])
+    return rows
+
+
+def _grade_lines(data):
+    return [
+        "探针事实：下面「看到的事实」里的数字来自这次抓取，不是估计。",
+        "判定可执行：定位靠关于我们/首页一致性；每页一个词；技术过了看每页微观，不堆标题。",
+        "判定需降级：权重分数是结果不是原因，不能拿来解释这个站为什么掉。",
+        "无数据：有没有手动处罚、真实用户体验、外链质量、品牌搜索量——没有你的导出就不写。",
+        "开放问题：转化发生在哪几页（你填）。",
+    ]
+
+
+def _watch_lines(data):
+    out = [
+        "整站软 404 和脚本渲染差要整站爬才能看，这次只打了首页和一个假地址。",
+        "体验看官方近 28 天真实用户数据，不要用实验室打分充数。",
+        "结构化数据写全了也不等于能排。给 AI 看的说明文件有了，谷歌 AI 结果也不一定读。",
+    ]
+    html = data.get("html") or {}
+    linkedin = html.get("linkedin")
+    if linkedin == 0:
+        out.append("首页没有作者职业档案外链。只有钱/医/法这类要被追问专业度的站才需要互链；"
+                   "教育交付或工具站不要当成缺陷。")
+    return out
 
 
 def _next_rows(data):
@@ -899,53 +972,53 @@ def _html_table(rows, headers):
 
 def render_markdown(data):
     host, verdict, vh, conf, follow, status = _report_meta(data)
-    L = [f"# 网站 SEO 体检报告：{host}", "",
+    L = [f"# 站点诊断报告：{host}", "",
          _opening(data, host, vh), "",
          "## 一、现在的状态",
          f"- 探针结论（status）：**{status}**",
          f"- 数据置信度（run_confidence）：{conf}",
          f"- 网站地图跟进（sitemap_follow）：{follow}",
-         f"- 总体研判（verdict）：**{vh}**", "",
-         "## 二、最该做的几件事（先做 / 先停）"]
+         f"- 总体研判：**{vh}**", "",
+         "## 二、先做 / 先停"]
     L.extend(_md_table(_priority_rows(data), ["#", "谁改", "改哪一页", "改成什么", "怎么验收"]))
-    L.append("")
-    L.append("## 三、看到的事实（不含内部黑话）")
-    for r in _facts_rows(data):
-        L.append(f"- {r}")
-    L.append("")
-    L.append("## 四、一页一词表（这页要排什么词）")
+    L += ["", "## 三、看到的事实"]
+    L += [f"- {r}" for r in _facts_rows(data)]
+    L += ["", "## 四、一页一词表"]
     L.extend(_md_table(_onepage_rows(data), ["页面", "要排的 query", "依据（标题/H1）"]))
-    L.append("")
-    L.append("## 五、下一步搜集（探针核不到的，需你提供数据）")
-    for r in _next_rows(data):
-        L.append(f"- {r}")
-    L.append("")
-    L.append("## 六、决策仍在你")
-    L.append("> 以上动作与判断的最终决定权在你。探针只给客观事实与建议。")
+    L += ["", "## 五、证据等级"]
+    L += [f"- {r}" for r in _grade_lines(data)]
+    L += ["", "## 六、下一步搜集"]
+    L += [f"- {r}" for r in _next_rows(data)]
+    L += ["", "## 七、测不到也要注意"]
+    L += [f"- {r}" for r in _watch_lines(data)]
+    L += ["", "## 八、决策仍在你",
+          "> 最终决定权在你。没有导出的数字一律标无数据，禁止编造。"]
     return "\n".join(L)
+
+
+def _ul(items):
+    return "<ul>" + "".join(f"<li>{_esc(x)}</li>" for x in items) + "</ul>"
 
 
 def render_html(data):
     host, verdict, vh, conf, follow, status = _report_meta(data)
-    p = [f"<h1>网站 SEO 体检报告：{_esc(host)}</h1>",
+    p = [f"<h1>站点诊断报告：{_esc(host)}</h1>",
          f"<p class='open'>{_esc(_opening(data, host, vh))}</p>",
          "<h2>一、现在的状态</h2><ul>",
          f"<li>探针结论（status）：<b>{_esc(status)}</b></li>",
          f"<li>数据置信度：{_esc(conf)}</li>",
          f"<li>网站地图跟进：{_esc(follow)}</li>",
          f"<li>总体研判：<b>{_esc(vh)}</b></li></ul>",
-         "<h2>二、最该做的几件事</h2>",
+         "<h2>二、先做 / 先停</h2>",
          _html_table(_priority_rows(data), ["#", "谁改", "改哪一页", "改成什么", "怎么验收"]),
-         "<h2>三、看到的事实</h2><ul>"]
-    for r in _facts_rows(data):
-        p.append(f"<li>{_esc(r)}</li>")
-    p.append("</ul><h2>四、一页一词表</h2>")
-    p.append(_html_table(_onepage_rows(data), ["页面", "要排的 query", "依据"]))
-    p.append("<h2>五、下一步搜集</h2><ul>")
-    for r in _next_rows(data):
-        p.append(f"<li>{_esc(r)}</li>")
-    p.append("</ul><h2>六、决策仍在你</h2>"
-             "<p>以上动作与判断的最终决定权在你。探针只给客观事实与建议。</p>")
+         "<h2>三、看到的事实</h2>", _ul(_facts_rows(data)),
+         "<h2>四、一页一词表</h2>",
+         _html_table(_onepage_rows(data), ["页面", "要排的 query", "依据"]),
+         "<h2>五、证据等级</h2>", _ul(_grade_lines(data)),
+         "<h2>六、下一步搜集</h2>", _ul(_next_rows(data)),
+         "<h2>七、测不到也要注意</h2>", _ul(_watch_lines(data)),
+         "<h2>八、决策仍在你</h2>",
+         "<p>最终决定权在你。没有导出的数字一律标无数据，禁止编造。</p>"]
     style = ("<style>body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:820px;"
              "margin:2rem auto;padding:0 1rem;color:#1a1a1a;line-height:1.6}"
              "h1{color:#0a7d4f}h2{color:#0a7d4f;border-bottom:1px solid #ddd;padding-bottom:.3rem}"
@@ -954,7 +1027,7 @@ def render_html(data):
              "th,td{border:1px solid #ddd;padding:.5rem;text-align:left}th{background:#f3f9f4}"
              "ul{margin:.5rem 0}li{margin:.3rem 0}</style>")
     return (f"<!doctype html><html lang='zh'><head><meta charset='utf-8'>"
-            f"<title>SEO 体检：{_esc(host)}</title>{style}</head>"
+            f"<title>站点诊断：{_esc(host)}</title>{style}</head>"
             f"<body>{''.join(p)}</body></html>")
 
 
@@ -966,6 +1039,8 @@ def main():
     json.dump(data, sys.stdout, ensure_ascii=False, indent=2)
     print()
     host = urlparse(data.get("origin", "")).netloc or "site"
+    if host.startswith("www."):
+        host = host[4:]
     md_path, html_path = f"{host}_audit_report.md", f"{host}_audit_report.html"
     try:
         Path(md_path).write_text(render_markdown(data), encoding="utf-8")
