@@ -115,11 +115,17 @@ cp -r loki-seo-probe ~/.workbuddy/skills/loki-seo   # ~/.claude/skills/、~/.gro
 
 每层都能被程序验证，改坏即红：
 
-| 层 | 文件 | 负责什么 |
-|---|---|---|
-| 🔬 判断标准体系 | `SKILL.md` + `expert_claims.md` + `corpus.json` | 134 条判定规则（判定条件/适用边界/反例/推文出处 `#n`），碰撞时按五档优先级取舍 |
-| 🧭 事实采集 | `scripts/audit_url.py` | 零登录公开抓取：`robots/sitemap/llms.txt/软404/<main>/m站/Wayback/抽样原创度`，带可信度与降级状态机，自动落盘 `md/html` |
-| 🚧 防回归门禁 | `tests/*_gate.py` | 三道门禁 + 形态检查，改坏即报错 |
+### 🔬 判断标准体系
+`SKILL.md` · `expert_claims.md` · `corpus.json`  
+134 条判定规则，含适用边界与出处，碰撞时按五档优先级取舍。
+
+### 🧭 事实采集
+`scripts/audit_url.py`  
+零登录公开抓取 `robots` / `sitemap` / `软404` / `<main>` / `m站` / `Wayback` / 抽样原创度，带可信度与降级状态机，自动落盘 `md/html`。
+
+### 🚧 防回归门禁
+`tests/*_gate.py` · `shape_check.py`  
+三道门禁 + 形态检查，改坏即报错。
 
 ---
 
@@ -155,17 +161,28 @@ cp -r loki-seo-probe ~/.workbuddy/skills/loki-seo   # ~/.claude/skills/、~/.gro
 
 ## 常见问题（只答工具，不答口径）
 
-**报告落在哪？会污染仓库吗？** 同目录 `*_audit_report.{json,md,html}`，已在 `.gitignore`，不入库。需归档自行 `cp`。
+口径相关（`needs-focus` / `llms.txt` / `LinkedIn` / `partial` 含义）见 `SKILL.md`。
 
-**要什么环境？离线能跑吗？** `Python 3` 标准库即可，需联网抓目标站；`CI` 用 `3.13`，`import` 期不触网。
+### 报告落在哪？会污染仓库吗？
+同目录生成 `*_audit_report.{json,md,html}`，已在 `.gitignore`，不入库。需归档自行 `cp`。
 
-**抓取被 `WAF`/代理拦？** 先 `pip install curl_cffi` 再跑（`impersonate=chrome`），缺失自动回退 `urllib`；两路径在门禁均覆盖。仍失败看 `stderr` 的 `core_missing`。
+### 要什么环境？离线能跑吗？
+`Python 3` 标准库即可，需联网抓目标站；`CI` 用 `3.13`，`import` 期不触网。
 
-**如何对比改动是否生效？** 用 `--diff`：`python3 scripts/audit_url.py https://example.com --diff prev.json`，只对 `findings/status` 与 `sitemap` 打 `diff`，`na↔pass` 抖动会标注。
+### 抓取被 `WAF` / 代理拦？
+先 `pip install curl_cffi` 再跑（`impersonate=chrome`），缺失自动回退 `urllib`；两路径在门禁均覆盖。仍失败看 `stderr` 的 `core_missing`。
 
-**`md/html` 与 `json` 不一致？** 不应发生，若出现请提 `issue` 并附 `json`。
+### 如何对比改动是否生效？
+用 `--diff`：
 
-口径相关（`needs-focus/llms.txt/LinkedIn/partial` 含义）见 `SKILL.md`，不在此赘述。
+```bash
+python3 scripts/audit_url.py https://example.com --diff prev.json
+```
+
+只对 `findings/status` 与 `sitemap` 打 `diff`，`na↔pass` 抖动会标注。
+
+### `md/html` 与 `json` 不一致？
+不应发生，若出现请提 `issue` 并附 `json`。
 
 ---
 
