@@ -1,6 +1,6 @@
 ---
 name: loki-seo
-version: 1.0.13
+version: 1.0.14
 description: >
   用 Loki Yan (@loki_yan_seo) 的口径诊断一个线上网址：先跑 audit_url.py 探针，
   再给 3–7 条贴合该站的可落地动作，并列出要从 GSC / Frog 导出的数据。
@@ -175,7 +175,8 @@ python3 scripts/audit_url.py https://example.com
 3. **先做 / 先停（3–7 条）**：`diagnosis` 是**排序草稿，不是结论**——
    - `verdict`：`critical` 有 fail / `at-risk` 有技术阻断或信任红线 / `needs-focus` 只剩定性或常识类 warn / `insufficient` partial 且无 fail/warn（看到的少，勿读成站没问题）。`needs-focus` **不是**「有问题」，是「技术面没查到阻断，下一刀砍定性 / 内容」。
    - `focus_reading`（如「站点可能被当成 posts 站」）是 **7.4 定性，不是风险**，不要写成 must-fix。
-   - `priority[]` 每条必须改写成四列：**谁改 / 改哪一页 / 改成什么 / 怎么验收**（再跑探针，或 GSC 哪一屏）。只复述 `rule` 名不算开方。
+   - `priority[]` 每条必须改写：**先做**四列 **谁改 / 改哪一页 / 改成什么 / 怎么验收**（再跑同一条命令，或 GSC 哪一屏）。只复述 `rule` 名不算开方。
+   - **先停**表不复用先做的列名，四列是 **# / 别碰哪块 / 别做什么 / 边界在哪**。先停里既没有「谁改」也没有「改成什么」，套先做的列名会读不通。
    - `gaps[]` 是缺数据（`na`），单列，**不混进「先做」**。
    - `evidence_partial=true` 时整份 `verdict` / `priority` 是暂定的：先把 `core_missing[]`
      和 `gaps[]` 摆出来，再给暂定结论，并写明「补上哪份数据就能定下来」。

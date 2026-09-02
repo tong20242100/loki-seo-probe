@@ -18,6 +18,7 @@
 用法: python3 tests/report_gate.py
 """
 import os
+import re
 import sys
 import types
 from pathlib import Path
@@ -91,6 +92,7 @@ NEED = (("这次没检测到", "md", "na 状态未翻译（应出现「这次没
         ("PageSpeed Insights", "md", "缺「不要用 PageSpeed Insights 分数充真实体验」"),
         ("不是技术故障", "md", "栏目集中须标定性不是硬伤"),
         ("/a/event", "md", "有抽样却没进一页一词表"),
+        ("| # | 别碰哪块 |", "md", "先停表须用自己的表头，不能沿用「谁改/改成什么」"),
         ("逐项核查结果", "md", "缺「逐项核查结果」章节"),
         ("需要你手动处理", "md", "cannot[] 没改写成「需要你手动处理」"),
         ("site:", "md", "缺 site: 收录结构这一步"),
@@ -101,15 +103,25 @@ GENERIC = ("探针未抽样", "待你填", "降低单一前缀", "结构更均�
 
 
 def _table_rows(md, header):
-    in_sec, n = False, 0
+    """数某节表格的数据行。
+
+    跳表头不能靠「谁改」这类显示字符串：先停表换成自己的表头后，
+    那种写法会把表头算成数据行（行数永远对不上）。改为按结构跳：
+    每节遇到的第一行非空表格行即表头。
+    """
+    in_sec, n, head = False, 0, False
     for ln in md.splitlines():
         if ln.startswith("## "):
-            in_sec = ln.startswith(header)
+            in_sec, head = ln.startswith(header), False
             continue
-        if in_sec and ln.strip().startswith("|"):
-            if "谁改" in ln or set(ln) <= set("|- "):
-                continue
-            n += 1
+        if not (in_sec and ln.strip().startswith("|")):
+            continue
+        if set(ln) <= set("|- "):
+            continue
+        if not head:
+            head = True
+            continue
+        n += 1
     return n
 
 
@@ -141,6 +153,43 @@ def check_agent(au, d, bad):
         bad.append("agent.cannot 缺少 site: 缺口项：消重后 site: 必须仍在 cannot 单源保留")
     if a.get("conclude") != "full" or a.get("may_conclude") is not True:
         bad.append("ok 样本 conclude 应为 full 且 may_conclude=true")
+
+
+def check_facts_dup(au, bad):
+    """facts 行是「规则名：结论。证据」。规则名里解释过一次的术语，证据里不许再解释一遍。
+
+    曾出现「软 404（错误页却返回 200）：检测到硬伤，必须修。存在软 404（错误页却返回 200）」，
+    同一句里把同一个括号念两遍。这里按结构查重复，不按固定字符串查。
+    """
+    d = sample()
+    for r in ("soft-404 probe", "https", "display:none", "m-subdomain", "h1"):
+        d["findings"].append({"rule": r, "status": "fail", "evidence": "", "loki": "常识"})
+        d["diagnosis"]["priority"].append({"rule": r, "status": "fail", "loki": "常识", "why": ""})
+    d["diagnosis"]["verdict"] = "critical"
+    d["agent"] = au.build_agent(d)
+    md = au.render_markdown(d)
+    for ln in md.splitlines():
+        if not ln.startswith("- "):
+            continue
+        for m in re.finditer(r"（([^（）]{2,24})）", ln):
+            if ln.count(m.group(1)) > 1:
+                bad.append(f"证据句重复了规则名里的解释：{m.group(1)}")
+
+
+def check_reading(au, bad):
+    """读法句不能硬编码「技术没硬伤」——critical 报告里这句话会自相矛盾。"""
+    c = sample()
+    c["findings"].append({"rule": "https", "status": "fail", "evidence": "无跳转", "loki": "常识"})
+    c["diagnosis"]["priority"].insert(0, {"rule": "https", "status": "fail",
+                                          "loki": "常识", "why": "无跳转"})
+    c["diagnosis"]["verdict"] = "critical"
+    c["diagnosis"]["n_fail"] = 1
+    c["agent"] = au.build_agent(c)
+    md = au.render_markdown(c)
+    if "技术没硬伤" in md:
+        bad.append("critical 报告仍在说「技术没硬伤」，读法句须按 verdict 分流")
+    if "先按「先做」修完" not in md:
+        bad.append("critical 报告未给出「先按先做修完」的读法")
 
 
 def check_conclude(au, bad):
@@ -189,6 +238,8 @@ def main():
     bad = []
     check(md, html, bad, au)
     check_agent(au, d, bad)
+    check_reading(au, bad)
+    check_facts_dup(au, bad)
     check_conclude(au, bad)
     for b in bad:
         print("  FAIL", b)

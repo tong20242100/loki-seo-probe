@@ -730,8 +730,9 @@ def _accept_text(a):
     v = a.get("verify") or {}
     k = v.get("kind")
     if k == "probe":
-        name = RULE_HUMAN.get(a.get("rule"), "这项")
-        return f"再用同一条检测命令跑一遍，看「{name}」是否变为通过"
+        # 不嵌规则名：先做表常有六七个探针项，每行都挂一句 60 字长句会淹掉表格，
+        # 而「改哪一页 + 改成什么」已经点明是哪一项。
+        return "改完再跑一次这条命令，看这一行是否转为通过"
     if k == "human":
         return v.get("accept", "")
     if k == "none":
@@ -951,36 +952,35 @@ RULE_HUMAN = {
     "wayback": "Wayback 历史存档", "m-subdomain": "移动端 m. 子域",
     "sitemap-mix": "网站地图内的页面结构", "sampled-originality": "抽样页原创度",
     "jsonld-types": "结构化数据类型", "title-h1": "标题与 H1 文案",
-    "robots-ua": "robots 分用户屏蔽", "https": "HTTPS",
+    "robots-ua": "robots 里按搜索引擎分别写的屏蔽规则", "https": "HTTPS（加密地址）",
 }
+# 两张动作表的表头。先停表不复用先做的表头：那里既没有「谁改」也没有「改成什么」。
+HDR_DO = ["#", "谁改", "改哪一页", "改成什么", "怎么验收"]
+HDR_STOP = ["#", "别碰哪块", "别做什么", "边界在哪"]
 # 渲染层翻译：已移至 build_agent / CANNOT / ALWAYS_STOP，数据模型本身即人话
 # 探针 fail/warn 的动作。sitemap-mix 不走「把栏目比例做均衡」——那是通用体检。
+# 只留 who / where / change 三元组。这里曾并存第四元素（验收文案，写了
+# 「重跑探针看该项是否转 pass」）却从未被读取——验收那列实际由 _accept_text
+# 统一生成，第四元素是死数据，删掉以免下一个人照着它改错地方。
 ACTIONS = {
-    "robots-ua": ("站长/技术", "/robots.txt",
-        "逐 User-agent 读全文屏蔽，核对有没有误挡重要目录",
-        "重跑探针看该项是否转 pass"),
-    "semantic main": ("前端", "首页",
-        "把主内容放进页面主内容区标签，确保爬虫认的是主体而不是侧栏页脚",
-        "重跑探针；整站结构另用整站爬"),
-    "display:none": ("前端", "含隐藏文本的页面",
-        "去掉用隐藏样式藏起来的正文（一份 HTML 只出现一次）",
-        "重跑探针看该项是否转 pass"),
-    "m-subdomain": ("前端/架构", "移动端",
-        "不要做独立移动站两套页面；用同一份 HTML",
-        "重跑探针看移动端子域状态"),
-    "soft-404 probe": ("后端", "错误页",
-        "错误页返回真正的 404/410，不要 200 下一张「找不到」皮",
-        "重跑探针看软 404 项"),
-    "https": ("运维", "全站", "启用 HTTPS，http 跳到 https",
-        "重跑探针看 HTTPS 项"),
-    "sampled-originality": ("内容", "转载/拼接页",
-        "拿掉无增量转载和拼接，改成可核对的原创交付",
-        "重跑抽样；全站还要看效果报告里谁在掉"),
+    "robots-ua": ("管网站的人", "/robots.txt 这份文件",
+        "把这份文件从头读一遍，看有没有把重要目录误挡在搜索引擎外面"),
+    "semantic main": ("做网站前端的人", "首页",
+        "把正文放进页面主内容区标签，让搜索引擎认的是正文而不是侧栏页脚"),
+    "display:none": ("做网站前端的人", "有隐藏文字的页面",
+        "去掉用隐藏样式藏起来的正文（同一页只留一处正文）"),
+    "m-subdomain": ("做网站前端的人", "手机端",
+        "不要另做一套手机站页面；手机和电脑共用同一份网页"),
+    "soft-404 probe": ("做网站后台的人", "「找不到」页面",
+        "页面真的找不到时，就让它返回「找不到」这个状态，不要正常打开却显示找不到"),
+    "https": ("管服务器的人", "全站", "启用 HTTPS，让 http 开头的网址自动跳到 https"),
+    "sampled-originality": ("内容", "整段照搬或拼接出来的页面",
+        "拿掉没有增量的转载和拼接，换成可核对的原创内容"),
 }
 
 # 测不到也要说的刹车。技术全 pass 时报告仍靠这几条，不许只剩「结构均衡」。
 ALWAYS_STOP = (
-    ("先别做", "买外链的钱",
+    ("先别做", "买外链这件事",
      "不要把 DA/DR 这类第三方打分当排名原因去追，更不要花钱买外链来恢复排名",
      "没有外链工具就写无数据，禁止编数字"),
     ("先别做", "AI 搜索结果",
@@ -993,18 +993,20 @@ ALWAYS_STOP = (
 
 
 # 各 rule 的人话事实文案（warn / na / pass）。seen 不在 facts 里，不列。
+# 证据句不再重复规则名里的括号解释：facts 行的格式是「规则名：结论。证据」，
+# 规则名已经解释过一次的术语（如「错误页却返回 200」），证据里就不许再解释一遍。
 EVID = {
-    "robots-ua": ("robots 读到了，但分用户（User-agent）的屏蔽规则没读到全文，可能误屏蔽了重要目录",
-                  "没读到 robots 的分用户屏蔽规则全文", "已读到 robots 全文分用户屏蔽规则"),
-    "semantic main": ("首页主内容区 <main> 缺失或结构不对", "首页主内容区没抓到", "首页主内容区正常"),
-    "display:none": ("发现用 display:none 隐藏的文本，可能被判定作弊", "首页隐藏文本没抓到", "未发现隐藏文本"),
-    "soft-404 probe": ("存在软 404（错误页却返回 200），会浪费抓取预算", "软 404 探针没拿到结果", "未发现软 404"),
-    "m-subdomain": ("存在独立 m. 移动子域且可能是两套 HTML，有重复内容风险", "移动子域没抓到", "未发现移动端两套 HTML 风险"),
-    "https": ("站点未全站启用 HTTPS", "HTTPS 状态没抓到", "已启用 HTTPS"),
-    "sampled-originality": ("抽样页里发现转载 / 洗稿内容", "未抽到内页，无法判断原创度", "抽样页未见明显转载"),
-    "sitemap": ("网站地图存在异常", "探针没拿到网站地图（可能超时或被代理挡），无法判断有没有", "网站地图正常"),
-    "h1": ("H1 标题数量异常（应为 1 个）", "首页 H1 没抓到", "H1 标题正常"),
-    "title-h1": ("标题与 H1 文案有问题", "标题 / H1 文案没抓到", "标题 / H1 文案正常"),
+    "robots-ua": ("这份文件读到了，但里面针对某些搜索引擎单独写的那几段没读到全文，可能把重要目录误挡在了外面",
+                  "这一项没抓到结果", "已读到全文，没有误挡"),
+    "semantic main": ("首页缺了这个标签，或者放的位置不对", "这一项没抓到结果", "首页主内容区正常"),
+    "display:none": ("页面里有用隐藏样式藏起来的文字，搜索引擎可能认为你在耍花样", "这一项没抓到结果", "没有发现藏起来的文字"),
+    "soft-404 probe": ("有页面写着「找不到」，地址却返回正常。搜索引擎会反复来抓这些其实不存在的页面，白占它花在你站上的时间", "这一项没抓到结果", "没有发现这类页面"),
+    "m-subdomain": ("手机站另开了一个 m. 开头的地址，内容可能和电脑版是两回事，搜索引擎会当成两个站", "这一项没抓到结果", "没有发现手机电脑两套页面"),
+    "https": ("网址开头没有统一用 https", "这一项没抓到结果", "已启用 HTTPS"),
+    "sampled-originality": ("抽查到的页面里有整段照搬或改几个字的搬运内容", "没抽到内页，无法判断原创度", "抽查到的页面没发现搬运"),
+    "sitemap": ("这份文件读到了，但里面的内容有问题", "这次没拿到网站地图（可能超时或被挡），说不清有没有", "网站地图正常"),
+    "h1": ("一页只该有一个主标题，这个页面不是", "这一项没抓到结果", "主标题正常"),
+    "title-h1": ("标题和主标题的写法有问题", "这一项没抓到结果", "标题和主标题正常"),
 }
 
 
@@ -1110,8 +1112,7 @@ def _stop_rows(data):
         if key in seen or len(rows) >= 12:
             continue
         seen.add(key)
-        rows.append([len(rows) + 1, a.get("who", "先别做"),
-                     a.get("where", ""), a.get("change", ""), note])
+        rows.append([len(rows) + 1, a.get("where", ""), a.get("change", ""), note])
     return rows
 
 
@@ -1220,7 +1221,7 @@ def _cannot_todo(data):
     out = []
     for c in items:
         task = c.get("task", "").replace("site:域名", "site:" + host)
-        line = "待办（你做）：" + task
+        line = task
         if c.get("why"):
             line += " —— " + c["why"]
         out.append(line)
@@ -1233,7 +1234,7 @@ def _cannot_confirm(data):
         return []
     out = []
     for c in items:
-        line = "需你确认：" + c.get("task", "")
+        line = c.get("task", "")
         if c.get("why"):
             line += " —— " + c["why"]
         out.append(line)
@@ -1266,20 +1267,27 @@ def _html_table(rows, headers):
     return f"<table><thead><tr>{th}</tr></thead><tbody>{body}</tbody></table>"
 
 
+def _reading_line(data):
+    """报告第一屏的读法提示。硬编码成「技术没硬伤」会在 critical 报告里自相矛盾。"""
+    v = (data.get("diagnosis") or {}).get("verdict", "")
+    if v in ("critical", "at-risk"):
+        return "读法：没写出来的数字不是漏了，是没抓到就不编。有硬伤就先按「先做」修完，别的先放一放。"
+    return "读法：没写出来的数字不是漏了，是没抓到就不编。技术没硬伤时，先看「先停」。"
+
+
 def render_markdown(data):
     host, verdict, vh, conf, follow, status = _report_meta(data)
-    hd = ["#", "谁改", "改哪一页", "改成什么", "怎么验收"]
     L = [f"# 站点诊断报告：{host}", "", _opening(data, host, vh), "",
          "## 一、现在的状态",
          f"- 这次查全了吗：**{RUN_HUMAN.get(status, status)}**",
          f"- 数据可信度：{conf}（1.0 = 该查的都查到了；越低只说明这次看到的越少，不是站越差）",
          f"- 网站地图：**{FOLLOW_HUMAN.get(follow, follow)}**",
          f"- 总体判断：**{vh}**",
-         "- 读法：没写出来的数字不是漏了，是没抓到就不编。技术没硬伤时，先看「先停」。",
+         f"- {_reading_line(data)}",
          "", "## 二、先做"]
-    L.extend(_md_table(_do_rows(data), hd))
+    L.extend(_md_table(_do_rows(data), HDR_DO))
     L += ["", "## 三、先停"]
-    L.extend(_md_table(_stop_rows(data), hd))
+    L.extend(_md_table(_stop_rows(data), HDR_STOP))
     L += ["", "## 四、检测发现的问题"]
     L += [f"- {r}" for r in _facts_rows(data)]
     L += ["", "## 五、每页要排哪个词",
@@ -1304,7 +1312,7 @@ def render_markdown(data):
     L += ["", "## 九、还需要补充的数据"]
     L += [f"- {r}" for r in _next_rows(data)]
     L += ["", "## 十、最终决定权在你",
-          "> 做不做由你定。能做的已经写在「先做」和「先停」里了。没有后台数据的数字一律标无数据。"]
+          "> 做不做由你定。该做的写在「先做」，别碰的写在「先停」。没有后台数据的数字一律标无数据。"]
     return "\n".join(L)
 
 
@@ -1314,7 +1322,6 @@ def _ul(items):
 
 def render_html(data):
     host, verdict, vh, conf, follow, status = _report_meta(data)
-    hd = ["#", "谁改", "改哪一页", "改成什么", "怎么验收"]
     p = [f"<h1>站点诊断报告：{_esc(host)}</h1>",
          f"<p class='open'>{_esc(_opening(data, host, vh))}</p>",
          "<h2>一、现在的状态</h2><ul>",
@@ -1323,8 +1330,8 @@ def render_html(data):
          f"<li>网站地图：<b>{_esc(FOLLOW_HUMAN.get(follow, follow))}</b></li>",
          f"<li>总体判断：<b>{_esc(vh)}</b></li>",
          "<li>读法：没写出来的数字不是漏了，是没抓到就不编。技术没硬伤时，先看「先停」。</li></ul>",
-         "<h2>二、先做</h2>", _html_table(_do_rows(data), hd),
-         "<h2>三、先停</h2>", _html_table(_stop_rows(data), hd),
+         "<h2>二、先做</h2>", _html_table(_do_rows(data), HDR_DO),
+         "<h2>三、先停</h2>", _html_table(_stop_rows(data), HDR_STOP),
          "<h2>四、检测发现的问题</h2>", _ul(_facts_rows(data)),
          "<h2>五、每页要排哪个词</h2>",
          "<p>每个页面只盯一个搜索词。下面是检测到的页面，「搜索词」列留给你填——检测工具不知道你的业务目标，不替你发明关键词。</p>",
