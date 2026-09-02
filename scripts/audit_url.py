@@ -491,14 +491,32 @@ def sniff_samples(mix):
     return out
 
 
+# 探针核不到、必须由用户亲自处理/确认的项。
+# mode: "todo"=待办任务（用户去拉/查）；"confirm"=需用户自己确认（探针看不到该状态）。
+# task: 用户要做什么；why: 为什么探针不能代做（不写成「禁止编」式防御腔）。
+# forbid: 给 AI 闭环的机器指令（不要替用户伪造该项结论）。
 CANNOT = [
-    "GSC Field CWV（7.3）要 Search Console 或 cruxvis，禁止编 PSI 分数充 Field Data",
-    "Manual Action vs Deindex（1.1）要 GSC 处罚报告",
-    "品牌搜索量 vs 外链（3.3）无搜索量接口",
-    "外链质量/DR（3.1-3.2）无 Ahrefs，禁止编造",
-    "作者履历真伪（5.1）只能看见有没有 LinkedIn 链接",
-    "site: 收录结构要搜索引擎结果，脚本后必须再 web_search site:域名",
-    "整站软 404/JS 渲染差要 Screaming Frog（#116 他本人工具优先）",
+    {"mode": "todo", "task": "拉 Search Console 或 cruxvis（origin+all，28 天 LCP/CLS/INP）看真实 Field CWV",
+     "loki": "7.3", "why": "探针没有 PSI/Lighthouse 分数，不能替你填 Field Data",
+     "forbid": "不要编 PSI/Lighthouse 分数充当 Field CWV"},
+    {"mode": "confirm", "task": "确认是 Manual Action 还是 Deindex，并给 GSC 处罚报告",
+     "loki": "1.1", "why": "两种修法完全不同，探针看不到处罚状态",
+     "forbid": "不要替用户认定是 Manual Action 还是 Deindex"},
+    {"mode": "confirm", "task": "确认品牌搜索量与外链规模",
+     "loki": "3.3", "why": "探针无搜索量/外链接口，不能估数字",
+     "forbid": "不要编品牌搜索量或外链规模数字"},
+    {"mode": "todo", "task": "用 Ahrefs/SEMrush/Majestic 查外链质量与 DR",
+     "loki": "3.1-3.2", "why": "探针无外链库，不能编 DR/质量",
+     "forbid": "不要编外链质量/DR 数字"},
+    {"mode": "confirm", "task": "确认作者履历真伪：探针只能看到首页有没有 LinkedIn 链接",
+     "loki": "5.1", "why": "学历/履历只有 LinkedIn 能承载，需你点开核对",
+     "forbid": "不要把「首页无 LinkedIn 链接」当成履历问题或替用户认定真伪"},
+    {"mode": "todo", "task": "搜索 site:域名 看收录结构",
+     "loki": "", "why": "自动报告做不了搜索，需你补这一步",
+     "forbid": "不要凭 sitemap 推断收录结构，也不要把已收录总数当健康分"},
+    {"mode": "todo", "task": "用 Screaming Frog 查整站软 404 与 JS 渲染差",
+     "loki": "#116", "why": "整站规模探针抽样不到，他本人工具优先",
+     "forbid": "不要凭单页抽样认定整站软 404/JS 渲染状况"},
 ]
 
 
@@ -795,7 +813,7 @@ def build_agent(bundle):
     disp = host[4:] if host.startswith("www.") else host
     may = not (bundle.get("inconclusive")
                or bundle.get("status") == "inconclusive")
-    cannot = [{"id": f"no-{i+1:02d}", "forbid": _plain(c)}
+    cannot = [{"id": f"no-{i+1:02d}", "forbid": (c.get("forbid") if isinstance(c, dict) else _plain(c))}
               for i, c in enumerate(bundle.get("cannot") or [])]
     return {
         "schema": "loki-seo-agent/v1",
@@ -1092,7 +1110,7 @@ def _grade_lines(data):
         "探针事实：下面「看到的事实」和「本站对照」里的数字来自这次抓取，不是估计。",
         "判定可执行：定位靠关于我们/首页一致性；每页一个词；技术过了看每页微观，不堆标题。",
         "判定需降级：权重分数是结果不是原因，不能拿来解释这个站为什么掉。",
-        "无数据：见「本次拒绝伪造」。没有你的导出就不写那些数字。",
+        "无数据：见「八、待你处理」。没有你的导出就不写那些数字。",
         "开放问题：转化发生在哪几页（你填）。query 列探针不发明关键词。",
     ]
 
@@ -1127,9 +1145,45 @@ def _plain(s):
     return re.sub(r"\s+", " ", s).strip()
 
 
+def _cannot_items(data):
+    out = []
+    for c in (data.get("cannot") or []):
+        if isinstance(c, dict):
+            out.append(c)
+        else:
+            out.append({"mode": "todo", "task": _plain(c), "why": "", "loki": ""})
+    return out
+
+
+def _cannot_todo(data):
+    items = [c for c in _cannot_items(data) if c.get("mode") == "todo"]
+    if not items:
+        return []
+    out = []
+    for c in items:
+        line = "待办（你做）：" + c.get("task", "")
+        if c.get("why"):
+            line += " —— " + c["why"]
+        out.append(line)
+    return out
+
+
+def _cannot_confirm(data):
+    items = [c for c in _cannot_items(data) if c.get("mode") == "confirm"]
+    if not items:
+        return []
+    out = []
+    for c in items:
+        line = "需你确认：" + c.get("task", "")
+        if c.get("why"):
+            line += " —— " + c["why"]
+        out.append(line)
+    return out
+
+
 def _cannot_lines(data):
-    items = [_plain(x) for x in (data.get("cannot") or []) if _plain(x)]
-    return ["本次拒绝伪造：" + x for x in items] or ["（本次没有额外禁编项）"]
+    # 兼容旧调用：合并两类，保持返回列表
+    return _cannot_todo(data) + _cannot_confirm(data)
 
 
 def _next_rows(data):
@@ -1177,8 +1231,18 @@ def render_markdown(data):
     L += [f"- {r}" for r in _grade_lines(data)]
     L += ["", "## 七、本站对照"]
     L += [f"- {r}" for r in _site_notes(data)]
-    L += ["", "## 八、本次拒绝伪造"]
-    L += [f"- {r}" for r in _cannot_lines(data)]
+    L += ["", "## 八、待你处理（探针核不到）",
+          "下面这些探针做不了，要你自己去拉/查或确认。没做之前不要替自己脑补结论。"]
+    todo = _cannot_todo(data)
+    conf = _cannot_confirm(data)
+    if todo:
+        L += ["", "### 8.1 待办任务（你去拉/查）"]
+        L += [f"- {r}" for r in todo]
+    if conf:
+        L += ["", "### 8.2 需你确认（探针看不到该状态）"]
+        L += [f"- {r}" for r in conf]
+    if not todo and not conf:
+        L += ["（本次没有额外待处理项）"]
     L += ["", "## 九、下一步搜集"]
     L += [f"- {r}" for r in _next_rows(data)]
     L += ["", "## 十、决策仍在你",
@@ -1208,7 +1272,10 @@ def render_html(data):
          _html_table(_onepage_rows(data), ["页面", "要排的 query", "依据"]),
          "<h2>六、证据等级</h2>", _ul(_grade_lines(data)),
          "<h2>七、本站对照</h2>", _ul(_site_notes(data)),
-         "<h2>八、本次拒绝伪造</h2>", _ul(_cannot_lines(data)),
+         "<h2>八、待你处理（探针核不到）</h2>",
+         "<p>下面这些探针做不了，要你自己去拉/查或确认。没做之前不要替自己脑补结论。</p>",
+         ("<h3>8.1 待办任务（你去拉/查）</h3>" + _ul(_cannot_todo(data))) if _cannot_todo(data) else "",
+         ("<h3>8.2 需你确认（探针看不到该状态）</h3>" + _ul(_cannot_confirm(data))) if _cannot_confirm(data) else "",
          "<h2>九、下一步搜集</h2>", _ul(_next_rows(data)),
          "<h2>十、决策仍在你</h2>",
          "<p>做不做由你定。重要的已经写在先做/先停里。没有导出的数字一律标无数据。</p>"]

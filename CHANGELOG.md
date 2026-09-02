@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.9 — 2026-09-02（「待你处理」改写：能力缺口不再写成防御腔）
+
+`cannot[]` 的报告呈现从「本次拒绝伪造」式免责声明改写为「待你处理」：拆成**待办任务**（用户去拉/查 GSC、Ahrefs、Screaming Frog、site: 搜索）与**需你确认**（探针看不到的状态，如 Manual Action vs Deindex、品牌搜索量 vs 外链、作者履历真伪）。`CANNOT` 由纯字符串升级为结构化 `{mode, task, loki, why, forbid}`，渲染层据此分两组投影，agent 块 `cannot.forbid` 仍是机器 moat（AI 不得伪造该项）。report_gate 断言同步改为校验「待你处理」进场。
+
+- `CANNOT` 结构化：`mode∈{todo,confirm}`、`task`（用户动作）、`why`（为何探针不能代做，不再写「禁止编」）、`forbid`（AI 闭环指令）。
+- md 八、html 八拆为 `8.1 待办任务` / `8.2 需你确认` 两个子节；`_grade_lines` 引用同步。
+- 判定层与门禁未动；report_gate 全绿、shape_check（audit_url.py 超标 0）。
+
 ## 1.0.8 — 2026-09-02（AI 原生：JSON.agent 机器合同 + --diff 复测）
 
 报告只给人看、AI 若读 md 就丢掉闭环键（loki/#n/cannot）。本版把动作算一遍进 `JSON.agent`，md/html 仅投影，判定语义不动。

@@ -2,7 +2,7 @@
 
 [![语义门禁](https://github.com/tong20242100/loki-seo-probe/actions/workflows/gate.yml/badge.svg)](https://github.com/tong20242100/loki-seo-probe/actions/workflows/gate.yml)
 
-**当前版本 1.0.8（2026-09-02）· MIT · 语料版权另见 [`NOTICE.md`](NOTICE.md)**
+**当前版本 1.0.9（2026-09-02）· MIT · 语料版权另见 [`NOTICE.md`](NOTICE.md)**
 
 > Loki Yan SEO 口径的可验证实现：探针（客观 HTTP 事实）＋ 研判（专家判定规则映射）＋ 语义门禁（回归即红）。
 >
@@ -31,8 +31,8 @@
 - **网络抖动不翻结论**：探针超时（`status=0`）／5xx 一律 `na`（没看到），不落 warn——站点没变，
   抖动不该把结论从 pass 翻成 at-risk。唯一例外：robots 是下跌场景第一探针，非 200 一律 `warn`
   （门禁刻意钉死）。
-- **禁编清单**：GSC Field CWV、DR / 外链、品牌搜索量——探针核不到的项在 JSON 里显式挡（`cannot[]`），
-  报告里只能标「无数据」。
+- **待你处理清单**：GSC Field CWV、DR / 外链、品牌搜索量等探针核不到的项，在 JSON 里显式挡（`cannot[]`），
+  报告里改写成「待办任务 / 需你确认」两类，由用户自己去拉/查或确认，不写成防御腔。
 - **`seen` 值**：title / h1 文案、JSON-LD 类型这类「材料已给但不自动打分」的事实，
   与「没看到」严格分开，判断权归输出合同。
 
