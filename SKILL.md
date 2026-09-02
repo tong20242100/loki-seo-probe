@@ -1,6 +1,6 @@
 ---
 name: loki-seo
-version: 1.0.11
+version: 1.0.12
 description: >
   用 Loki Yan (@loki_yan_seo) 的口径诊断一个线上网址：先跑 audit_url.py 探针，
   再给 3–7 条贴合该站的可落地动作，并列出要从 GSC / Frog 导出的数据。
@@ -163,7 +163,7 @@ python3 scripts/audit_url.py https://example.com
 
 自动报告是「人话投影」，JSON 里的 `agent` 块才是机器可读合同。改站闭环时：
 
-- agent 是源、md/html 是投影：动作只算一遍（在 `attach_report` 内 `build_agent`），md/html 从 `agent.actions` 渲染；二者一旦分叉，`tests/report_gate.py` 即红。
+- agent 是源、md/html 是投影：动作只算一遍（在 `attach_report` 内 `build_agent`），md/html 从 `agent.actions` 渲染；二者一旦分叉，`tests/report_gate.py` 即红。`cannot[]` 是禁编/待办清单（含 `site:` 收录搜索这类探针永久缺口），`agent.cannot` 逐条带 `task`/`forbid`，是机器层单源；`site:` 只在 `cannot[]` 出现，`agent.actions` 不得重复 append。
 - AI 改站前**只读 JSON.agent**，不要只读 md——md 故意删掉 `loki`/`#n`，对不上闭环键。
 - `actions[].verify.kind` 三态是 moat：`probe`=同一命令复跑对 `rule+status`（软404/`<main>`/https/m站/display:none）；`human`=探针打不绿（About 定性、一页一词、成交页），**AI 禁止为了绿而改 sitemap 比例或堆标题**；`collect`=GSC/Frog/site:，没文件就停、不准编。
 - `reprobe.cmd` 是复测命令，`agent.reprobe.diff` 是稳定对账键；修复循环只改一项、复跑、对 `diff` 比对，na↔pass 抖动标「可能是代理抖动」不当成修复成功。

@@ -778,18 +778,14 @@ def _agent_stop(bundle):
 
 
 def _agent_collect(bundle):
+    """collect 只来自 next_collect。site: 搜索是探针永久能力缺口，
+    只走 cannot[] → 八节（8.1），不在这里重复 append，避免 JSON.agent 双写。"""
     out = []
     for item in bundle.get("next_collect") or []:
         out.append({"id": f"collect-{item.get('trigger','x')}", "kind": "collect",
             "loki": item.get("loki", ""), "where": "搜集",
             "need": item.get("need", ""), "read_as": item.get("read_as", ""),
             "verify": {"kind": "collect"}})
-    host = urlparse(bundle.get("origin") or "").netloc or "该域名"
-    if host.startswith("www."):
-        host = host[4:]
-    out.append({"id": "collect-site", "kind": "collect", "loki": "", "where": "搜集",
-        "need": f"必须补一步：搜索 site:{host} 看收录结构。自动报告做不了搜索，这一步要你来做。不要把「已收录总数」当健康分。",
-        "read_as": "搜索引擎结果", "verify": {"kind": "collect"}})
     return out
 
 
@@ -824,7 +820,10 @@ def build_agent(bundle):
     disp = host[4:] if host.startswith("www.") else host
     mode = _conclude(bundle)
     acts = (_agent_collect(bundle) if mode == "none" else _agent_actions(bundle))
-    cannot = [{"id": f"no-{i+1:02d}", "forbid": (c.get("forbid") if isinstance(c, dict) else _plain(c))}
+    cannot = [{"id": f"no-{i+1:02d}",
+               "mode": (c.get("mode") if isinstance(c, dict) else "todo"),
+               "task": _plain(c.get("task") if isinstance(c, dict) else c).replace("域名", disp),
+               "forbid": (c.get("forbid") if isinstance(c, dict) else _plain(c))}
               for i, c in enumerate(bundle.get("cannot") or [])]
     return {
         "schema": "loki-seo-agent/v1",

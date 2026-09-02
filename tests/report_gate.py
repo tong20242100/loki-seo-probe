@@ -136,6 +136,11 @@ def check_agent(au, d, bad):
     stop_n = sum(1 for x in a["actions"] if x["kind"] == "stop")
     if _table_rows(md, "## 二、先做") != do_n or _table_rows(md, "## 三、先停") != stop_n:
         bad.append("先做/先停表行数与 agent do/stop 数不一致")
+    # 机器层 site: 单源钉死：不得双写进 actions，且必须仍在 cannot 单源保留
+    if any(x.get("id") == "collect-site" for x in a.get("actions", [])):
+        bad.append("agent.actions 仍含 collect-site：site: 应只走 cannot → 8.1（机器层双写）")
+    if not any("site:" in (c.get("task") or c.get("forbid") or "") for c in a.get("cannot", [])):
+        bad.append("agent.cannot 缺少 site: 缺口项：消重后 site: 必须仍在 cannot 单源保留")
     if a.get("conclude") != "full" or a.get("may_conclude") is not True:
         bad.append("ok 样本 conclude 应为 full 且 may_conclude=true")
 

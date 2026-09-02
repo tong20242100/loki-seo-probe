@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.12 — 2026-09-02（机器层 site: 单源收口）
+
+1.0.11 只在人话层（md 八/九节）消重。机器层有两处问题，缺一不可：
+(a) `JSON.agent.actions` 里 `_agent_collect()` 仍无条件 append `collect-site`，AI 读 agent 时 site: 在 `cannot[]` 与 `actions[]` 各出现一次（双写）；
+(b) `build_agent` 序列化 `cannot[]` 时只取 `forbid`、丢掉 `task`——而 site: 指令写在 task 上，导致即使只删 (a)，site: 也会从 JSON 整条消失（md 有、机器无源）。
+
+修复：
+- `_agent_collect()` 删除无条件 append 的 `collect-site`。
+- `build_agent` 的 `cannot[]` 改为逐条带 `task`/`mode`/`forbid`（task 做 host 替换），site: 指令现在以单源存在于 `agent.cannot[].task`，人话与机器读到的同一句。
+- `tests/report_gate.py` 的 `check_agent` 加机器层断言：agent.actions 不得含 `collect-site`、且 `cannot[]` 必须仍存在 site: 项（查 task 字段，不再误查 forbid）。
+- SKILL.md AI 闭环小节补一句：site: 只在 `cannot[]`，actions 不得重复。
+
 ## 1.0.11 — 2026-09-02（消重 site: 提醒：只在八节常驻缺口，九节不再重复）
 
 八节「待你处理」与九节「下一步搜集」都无条件带了 site: 收录搜索提醒，两处重复。
