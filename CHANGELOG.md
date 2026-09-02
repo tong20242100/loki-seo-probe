@@ -1,5 +1,13 @@
 # Changelog
 
+## 未发布（仓库清理，无语义变更）
+
+- 删除 `scripts/publish.sh`：origin 早已配好、日常手动 `git push` 即可，脚本只是 `git push`
+  的薄壳，且其注释「仓库默认无 remote / 本机无认证 gh」已失实。同步移除 README「发布」小节里
+  对它的注释引用。
+- README「发布」小节纠偏：origin 实为 **HTTPS**（`https://github.com/tong20242100/loki-seo-probe.git`），
+  此前误写成 SSH；「推送走 SSH」改为「推送走 HTTPS」。
+
 ## 1.0.13 — 2026-09-02（fetch 隐身后端 + 文档修正 + 形态门禁全绿）
 
 ### 抓取后端：裸 urllib → 可选 curl_cffi 隐身

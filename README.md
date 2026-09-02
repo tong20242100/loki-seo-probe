@@ -71,15 +71,14 @@ agent 按 SKILL.md 的输出合同（任务类型 / 探针事实 / 先做先停 
 
 ## 发布（推到 GitHub 触发 CI）
 
-仓库已关联 `origin`（`git@github.com:tong20242100/loki-seo-probe.git`）。`git push` 即触发
+仓库已关联 `origin`（`https://github.com/tong20242100/loki-seo-probe.git`）。`git push` 即触发
 `.github/workflows/gate.yml` 三道门禁，README 顶部 badge 同步状态。
 
 ```bash
 git push                          # 已配好 remote，直接推
-# bash scripts/publish.sh         # 首次自动补 remote，之后幂等（同样走 git push）
 ```
 
-推送走 SSH（需本机已配置 SSH key，或用已登录 `gh` 提供的凭证）。
+推送走 HTTPS（用本机 Git 凭证助手或已登录 `gh` 的凭证）。
 本机 `/Users/tong/agent-hub/bin/gh` 是**只读查询封装**，不参与推送。
 本地若领先 `origin/main`（例如尚未推送的清理提交），推送后即进 CI。
 
