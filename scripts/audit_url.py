@@ -526,7 +526,7 @@ def sniff_samples(mix):
 # task: 用户要做什么；why: 为什么探针不能代做（不写成「禁止编」式防御腔）。
 # forbid: 给 AI 闭环的机器指令（不要替用户伪造该项结论）。
 CANNOT = [
-    {"mode": "todo", "task": "拉 Google Search Console（谷歌站长工具）或 CrUX 看近 28 天真实用户的核心网页指标（LCP/CLS/INP）",
+    {"mode": "todo", "task": "打开 Google Search Console（谷歌站长工具），看近 28 天真实用户打开网站时会不会慢、会不会抖、点了会不会卡",
      "loki": "7.3", "why": "检测工具没有 PageSpeed Insights / Lighthouse（谷歌的网页速度检测工具）的分数，不能替你填真实用户数据",
      "forbid": "不要编 PageSpeed Insights / Lighthouse 分数充当真实用户数据"},
     {"mode": "confirm", "task": "确认是 Manual Action（谷歌人工处罚）还是 Deindex（被谷歌从搜索结果中移除），并从 Google Search Console 导出处罚报告",
@@ -544,7 +544,7 @@ CANNOT = [
     {"mode": "todo", "task": "在搜索引擎搜索 site:域名 看哪些页面被收录了",
      "loki": "", "why": "自动检测做不了搜索，需你手动补这一步",
      "forbid": "不要凭 sitemap 推断收录结构，也不要把已收录总数当健康分"},
-    {"mode": "todo", "task": "用 Screaming Frog（一款网站爬虫工具）查整站的软 404（页面返回 200 但内容是错误页）和 JavaScript 渲染问题（需要 JS 才能显示的内容搜索引擎可能看不到）",
+    {"mode": "todo", "task": "用 Screaming Frog（一款整站扫描工具）查全站：有没有「看起来是错误页、地址却返回正常」的假页面，以及必须开脚本才能看见的正文",
      "loki": "#116", "why": "整站规模检测工具抽样不到，Screaming Frog 更全面",
      "forbid": "不要凭单页抽样认定整站软 404/JS 渲染状况"},
 ]
@@ -730,7 +730,8 @@ def _accept_text(a):
     v = a.get("verify") or {}
     k = v.get("kind")
     if k == "probe":
-        return f"重跑探针看 {a.get('rule','')} 项是否转 pass"
+        name = RULE_HUMAN.get(a.get("rule"), "这项")
+        return f"再用同一条检测命令跑一遍，看「{name}」是否变为通过"
     if k == "human":
         return v.get("accept", "")
     if k == "none":
@@ -747,9 +748,9 @@ def _agent_do_sitemap(bundle):
                     "accept": "外人能否一句话说出你是什么机构"}},
         {"id": "do-convert-blog", "kind": "do", "rule": "sitemap-mix", "loki": "7.4",
          "who": "内容/运营", "where": "能产生订单/咨询的页面 vs 博客文章",
-         "change": "博客目录多不等于该删博客；先标能产生订单/咨询的页面在哪几页，再用同一个数据面板看谁在掉",
+         "change": "博客多不等于该删博客；先标出哪几页真正能产生订单或咨询，再用同一个后台看是这些页在掉，还是博客在涨",
          "verify": {"kind": "human", "reprobe_can_pass": False,
-                    "accept": "效果报告：成交页掉、博客涨 ≠ 站好了"}},
+                    "accept": "能成交的页面掉、博客涨，不代表网站变好了"}},
     ]
     if _looks_blog_only(bundle):
         out.append({"id": "do-money-page", "kind": "do", "rule": "sitemap-mix",
@@ -777,22 +778,22 @@ def _agent_do(bundle):
                            "expect": {"rule": rule, "status": "pass"}}})
     out.append({"id": "do-onepage", "kind": "do", "rule": "title-h1", "loki": "6.3",
         "who": "内容", "where": "首页 + 抽样内页",
-        "change": "每页只认一个要排的词；说不清就写「这页说不出自己排什么」，不要把自己公司内部的说法当搜索词",
+        "change": "每页只认一个要排的词；说不清就写「这页说不出自己排什么」，不要把公司内部的叫法当成外人会搜的词",
         "verify": {"kind": "human", "reprobe_can_pass": False,
-                   "accept": "填下面的每页要排哪个词表，另标出能产生订单/咨询的页面在哪几页"}})
+                   "accept": "填下面的「每页要排哪个词」表，另标出能产生订单/咨询的页面在哪几页"}})
     if not any((x or {}).get("status") == "fail" for x in bundle.get("findings") or []):
         out.append({"id": "do-after-tech", "kind": "do", "rule": None, "loki": "7.4",
             "who": "内容", "where": "改完技术之后",
-            "change": "技术地基过了，决定性因素是每一页的具体内容，不是再堆标题。改一项，用同一个数据面板复测。",
+            "change": "技术检查过了，接下来看每一页写了什么，不要再往标题里堆词。一次改一处，用同一个后台再看一遍。",
             "verify": {"kind": "human", "reprobe_can_pass": False,
-                       "accept": "不要同时改十处还问是不是外链的问题"}})
+                       "accept": "不要一次改十处，回头却问是不是外链的问题"}})
     return out
 
 
 def _agent_stop(bundle):
-    out = [{"id": "stop-h1", "kind": "stop", "loki": "6.3", "who": "先停",
+    out = [{"id": "stop-h1", "kind": "stop", "loki": "6.3", "who": "先别做",
             "where": "标题和主标题",
-            "change": "不要把主标题改成目标词，不要做关键词密度榜",
+            "change": "不要为了塞搜索词去改主标题，也不要按关键词出现次数给页面打分",
             "verify": {"kind": "none", "note": "每页要排的词能说清即可"}}]
     for stop in ALWAYS_STOP:
         out.append({"id": f"stop-{_slug(stop[1])}", "kind": "stop",
@@ -800,10 +801,10 @@ def _agent_stop(bundle):
             "change": stop[2], "verify": {"kind": "none", "note": stop[3]}})
     ll = _finding(bundle, "llms.txt")
     if ll and ll.get("status") == "seen" and "HTTP 200" in (ll.get("evidence") or ""):
-        out.append({"id": "stop-llms", "kind": "stop", "loki": "2.3", "who": "先停",
+        out.append({"id": "stop-llms", "kind": "stop", "loki": "2.3", "who": "先别做",
             "where": "给 AI 看的说明文件",
-            "change": "本站已经有这份文件。谷歌 AI 搜索结果不一定读。有文件 ≠ 做完 AI 收录。",
-            "verify": {"kind": "none", "note": "不要再加社区帖/问答/公关/结构化数据作业包"}})
+            "change": "本站已经有这份文件。谷歌的 AI 搜索结果不一定会读。有文件不等于这件事做完了。",
+            "verify": {"kind": "none", "note": "不要再加社区帖、问答、公关那一套作业"}})
     return out
 
 
@@ -822,9 +823,9 @@ def _agent_collect(bundle):
 def _agent_ask():
     return [
         {"id": "ask-convert", "kind": "ask", "who": "你",
-         "question": "转化发生在哪几页（探针看不到成交）"},
+         "question": "成交发生在哪几页（检测看不到订单）"},
         {"id": "ask-query", "kind": "ask", "who": "你",
-         "question": "每页要排的 query（探针不发明关键词）"},
+         "question": "每页要排的搜索词（检测不替你编关键词）"},
     ]
 
 
@@ -852,7 +853,7 @@ def build_agent(bundle):
     acts = (_agent_collect(bundle) if mode == "none" else _agent_actions(bundle))
     cannot = [{"id": f"no-{i+1:02d}",
                "mode": (c.get("mode") if isinstance(c, dict) else "todo"),
-               "task": _plain(c.get("task") if isinstance(c, dict) else c).replace("域名", disp),
+               "task": _plain(c.get("task") if isinstance(c, dict) else c).replace("site:域名", "site:" + disp),
                "forbid": (c.get("forbid") if isinstance(c, dict) else _plain(c))}
               for i, c in enumerate(bundle.get("cannot") or [])]
     return {
@@ -869,8 +870,8 @@ def build_agent(bundle):
         "actions": acts,
         "cannot": cannot,
         "ask_human": [
-            "转化发生在哪几页（探针看不到成交）",
-            "每页要排的 query（探针不发明关键词）",
+            "成交发生在哪几页（检测看不到订单）",
+            "每页要排的搜索词（检测不替你编关键词）",
         ],
     }
 
@@ -923,11 +924,22 @@ VERDICT_HUMAN = {
     "inconclusive": "这次核心检测都没拿到数据，无法判断，只报没看到什么。",
     "healthy": "技术面没发现会挡收录的问题。",
 }
+# 三项枚举不要共用一张表：站点「查全了」≠ 单条「检测通过」≠ 网站地图「读到了」
+RUN_HUMAN = {
+    "ok": "核心页面都查到了",
+    "partial": "只查到一部分（没查到的不等于没问题）",
+    "inconclusive": "核心检测都没查到",
+}
+FOLLOW_HUMAN = {
+    "ok": "已读到",
+    "lost": "地图文件在，里面的清单没跟上",
+    "absent": "这个站没有网站地图",
+    "fail": "这次没读到网站地图",
+}
 STATUS_HUMAN = {
-    "ok": "通过，没问题",
     "na": "这次没检测到（不等于没问题）",
     "seen": "看到了材料，要你判断",
-    "pass": "检测通过，没问题",
+    "pass": "这项没发现问题",
     "warn": "检出风险，需先处理",
     "fail": "检测到硬伤，必须修",
 }
@@ -968,14 +980,14 @@ ACTIONS = {
 
 # 测不到也要说的刹车。技术全 pass 时报告仍靠这几条，不许只剩「结构均衡」。
 ALWAYS_STOP = (
-    ("先停", "买外链的钱",
+    ("先别做", "买外链的钱",
      "不要把 DA/DR 这类第三方打分当排名原因去追，更不要花钱买外链来恢复排名",
      "没有外链工具就写无数据，禁止编数字"),
-    ("先停", "AI 搜索结果",
-     "不要做社区帖/问答/公关/结构化数据作业；说明文件有了，谷歌 AI 搜索结果也不一定读",
-     "被 AI 引用就是被普通收录，没有另一套作业"),
-    ("先停", "分数和处罚",
-     "不要用 PageSpeed Insights 这类工具给的分数充真实用户体验；没有后台截图禁止说被处罚",
+    ("先别做", "AI 搜索结果",
+     "不要另做一套「给 AI 看的作业」（社区帖、问答、公关稿、结构化数据清单）；说明文件有了，谷歌 AI 也不一定读",
+     "被 AI 提到，靠的还是普通收录，没有另一套作业"),
+    ("先别做", "分数和处罚",
+     "不要用 PageSpeed Insights 这类工具给的分数冒充真实用户体验；没有后台截图不要说被处罚",
      "体验看 Google Search Console 近 28 天的真实用户数据"),
 )
 
@@ -1098,7 +1110,7 @@ def _stop_rows(data):
         if key in seen or len(rows) >= 12:
             continue
         seen.add(key)
-        rows.append([len(rows) + 1, a.get("who", "先停"),
+        rows.append([len(rows) + 1, a.get("who", "先别做"),
                      a.get("where", ""), a.get("change", ""), note])
     return rows
 
@@ -1151,8 +1163,8 @@ def _onepage_rows(data):
 def _grade_lines(data):
     return [
         "下面的数字都是这次检测抓到的，不是猜的。",
-        "能直接动手的：首页/关于我们写清楚定位；每页盯一个词；技术没问题后看每页内容，别堆标题。",
-        "要打折扣的：DA（Domain Authority，域名权重）/DR（Domain Rating，域名评分）这类第三方打分是结果不是原因，不能拿来解释排名为什么掉。",
+        "能直接动手的：首页和「关于我们」写清楚你是谁；每页盯一个外人会搜的词；技术没问题后看每页内容，别堆标题。",
+        "要打折扣的：DA / DR 这类第三方打的「网站权重分」是结果不是原因，不能拿来解释排名为什么掉。",
         "没有数据的：见「八、需要你手动处理」。没有你的后台导出就不写那些数字。",
         "还要你自己定的：能产生订单/咨询的页面在哪（你填）。搜索词列检测工具不替你编关键词。",
     ]
@@ -1207,7 +1219,7 @@ def _cannot_todo(data):
         return []
     out = []
     for c in items:
-        task = c.get("task", "").replace("域名", host)
+        task = c.get("task", "").replace("site:域名", "site:" + host)
         line = "待办（你做）：" + task
         if c.get("why"):
             line += " —— " + c["why"]
@@ -1259,10 +1271,12 @@ def render_markdown(data):
     hd = ["#", "谁改", "改哪一页", "改成什么", "怎么验收"]
     L = [f"# 站点诊断报告：{host}", "", _opening(data, host, vh), "",
          "## 一、现在的状态",
-         f"- 检测结果：**{STATUS_HUMAN.get(status, status)}**",
-         f"- 数据可信度：{conf}（1.0 = 全部拿到，数值越低越不可靠）",
-         f"- 网站地图：**{STATUS_HUMAN.get(follow, follow)}**",
-         f"- 总体判断：**{vh}**", "", "## 二、先做"]
+         f"- 这次查全了吗：**{RUN_HUMAN.get(status, status)}**",
+         f"- 数据可信度：{conf}（1.0 = 该查的都查到了；越低只说明这次看到的越少，不是站越差）",
+         f"- 网站地图：**{FOLLOW_HUMAN.get(follow, follow)}**",
+         f"- 总体判断：**{vh}**",
+         "- 读法：没写出来的数字不是漏了，是没抓到就不编。技术没硬伤时，先看「先停」。",
+         "", "## 二、先做"]
     L.extend(_md_table(_do_rows(data), hd))
     L += ["", "## 三、先停"]
     L.extend(_md_table(_stop_rows(data), hd))
@@ -1304,10 +1318,11 @@ def render_html(data):
     p = [f"<h1>站点诊断报告：{_esc(host)}</h1>",
          f"<p class='open'>{_esc(_opening(data, host, vh))}</p>",
          "<h2>一、现在的状态</h2><ul>",
-         f"<li>检测结果：<b>{_esc(STATUS_HUMAN.get(status, status))}</b></li>",
-         f"<li>数据可信度：{_esc(conf)}（1.0 = 全部拿到，数值越低越不可靠）</li>",
-         f"<li>网站地图：<b>{_esc(STATUS_HUMAN.get(follow, follow))}</b></li>",
-         f"<li>总体判断：<b>{_esc(vh)}</b></li></ul>",
+         f"<li>这次查全了吗：<b>{_esc(RUN_HUMAN.get(status, status))}</b></li>",
+         f"<li>数据可信度：{_esc(conf)}（1.0 = 该查的都查到了；越低只说明这次看到的越少，不是站越差）</li>",
+         f"<li>网站地图：<b>{_esc(FOLLOW_HUMAN.get(follow, follow))}</b></li>",
+         f"<li>总体判断：<b>{_esc(vh)}</b></li>",
+         "<li>读法：没写出来的数字不是漏了，是没抓到就不编。技术没硬伤时，先看「先停」。</li></ul>",
          "<h2>二、先做</h2>", _html_table(_do_rows(data), hd),
          "<h2>三、先停</h2>", _html_table(_stop_rows(data), hd),
          "<h2>四、检测发现的问题</h2>", _ul(_facts_rows(data)),
