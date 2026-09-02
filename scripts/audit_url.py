@@ -844,14 +844,27 @@ def _opening(data, host, vh):
 
 
 def _add_row(rows, seen, who, where, change, check):
-    key = (where, change[:20])
-    if key in seen or len(rows) >= 7:
+    key = (where, change[:24])
+    if key in seen or len(rows) >= 12:
         return
     seen.add(key)
     rows.append([len(rows) + 1, who, where, change, check])
 
 
-def _add_from_rule(rows, seen, rule):
+def _finding(data, rule):
+    return next((f for f in data.get("findings") or [] if f["rule"] == rule), None)
+
+
+def _looks_blog_only(data):
+    names = [str(p[0]).lower() for p in (data.get("sitemap") or {}).get("prefixes") or []]
+    if not names:
+        return False
+    money = ("cases", "shop", "product", "service", "pricing", "store",
+             "booking", "solutions", "offer", "course")
+    return not any(any(k in n for k in money) for n in names)
+
+
+def _add_from_rule(rows, seen, rule, data=None):
     if rule == "sitemap-mix":
         _add_row(rows, seen, "内容", "关于我们 + 首页",
                  "写清谁在做、实际交付什么、凭据；首页口号不能代替定位",
@@ -859,25 +872,43 @@ def _add_from_rule(rows, seen, rule):
         _add_row(rows, seen, "内容/运营", "成交页 vs 博客",
                  "博客目录多不等于该删博客；先标转化发生在哪几页，再用同一面板看谁在掉",
                  "效果报告：成交页掉、博客涨 ≠ 站好了")
+        if data is not None and _looks_blog_only(data):
+            _add_row(rows, seen, "内容", "成交页",
+                     "地图里几乎只有博客/新闻目录，看不到成交或产品目录。"
+                     "先确认有没有能成交的页；没有就先停铺博客。",
+                     "标出转化发生在哪几页")
         return
     spec = ACTIONS.get(rule)
     if spec:
         _add_row(rows, seen, *spec)
 
 
-def _priority_rows(data):
+def _do_rows(data):
     rows, seen = [], set()
-    dx = data.get("diagnosis") or {}
-    for item in dx.get("priority") or []:
-        _add_from_rule(rows, seen, item.get("rule", ""))
+    for item in (data.get("diagnosis") or {}).get("priority") or []:
+        _add_from_rule(rows, seen, item.get("rule", ""), data)
     _add_row(rows, seen, "内容", "首页 + 抽样内页",
              "每页只认一个要排的词；说不清就写「这页说不出自己排什么」，不要把内部行话当搜索词",
              "填下面的一页一词表，另标出成交发生在哪几页")
+    if not any(f.get("status") == "fail" for f in data.get("findings") or []):
+        _add_row(rows, seen, "内容", "改完技术之后",
+                 "技术地基过了，决定性因素是每一页的微观形态，不是再堆标题。改一项，用同一面板复测。",
+                 "不要同时改十处还问是不是外链的问题")
+    return rows
+
+
+def _stop_rows(data):
+    rows, seen = [], set()
     _add_row(rows, seen, "先停", "标题和主标题",
              "不要把主标题改成目标词，不要做关键词密度榜",
              "一页一词表能说清即可")
     for stop in ALWAYS_STOP:
         _add_row(rows, seen, *stop)
+    ll = _finding(data, "llms.txt")
+    if ll and ll.get("status") == "seen" and "HTTP 200" in (ll.get("evidence") or ""):
+        _add_row(rows, seen, "先停", "给 AI 看的说明文件",
+                 "本站已经有这份文件。谷歌 AI 结果不一定读。有文件 ≠ 做完 AI 收录。",
+                 "不要再加社区帖/问答/公关作业包")
     return rows
 
 
@@ -927,33 +958,57 @@ def _onepage_rows(data):
 
 def _grade_lines(data):
     return [
-        "探针事实：下面「看到的事实」里的数字来自这次抓取，不是估计。",
+        "探针事实：下面「看到的事实」和「本站对照」里的数字来自这次抓取，不是估计。",
         "判定可执行：定位靠关于我们/首页一致性；每页一个词；技术过了看每页微观，不堆标题。",
         "判定需降级：权重分数是结果不是原因，不能拿来解释这个站为什么掉。",
-        "无数据：有没有手动处罚、真实用户体验、外链质量、品牌搜索量——没有你的导出就不写。",
-        "开放问题：转化发生在哪几页（你填）。",
+        "无数据：见「本次拒绝伪造」。没有你的导出就不写那些数字。",
+        "开放问题：转化发生在哪几页（你填）。query 列探针不发明关键词。",
     ]
 
 
-def _watch_lines(data):
-    out = [
-        "整站软 404 和脚本渲染差要整站爬才能看，这次只打了首页和一个假地址。",
-        "体验看官方近 28 天真实用户数据，不要用实验室打分充数。",
-        "结构化数据写全了也不等于能排。给 AI 看的说明文件有了，谷歌 AI 结果也不一定读。",
-    ]
-    html = data.get("html") or {}
-    linkedin = html.get("linkedin")
-    if linkedin == 0:
-        out.append("首页没有作者职业档案外链。只有钱/医/法这类要被追问专业度的站才需要互链；"
-                   "教育交付或工具站不要当成缺陷。")
-    return out
+def _site_notes(data):
+    if data.get("status") == "inconclusive":
+        return ["核心探针全没看到。禁止下任何结论，包括「看起来还行」。"]
+    out = []
+    if data.get("partial") or (data.get("diagnosis") or {}).get("evidence_partial"):
+        out.append("证据不全，下面是暂定结论，没看到的部分随时能翻案。")
+    pairs = (
+        ("semantic main", "pass", "首页有主内容区。只查了首页，整站要另爬。"),
+        ("soft-404 probe", "pass", "假地址返回了真 404。只打了一个地址，整站规模要索引报告或整站爬。"),
+        ("wayback", "pass", "历史存档只看到最新窗口里的几条，不是完整域名黑历史。"),
+        ("sampled-originality", "pass", "抽样页未见明显转载。抽样不是全站原创结论。"),
+        ("m-subdomain", "pass", "没有做成独立移动站两套页面。"),
+        ("jsonld-types", "seen", "首页结构化类型已看到。写全了也不等于能排。"),
+        ("robots-ua", "pass", "已读到分用户屏蔽。某个引擎单独挡一条路径，不等于全站隔离。"),
+    )
+    for rule, want, msg in pairs:
+        f = _finding(data, rule)
+        if f and f.get("status") == want:
+            out.append(msg)
+    if (data.get("html") or {}).get("linkedin") == 0:
+        out.append("首页没有作者职业档案外链。只有钱/医/法才需要互链；教育交付或工具站不要当成缺陷。")
+    return out or ["（本站对照无额外条目）"]
+
+
+def _plain(s):
+    s = re.sub(r"（[^）]*）", " ", s or "")
+    s = _clean_evidence(s)
+    return re.sub(r"\s+", " ", s).strip()
+
+
+def _cannot_lines(data):
+    items = [_plain(x) for x in (data.get("cannot") or []) if _plain(x)]
+    return ["本次拒绝伪造：" + x for x in items] or ["（本次没有额外禁编项）"]
 
 
 def _next_rows(data):
-    nc = data.get("next_collect") or []
-    if not nc:
-        return ["（无额外数据需求）"]
-    return [item.get("need", "") for item in nc]
+    host = urlparse(data.get("origin") or "").netloc or "该域名"
+    if host.startswith("www."):
+        host = host[4:]
+    out = [_plain(item.get("need", "")) for item in data.get("next_collect") or []]
+    out.append(f"必须补一步：搜索 site:{host} 看收录结构。"
+               "自动报告做不了搜索，这一步要你来做。不要把「已收录总数」当健康分。")
+    return [x for x in out if x]
 
 
 def _md_table(rows, headers):
@@ -972,27 +1027,31 @@ def _html_table(rows, headers):
 
 def render_markdown(data):
     host, verdict, vh, conf, follow, status = _report_meta(data)
-    L = [f"# 站点诊断报告：{host}", "",
-         _opening(data, host, vh), "",
+    hd = ["#", "谁改", "改哪一页", "改成什么", "怎么验收"]
+    L = [f"# 站点诊断报告：{host}", "", _opening(data, host, vh), "",
          "## 一、现在的状态",
          f"- 探针结论（status）：**{status}**",
          f"- 数据置信度（run_confidence）：{conf}",
          f"- 网站地图跟进（sitemap_follow）：{follow}",
-         f"- 总体研判：**{vh}**", "",
-         "## 二、先做 / 先停"]
-    L.extend(_md_table(_priority_rows(data), ["#", "谁改", "改哪一页", "改成什么", "怎么验收"]))
-    L += ["", "## 三、看到的事实"]
+         f"- 总体研判：**{vh}**", "", "## 二、先做"]
+    L.extend(_md_table(_do_rows(data), hd))
+    L += ["", "## 三、先停"]
+    L.extend(_md_table(_stop_rows(data), hd))
+    L += ["", "## 四、看到的事实"]
     L += [f"- {r}" for r in _facts_rows(data)]
-    L += ["", "## 四、一页一词表"]
+    L += ["", "## 五、一页一词表",
+          "query 列需你按业务填。探针没有搜索量接口，不替你发明关键词。"]
     L.extend(_md_table(_onepage_rows(data), ["页面", "要排的 query", "依据（标题/H1）"]))
-    L += ["", "## 五、证据等级"]
+    L += ["", "## 六、证据等级"]
     L += [f"- {r}" for r in _grade_lines(data)]
-    L += ["", "## 六、下一步搜集"]
+    L += ["", "## 七、本站对照"]
+    L += [f"- {r}" for r in _site_notes(data)]
+    L += ["", "## 八、本次拒绝伪造"]
+    L += [f"- {r}" for r in _cannot_lines(data)]
+    L += ["", "## 九、下一步搜集"]
     L += [f"- {r}" for r in _next_rows(data)]
-    L += ["", "## 七、测不到也要注意"]
-    L += [f"- {r}" for r in _watch_lines(data)]
-    L += ["", "## 八、决策仍在你",
-          "> 最终决定权在你。没有导出的数字一律标无数据，禁止编造。"]
+    L += ["", "## 十、决策仍在你",
+          "> 做不做由你定。重要的已经写在先做/先停里。没有导出的数字一律标无数据。"]
     return "\n".join(L)
 
 
@@ -1002,6 +1061,7 @@ def _ul(items):
 
 def render_html(data):
     host, verdict, vh, conf, follow, status = _report_meta(data)
+    hd = ["#", "谁改", "改哪一页", "改成什么", "怎么验收"]
     p = [f"<h1>站点诊断报告：{_esc(host)}</h1>",
          f"<p class='open'>{_esc(_opening(data, host, vh))}</p>",
          "<h2>一、现在的状态</h2><ul>",
@@ -1009,16 +1069,18 @@ def render_html(data):
          f"<li>数据置信度：{_esc(conf)}</li>",
          f"<li>网站地图跟进：{_esc(follow)}</li>",
          f"<li>总体研判：<b>{_esc(vh)}</b></li></ul>",
-         "<h2>二、先做 / 先停</h2>",
-         _html_table(_priority_rows(data), ["#", "谁改", "改哪一页", "改成什么", "怎么验收"]),
-         "<h2>三、看到的事实</h2>", _ul(_facts_rows(data)),
-         "<h2>四、一页一词表</h2>",
+         "<h2>二、先做</h2>", _html_table(_do_rows(data), hd),
+         "<h2>三、先停</h2>", _html_table(_stop_rows(data), hd),
+         "<h2>四、看到的事实</h2>", _ul(_facts_rows(data)),
+         "<h2>五、一页一词表</h2>",
+         "<p>query 列需你按业务填。探针没有搜索量接口，不替你发明关键词。</p>",
          _html_table(_onepage_rows(data), ["页面", "要排的 query", "依据"]),
-         "<h2>五、证据等级</h2>", _ul(_grade_lines(data)),
-         "<h2>六、下一步搜集</h2>", _ul(_next_rows(data)),
-         "<h2>七、测不到也要注意</h2>", _ul(_watch_lines(data)),
-         "<h2>八、决策仍在你</h2>",
-         "<p>最终决定权在你。没有导出的数字一律标无数据，禁止编造。</p>"]
+         "<h2>六、证据等级</h2>", _ul(_grade_lines(data)),
+         "<h2>七、本站对照</h2>", _ul(_site_notes(data)),
+         "<h2>八、本次拒绝伪造</h2>", _ul(_cannot_lines(data)),
+         "<h2>九、下一步搜集</h2>", _ul(_next_rows(data)),
+         "<h2>十、决策仍在你</h2>",
+         "<p>做不做由你定。重要的已经写在先做/先停里。没有导出的数字一律标无数据。</p>"]
     style = ("<style>body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:820px;"
              "margin:2rem auto;padding:0 1rem;color:#1a1a1a;line-height:1.6}"
              "h1{color:#0a7d4f}h2{color:#0a7d4f;border-bottom:1px solid #ddd;padding-bottom:.3rem}"

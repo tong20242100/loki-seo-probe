@@ -50,8 +50,7 @@ def sample():
              "loki": "G7 常识：分 UA 的 Disallow 必须读，不能当成全站隔离"},
             {"rule": "sitemap", "status": "na",
              "evidence": "sitemap paths={'/sitemap.xml': 0}", "loki": "常识"},
-            {"rule": "title-h1", "status": "seen",
-             "evidence": "title='友伴 PeerCare' h1='为学校做零废弃教育'", "loki": "6.3"},
+            {"rule": "title-h1", "status": "seen", "evidence": "title='友伴 PeerCare' h1='交付'", "loki": "6.3"},
         ],
         "diagnosis": {
             "verdict": "needs-focus",
@@ -73,7 +72,9 @@ def sample():
         ],
         "title_text": "友伴 PeerCare｜口号", "h1_text": "为学校做可验证的教育交付",
         "sniffs": [{"url": "https://x.com/a/event", "status": 200, "title": "一场活动"}],
-        "html": {"linkedin": 0},
+        "html": {"linkedin": 0}, "partial": False,
+        "sitemap": {"n": 444, "prefixes": [("posts", 333), ("news", 7)]},
+        "cannot": ["GSC Field 要后台（7.3）", "整站差要爬（#116 他本人）"],
     }
 
 
@@ -91,25 +92,30 @@ NEED = (("探针没看到", "md", "na 状态未翻译（应出现「探针没看
         ("实验室打分", "md", "缺「不要用实验室打分充真实体验」"),
         ("不是硬伤", "md", "栏目集中须标定性不是硬伤"),
         ("/a/event", "md", "有抽样却没进一页一词表"),
-        ("测不到也要注意", "md", "缺测不到也要说的注意项"))
+        ("本站对照", "md", "缺本站对照（pass 项的口径边界）"),
+        ("本次拒绝伪造", "md", "cannot[] 没进报告"),
+        ("site:", "md", "缺 site: 收录结构这一步"),
+        ("不替你发明", "md", "一页一词未明示探针不发明关键词"),
+        ("成交或产品目录", "md", "纯博客地图应点亮缺成交页"))
 
 GENERIC = ("探针未抽样", "待你填", "降低单一前缀", "结构更均衡", "增加业务页")
 
 
-def check(md, html, bad):
-    for b in LEAK + VERDICT_EN:
-        if b in md or b in html:
-            bad.append(f"黑话/英文 verdict 泄漏：{b}")
-    src_of = {"md": md, "html": html}
-    for tok, where, msg in NEED:
-        if tok not in src_of[where]:
-            bad.append(msg)
-    for g in GENERIC:
-        if g in md or g in html:
-            bad.append(f"通用体检腔调：{g}")
+def check(md, html, bad, au=None):
+    blob = md + "\n" + html
+    bad += [f"黑话/英文 verdict 泄漏：{b}" for b in LEAK + VERDICT_EN if b in blob]
+    src = {"md": md, "html": html}
+    bad += [msg for tok, where, msg in NEED if tok not in src[where]]
+    bad += [f"通用体检腔调：{g}" for g in GENERIC if g in blob]
     lines = [l for l in md.splitlines() if l.strip()]
     if not md.startswith("# 站点诊断") or len(lines) < 2 or "技术" not in lines[1]:
         bad.append("开头缺少大白话总结")
+    if au is None:
+        return
+    d = sample()
+    d["sitemap"] = {"n": 444, "prefixes": [("posts", 333), ("cases", 65)]}
+    if "成交或产品目录" in au.render_markdown(d):
+        bad.append("有成交目录时不应点亮纯博客缺成交页")
 
 
 def main():
@@ -121,7 +127,7 @@ def main():
     md = au.render_markdown(d)
     html = au.render_html(d)
     bad = []
-    check(md, html, bad)
+    check(md, html, bad, au)
     for b in bad:
         print("  FAIL", b)
     print(f"报告可读性门禁: {len(bad)} 项失败" if bad else "报告可读性门禁: 全部通过")
