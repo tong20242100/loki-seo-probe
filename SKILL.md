@@ -1,6 +1,6 @@
 ---
 name: loki-seo
-version: 1.0.3
+version: 1.0.4
 description: >
   用 Loki Yan (@loki_yan_seo) 的口径诊断一个线上网址：先跑 audit_url.py 探针，
   再给 3–7 条贴合该站的可落地动作，并列出要从 GSC / Frog 导出的数据。
@@ -146,6 +146,8 @@ python3 scripts/audit_url.py https://example.com
 ### 可读性（写给不懂 SEO 的人）
 
 报告是给人看的，不是给维护者看的。以下红线命中即改：
+
+现在 `audit_url.py` 运行后**自动**生成人话版报告：`<域名>_audit_report.md` 与 `<域名>_audit_report.html`（默认随 JSON 一起落盘）。agent 不必再手动把 JSON 翻译成散文；若用户要更贴合的动作建议，可在此合同基础上补充。上述红线同样约束自动报告（回归由 `tests/report_gate.py` 钉死）。
 
 - **第一句必须是一段大白话（≤120 字）**：站现在什么状态 + 最该做的一件事。不懂 SEO 的人读完要知道「我现在该干啥」，不是看到一串术语。
 - **verdict 四值翻成人话再写，不准直接贴英文**：`critical`→有必须修的硬伤；`at-risk`→有高风险项先处理；`needs-focus`→技术没硬伤，但 Google 可能搞不清你是干嘛的——去把「关于我们」/首页定位写清楚（**不是「站有问题」**）；`insufficient`→这次看的不够、下不了结论，先补数据。

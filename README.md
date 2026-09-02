@@ -2,7 +2,7 @@
 
 [![语义门禁](https://github.com/tong20242100/loki-seo-probe/actions/workflows/gate.yml/badge.svg)](https://github.com/tong20242100/loki-seo-probe/actions/workflows/gate.yml)
 
-**当前版本 1.0.3（2026-09-02）· MIT · 语料版权另见 [`NOTICE.md`](NOTICE.md)**
+**当前版本 1.0.4（2026-09-02）· MIT · 语料版权另见 [`NOTICE.md`](NOTICE.md)**
 
 > Loki Yan SEO 口径的可验证实现：探针（客观 HTTP 事实）＋ 研判（专家判定规则映射）＋ 语义门禁（回归即红）。
 >
@@ -52,8 +52,9 @@ cp -r loki-seo-probe ~/.workbuddy/skills/loki-seo      # ~/.claude/skills/、~/.
 ## 使用
 
 ```bash
-python3 scripts/audit_url.py https://example.com   # 输出探针 JSON
+python3 scripts/audit_url.py https://example.com   # 输出 JSON，并自动生成 <域名>_audit_report.md / .html 人话版报告
 python3 tests/confidence_gate.py                   # 语义门禁，应全绿
+python3 tests/report_gate.py                       # 报告可读性门禁，应全绿
 ```
 
 agent 按 SKILL.md 的输出合同（任务类型 / 探针事实 / 先做先停 / 一页一词表 / 证据等级 / 下一步搜集）出报告。
@@ -97,8 +98,9 @@ agent 按 SKILL.md 的输出合同（任务类型 / 探针事实 / 先做先停 
 SKILL.md                    调用规程：路由表、碰撞表、输出合同、风险信号、判定规则全文
 expert_claims.md            134 条主张表（含 #n → tweet_id 映射）
 corpus.json                 134 条推文原文（#n 同序、日期、X 链接，可离线核验）
-scripts/audit_url.py        探针（700 行，纯标准库）
+scripts/audit_url.py        探针（纯标准库，运行后自动生成人话 md/html 报告）
 tests/confidence_gate.py    语义门禁（692 行，compile 源码，绕过 pyc 缓存）
+tests/report_gate.py        报告可读性门禁（钉死渲染层去黑话 / verdict 人话 / 四列表）
 NOTICE.md                   语料归属、非官方声明、下架方式
 ```
 

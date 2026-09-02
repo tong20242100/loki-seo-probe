@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.4 — 2026-09-02（探针自动出人话报告 md/html，无语义变更）
+
+让探针**自己**输出人话版报告，不再依赖 agent 手动翻译 JSON。代码与判定语义未动，门禁仍全绿（confidence_gate 24 组 + 新增 report_gate + shape_check 三个 .py 超标 0）。
+
+- `scripts/audit_url.py` 新增渲染层（遵循「可读性」红线）：
+  - 运行后默认生成 `<域名>_audit_report.md` 与 `<域名>_audit_report.html`，JSON 仍打 stdout（管道兼容）。
+  - 自动去内部溯源（`loki`/`#n`/`口诀`/`G7`/`siteFocus` 不进报告）、`verdict` 四值翻人话、状态值翻译（`na`→探针没看到）、术语首翻（`posts`→博客文章）、四列动作表（谁改/改哪页/改成什么/怎么验收）。
+  - 事实段证据经 `_factual_evidence` 人话化，不再原样抄机器串（`prefixes=[('posts',333)]` 之类）。
+- 新增 `tests/report_gate.py`：用塞满黑话的合成 bundle 钉死渲染红线（去黑话 / verdict 人话 / na 翻译 / 术语首翻 / 四列表 / 开头大白话），回归即红。
+
 ## 1.0.3 — 2026-09-02（输出合同可读性，无语义变更）
 
 让运行时报告对**不懂 SEO 的用户**也能读懂、且不会误读结论。**代码与判定语义未动，门禁仍 24 组全绿。**
