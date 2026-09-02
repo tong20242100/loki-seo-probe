@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.9+1 — 2026-09-02（CI 补齐 report_gate / fetch_retry_gate）
+
+`.github/workflows/gate.yml` 原先只跑 `confidence_gate`。补齐用户早先要求的「把 report_gate 并进 CI」：
+
+- 新增 `report-gate` job：跑 `tests/report_gate.py`（可读性 + JSON.agent↔md 投影一致性）。
+- 新增 `fetch-retry-gate` job：跑 `tests/fetch_retry_gate.py`（502/超时退避重试、站点真 502 如实报 502）。
+- 三个 job 并行，任一红即阻断合并；README badge 文案「语义门禁」→「探针门禁」，并补一句 CI 覆盖范围说明。
+- 版本号不变（仅 CI/文档，不改探针语义或输出合同）。
+
 ## 1.0.9 — 2026-09-02（「待你处理」改写：能力缺口不再写成防御腔）
 
 `cannot[]` 的报告呈现从「本次拒绝伪造」式免责声明改写为「待你处理」：拆成**待办任务**（用户去拉/查 GSC、Ahrefs、Screaming Frog、site: 搜索）与**需你确认**（探针看不到的状态，如 Manual Action vs Deindex、品牌搜索量 vs 外链、作者履历真伪）。`CANNOT` 由纯字符串升级为结构化 `{mode, task, loki, why, forbid}`，渲染层据此分两组投影，agent 块 `cannot.forbid` 仍是机器 moat（AI 不得伪造该项）。report_gate 断言同步改为校验「待你处理」进场。

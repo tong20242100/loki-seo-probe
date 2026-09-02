@@ -1,6 +1,6 @@
 # loki-seo-probe
 
-[![语义门禁](https://github.com/tong20242100/loki-seo-probe/actions/workflows/gate.yml/badge.svg)](https://github.com/tong20242100/loki-seo-probe/actions/workflows/gate.yml)
+[![探针门禁](https://github.com/tong20242100/loki-seo-probe/actions/workflows/gate.yml/badge.svg)](https://github.com/tong20242100/loki-seo-probe/actions/workflows/gate.yml)
 
 **当前版本 1.0.9（2026-09-02）· MIT · 语料版权另见 [`NOTICE.md`](NOTICE.md)**
 
@@ -58,6 +58,8 @@ python3 tests/confidence_gate.py                   # 语义门禁，应全绿
 python3 tests/report_gate.py                       # 报告可读性门禁，应全绿
 python3 tests/fetch_retry_gate.py                  # 抓取重试门禁（502/超时退避重试），应全绿
 ```
+
+CI（`.github/workflows/gate.yml`）在每次 push 到 `main` 与每个 PR 上跑**全部三道门禁**（语意 / 报告可读性+AI 闭环一致性 / 抓取重试），任一红即阻断合并。本地改完先跑上面三条确认全绿再提。
 
 所有外网抓取统一走 `fetch()`，对 502/503/504 与网络超时自动退避重试（最多 3 次，间隔 1s→2s→4s），单次代理/隧道抖动不再把 sitemap/robots 打成 `na`；站点真 502 则如实报 502（上游仍按「没看到」处理，不假装探测失败）。
 

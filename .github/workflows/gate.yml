@@ -18,3 +18,25 @@ jobs:
         run: python3 -c "import scripts.audit_url"
       - name: 语义门禁必须全绿
         run: python3 tests/confidence_gate.py
+
+  report-gate:
+    runs-on: ubuntu-latest
+    # 可读性 + AI 闭环一致性门禁（md 与 JSON.agent 必须逐条一致），只用标准库。
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: 报告可读性门禁必须全绿
+        run: python3 tests/report_gate.py
+
+  fetch-retry-gate:
+    runs-on: ubuntu-latest
+    # 抓取重试行为门禁：502/超时退避重试，且站点真 502 如实报 502（不被重试掩盖成 0）。
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: 抓取重试门禁必须全绿
+        run: python3 tests/fetch_retry_gate.py
