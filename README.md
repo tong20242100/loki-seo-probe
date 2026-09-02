@@ -1,8 +1,11 @@
+[![门禁 CI](https://github.com/tong20242100/loki-seo-probe/actions/workflows/gate.yml/badge.svg)](https://github.com/tong20242100/loki-seo-probe/actions/workflows/gate.yml)
+![MIT](https://img.shields.io/badge/license-MIT-green.svg)
+![Python](https://img.shields.io/badge/python-3%2B-blue.svg)
+![corpus](https://img.shields.io/badge/corpus-134%20tweets-blueviolet.svg)
+
 # loki-seo-probe
 
 用 [@loki_yan_seo](https://x.com/loki_yan_seo) 的口径，把一个网址诊断成能落地的动作——并且**结构上不能编**。
-
-非官方实现 · MIT 许可证 · 语料版权见 [NOTICE.md](NOTICE.md)
 
 > **非官方实现，与作者无关联、未获授权、未获背书。** 判定规则以 @loki_yan_seo 的公开推文为源（见 `corpus.json`）；原始推文版权归原作者所有，MIT 仅覆盖本仓库代码与文档结构。完整版权与下架方式见 [NOTICE.md](NOTICE.md)。
 >
@@ -19,10 +22,6 @@
 | 🔬 **判断标准体系** | `SKILL.md` + `expert_claims.md` | 把一位 SEO 专家的 134 条判断标准整理成可查的规则库：每条都有判定条件、适用边界、反例、和原始推文出处；多条规则同时命中时按优先级决定顺序。 |
 | 🧭 **事实采集** | `scripts/audit_url.py` | 不登录、纯公开请求抓取网站的客观事实：robots 协议、sitemap、伪装成正常的死链（软 404）、移动版子站、历史存档。输出带可信度标注的结果——**抓不到 ≠ 没问题**。 |
 | 🚧 **防回归门禁** | `tests/confidence_gate.py` | 用自动化测试把上面的判断标准钉死：只要标准被改坏，测试立刻报错，不靠人肉审查。 |
-
-> 专家推文原文收录在 `corpus.json`，每条规则都能回源核对（见「语料与版权」）。
-
----
 
 ## 安装
 
@@ -51,8 +50,6 @@ python3 scripts/audit_url.py https://example.com --diff prev.json   # 只打印 
 - **人读**：直接看 `md` / `html` 报告，或对着 JSON 里的 `status` / `diagnosis` 读。
 - **AI 读**：只读 `JSON.agent` 块（`schema: loki-seo-agent/v1`）——它是机器合同，动作只算一遍，md / html 只是它的投影；`agent.actions[].verify.kind` 三态（probe / human / collect）定死「哪些能复测验收、哪些探针打不绿、哪些没文件就停」。完整合同见 SKILL.md「AI 闭环」一节。
 
----
-
 ## 可信度保证
 
 判定语义不是靠模型自觉，而是由 `tests/` 下三道门禁强制钉死——任何回归都会让 CI 变红：
@@ -64,8 +61,6 @@ python3 scripts/audit_url.py https://example.com --diff prev.json   # 只打印 
 | `fetch_retry_gate.py` | 抓取重试行为：断言真实退避，而非只检查源码字符串 |
 
 门禁在每次 push / PR 的 CI 中自动跑；演进记录见 [CHANGELOG.md](CHANGELOG.md)。
-
----
 
 ## 仓库结构
 
@@ -89,8 +84,6 @@ python3 scripts/audit_url.py https://example.com --diff prev.json   # 只打印 
 - **134 条是切片，不是全账号**：收录标准与不收录范围见 [NOTICE.md](NOTICE.md)。
 - **原文版权归 @loki_yan_seo 所有**；MIT 仅覆盖本仓库的代码与文档结构，**不覆盖**推文原文。
 - 有异议即下架：原作者或权利人在 issue 或 X（[@MagicQM](https://x.com/MagicQM)）提出，直接删，不问理由。
-
----
 
 ## License
 
