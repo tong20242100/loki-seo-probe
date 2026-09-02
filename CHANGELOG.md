@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.11 — 2026-09-02（消重 site: 提醒：只在八节常驻缺口，九节不再重复）
+
+八节「待你处理」与九节「下一步搜集」都无条件带了 site: 收录搜索提醒，两处重复。
+site: 搜索是探针永久能力缺口（探针永远不能搜索），属常驻缺口，应只在八节 8.1 出现。
+九节只承载 per-run 动态搜集项（GSC 基线等）。
+
+- `_next_rows()` 删除无条件 append 的 site: 行。
+- `_cannot_todo()` 渲染时把占位「域名」替换为真实 host，八节 site 项现在写成 `site:peercare.cn` 这类针对本站的明确指令。
+- 门禁 NEED 令牌 `site:` 仍在八节保留，report_gate 不受影响。
+
 ## 1.0.10 — 2026-09-02（conclude 三态：partial ≠ inconclusive）
 
 `may_conclude` 布尔把两种完全不同的降级收成一件事。SKILL 对 partial 的合同是「只对看得见的部分开方、整份暂定」，对 inconclusive 才是「不开方」。把 partial 也打成 false 会丢掉降级诊断（与旧「home 非 200 就 exit 1」同型）。

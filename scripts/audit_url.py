@@ -1168,12 +1168,16 @@ def _cannot_items(data):
 
 
 def _cannot_todo(data):
+    host = urlparse(data.get("origin") or "").netloc or "该域名"
+    if host.startswith("www."):
+        host = host[4:]
     items = [c for c in _cannot_items(data) if c.get("mode") == "todo"]
     if not items:
         return []
     out = []
     for c in items:
-        line = "待办（你做）：" + c.get("task", "")
+        task = c.get("task", "").replace("域名", host)
+        line = "待办（你做）：" + task
         if c.get("why"):
             line += " —— " + c["why"]
         out.append(line)
@@ -1199,12 +1203,7 @@ def _cannot_lines(data):
 
 
 def _next_rows(data):
-    host = urlparse(data.get("origin") or "").netloc or "该域名"
-    if host.startswith("www."):
-        host = host[4:]
     out = [_plain(item.get("need", "")) for item in data.get("next_collect") or []]
-    out.append(f"必须补一步：搜索 site:{host} 看收录结构。"
-               "自动报告做不了搜索，这一步要你来做。不要把「已收录总数」当健康分。")
     return [x for x in out if x]
 
 
