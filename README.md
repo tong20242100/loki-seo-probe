@@ -88,30 +88,15 @@ bash scripts/publish.sh
 - 有异议就下架：开 issue 或联系维护者，直接删，不问理由。
 - MIT 覆盖代码与文档结构，**不覆盖**推文原文。
 
-## 验证声明
+## 验证
 
-- `tests/confidence_gate.py`：24 组门禁全绿、73 处断言点（其中 7 处在表驱动循环内，
-  运行时展开为更多独立失败信号）。分组：
-  P0 置信度语义 / P1 研判排序 / P4 seen-na 拆分 / P7 sitemap 变体 / P8 发现层 /
-  P9 抖动与假 healthy /
-  P10 m-host 双义、Wayback 倒序、抽样活样本分母、display:none 与 robots 双条覆盖 /
-  P11 robots 幽灵块、sitemap body 复用、NXDOMAIN 进置信、sitemap 超时走 na。
-- 变异测试：11 个变异（含 3 个诱导性变异：源码诱饵行、只 patch 被测函数、等价变异）逐个回退，
-  10 个 CAUGHT；剩下 1 个是等价变异（`True` / `None` 在唯一调用点同归 `na`，行为无差别）。
-  复原后 byte-identical 复绿。P11 又补 5 个变异（幽灵块 / body 二抓 / NXDOMAIN 置信 /
-  sitemap 超时 warn / mix 只认 lost），逐个回退全 CAUGHT，复原 byte-identical 复绿。
-- 实测：在一个出口链路间歇超时的自有站点上（探针 TIMEOUT=20s，序列中任一请求都可能撞上），
-  `partial` 降级路径与 `insufficient` verdict 均按设计落盘。CHANGELOG 里保留该站真名，
-  是为了让勘误可复算；它不是示例站，也不代表一般站点。
-- 发布前二轮实测另抓出三项并已修：Wayback `last200` 取到最早第 3 条（假数据，比真实最新早 10 个月）、
-  m-host 靠 urllib 错误文本判 NXDOMAIN 致同一站点事实随代理环境出两种结论、抽样分母把死样本计入。
-  详见 CHANGELOG「1.0.1」。
-- 发布前三轮重测又抓出四项并已修：robots 解析器幽灵空 `*` 块、well_known 已 200 的 sitemap
-  被 `sitemap_mix` 二抓（双次 fetch 撞抖动）、NXDOMAIN 判定层认而置信层不认、
-  sitemap 探针超时装扮成「站点没有 sitemap」。详见 CHANGELOG「1.0.1」。
-- 门禁自身也被实测纠过两次错：只查源码字符串的断言会被**诱饵行**骗过；
-  只 patch **被测函数自身**的断言会让该实现一行都跑不到。两条均已改为断言行为
-  （断言实际发出的请求 URL / 只 patch 下一层）。
+判定语义由 `tests/` 下三道门禁钉死，回退即红：
+
+- `confidence_gate.py`：24 组语义断言 + 变异测试（含诱导性变异），覆盖置信度、研判排序、seen/na 拆分、sitemap 变体、抖动与假 healthy、m-host / Wayback / 抽样分母 / display:none / 各探针超时路径。
+- `report_gate.py`：渲染层去黑话、verdict 人话、四列表、JSON.agent↔md 投影一致。
+- `fetch_retry_gate.py`：502/超时退避重试（patch 下一层 `urlopen`，断言真实重试行为）。
+
+门禁的分组、变异清单与历次抓虫记录见 [`CHANGELOG.md`](CHANGELOG.md)。
 
 ## 仓库结构
 
