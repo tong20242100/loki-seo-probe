@@ -267,10 +267,11 @@ def check_reading(au, bad):
     c["diagnosis"]["n_fail"] = 1
     c["agent"] = au.build_agent(c)
     md = au.render_markdown(c)
-    if "技术没硬伤" in md:
-        bad.append("critical 报告仍在说「技术没硬伤」，读法句须按 verdict 分流")
-    if "先按「先做」修完" not in md:
-        bad.append("critical 报告未给出「先按先做修完」的读法")
+    html = au.render_html(c)
+    if "技术没硬伤" in md or "技术没硬伤" in html:
+        bad.append("critical 报告仍在说「技术没硬伤」，读法句须按 verdict 分流（md 和 html 都要）")
+    if "先按「先做」修完" not in md or "先按「先做」修完" not in html:
+        bad.append("critical 报告未给出「先按先做修完」的读法（md 和 html 都要）")
 
 
 def check_conclude(au, bad):

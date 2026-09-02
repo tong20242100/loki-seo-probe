@@ -1345,7 +1345,7 @@ def render_html(data):
          f"<li>数据可信度：{_esc(conf)}（1.0 = 该查的都查到了；越低只说明这次看到的越少，不是站越差）</li>",
          f"<li>网站地图：<b>{_esc(FOLLOW_HUMAN.get(follow, follow))}</b></li>",
          f"<li>总体判断：<b>{_esc(vh)}</b></li>",
-         "<li>读法：没写出来的数字不是漏了，是没抓到就不编。技术没硬伤时，先看「先停」。</li></ul>",
+         f"<li>{_esc(_reading_line(data))}</li></ul>",
          "<h2>二、先做（业务侧：你和内容团队能做）</h2>", _html_table(_do_rows(data, tech=False), HDR_DO),
          ("<h3>技术项（交给技术团队）</h3>" + _html_table(_do_rows(data, tech=True), HDR_DO)) if _do_rows(data, tech=True) else "",
          "<h2>三、先停</h2>", _html_table(_stop_rows(data), HDR_STOP),
@@ -1361,7 +1361,7 @@ def render_html(data):
          ("<h3>8.2 需你确认（检测工具看不到）</h3>" + _ul(_cannot_confirm(data))) if _cannot_confirm(data) else "",
          "<h2>九、还需要补充的数据</h2>", _ul(_next_rows(data)),
          "<h2>十、最终决定权在你</h2>",
-         "<p>做不做由你定。能做的已经写在「先做」和「先停」里了。没有后台数据的数字一律标无数据。</p>"]
+         "<p>做不做由你定。该做的写在「先做」，别碰的写在「先停」。没有后台数据的数字一律标无数据。</p>"]
     style = ("<style>body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:820px;"
              "margin:2rem auto;padding:0 1rem;color:#1a1a1a;line-height:1.6}"
              "h1{color:#0a7d4f}h2{color:#0a7d4f;border-bottom:1px solid #ddd;padding-bottom:.3rem}"
