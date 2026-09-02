@@ -40,13 +40,6 @@
 | 🧭 **探针层** | `scripts/audit_url.py` | 未登录 HTTP 事实采集：robots / sitemap / 软 404 / `<main>` / m 站 / Wayback，输出带置信度的 JSON。五值状态机 `na / seen / pass / warn / fail`：**没看到 ≠ 没问题** |
 | 🚧 **门禁层** | `tests/confidence_gate.py` | 语义断言（含变异测试）：口径一旦回归直接 `exit 1`，不靠模型阅读自觉 |
 
-被门禁钉死的设计原则：
-
-- **降级不丢诊断** — 首页 502 但 robots 可读时是 `partial`，可用的降级结论不整份丢弃；`verdict` 在 partial 且无 fail/warn 时输出 `insufficient`，不让「healthy」字面值骗下游。
-- **抖动不翻结论** — 探针超时／5xx 一律 `na`（没看到），不落 warn；站点没变，抖动不该把结论从 pass 翻成 at-risk。robots 是下跌场景第一探针，非 200 一律 `warn`（刻意例外）。
-- **核不到就明示** — GSC Field CWV、DR／外链、品牌搜索量等探针核不到的项，在 JSON 里显式挡（`cannot[]`），改写成「待办任务 / 需你确认」两类，不写成防御腔。
-- **`seen` ≠ `na`** — title／h1 文案、JSON-LD 类型这类「材料已给但不自动打分」的事实，与「没看到」严格分开。
-
 ---
 
 ## 安装
