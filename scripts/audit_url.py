@@ -69,6 +69,18 @@ BACKOFF = 1.0
 _RETRY_HTTP = frozenset((502, 503, 504))
 FAKE = "/loki-audit-not-found-7f3c9e"
 
+# 可选抓取后端：curl_cffi 用真实浏览器 TLS/JA3 指纹（impersonate=chrome）绕过大多数
+# WAF/Cloudflare 对裸 urllib 的拦截，避免把被拦的请求误判成 na / 站差。
+# 缺失时自动回退标准库 urllib——CI 与干净环境默认走 urllib，门禁不受影响。
+try:
+    from curl_cffi import requests as _creq
+    from curl_cffi.requests.errors import RequestsError
+    _HAVE_STEALTH = True
+except Exception:
+    _creq = None
+    RequestsError = Exception
+    _HAVE_STEALTH = False
+
 
 def origin_of(url):
     p = urlparse(url if "://" in url else "https://" + url)
@@ -77,32 +89,50 @@ def origin_of(url):
     return f"{scheme}://{host}".rstrip("/")
 
 
-def fetch(url, method="GET", timeout=TIMEOUT):
+def _fetch_urllib(url, method, timeout):
     req = Request(url, method=method, headers={"User-Agent": UA})
+    try:
+        with urlopen(req, timeout=timeout, context=CTX) as r:
+            body = r.read(2_000_000)
+            return {"url": r.geturl(), "status": r.status,
+                    "ctype": r.headers.get("Content-Type", ""),
+                    "body": body.decode("utf-8", "replace")}
+    except HTTPError as e:
+        raw = e.read(20_000) if e.fp else b""
+        return {"url": url, "status": e.code, "ctype": "",
+                "body": raw.decode("utf-8", "replace")}
+
+
+def _fetch_stealth(url, method, timeout):
+    resp = _creq.request(method, url, impersonate="chrome",
+                         headers={"User-Agent": UA}, timeout=timeout,
+                         allow_redirects=True)
+    body = resp.content[:2_000_000]
+    return {"url": resp.url, "status": resp.status_code,
+            "ctype": resp.headers.get("Content-Type", ""),
+            "body": body.decode("utf-8", "replace")}
+
+
+def fetch(url, method="GET", timeout=TIMEOUT):
     last = None
     for attempt in range(RETRIES):
         try:
-            with urlopen(req, timeout=timeout, context=CTX) as r:
-                body = r.read(2_000_000)
-                return {
-                    "url": r.geturl(), "status": r.status,
-                    "ctype": r.headers.get("Content-Type", ""),
-                    "body": body.decode("utf-8", "replace"),
-                }
-        except HTTPError as e:
-            if e.code in _RETRY_HTTP and attempt < RETRIES - 1:
-                last = e
-                time.sleep(BACKOFF * (2 ** attempt))
-                continue
-            raw = e.read(20_000) if e.fp else b""
-            return {"url": url, "status": e.code, "ctype": "",
-                    "body": raw.decode("utf-8", "replace")}
-        except (URLError, TimeoutError, ssl.SSLError, ValueError) as e:
+            if _HAVE_STEALTH:
+                r = _fetch_stealth(url, method, timeout)
+            else:
+                r = _fetch_urllib(url, method, timeout)
+        except (URLError, TimeoutError, ssl.SSLError,
+                ValueError, OSError, RequestsError) as e:
             if attempt < RETRIES - 1:
                 time.sleep(BACKOFF * (2 ** attempt))
                 continue
             return {"url": url, "status": 0, "ctype": "", "body": "",
                     "error": str(e)}
+        if r["status"] in _RETRY_HTTP and attempt < RETRIES - 1:
+            last = r
+            time.sleep(BACKOFF * (2 ** attempt))
+            continue
+        return r
     return {"url": url, "status": 0, "ctype": "", "body": "",
             "error": f"重试 {RETRIES} 次仍失败: {last}"}
 

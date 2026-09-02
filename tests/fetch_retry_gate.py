@@ -12,6 +12,10 @@ spec = importlib.util.spec_from_file_location("au", "scripts/audit_url.py")
 au = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(au)
 
+# 门禁只验 urllib 路径的重试语义（下一层 urlopen 被 patch）。
+# 若本机装了可选后端 curl_cffi，强制关掉，保证断言稳定、与 CI 一致。
+au._HAVE_STEALTH = False
+
 CALLS = {"n": 0}
 
 

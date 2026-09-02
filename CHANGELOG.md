@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.0.13 — 2026-09-02（fetch 隐身后端 + 文档修正 + 形态门禁全绿）
+
+### 抓取后端：裸 urllib → 可选 curl_cffi 隐身
+裸 `urllib` + 单一写死 UA 的 TLS/JA3 指纹易被 WAF/Cloudflare 识破，把被拦的请求误判成
+`na` / 站差——直接污染探针最核心的「客观 HTTP 事实」。
+
+- `fetch()` 拆成「后端无关的重试循环 + `_fetch_urllib`（回退）+ `_fetch_stealth`（curl_cffi
+  `impersonate="chrome"`）」。装了 `curl_cffi` 自动改用浏览器指纹抓取，缺省回退 urllib。
+- 返回形状（url/status/ctype/body/error）不变，三道门禁的输入契约不动。
+- `scrapling-stealth` 经实测：import 即要求 `playwright`（浏览器二进制），对只查
+  状态码/robots/sitemap 的探针是过度依赖，故选其底层引擎 `curl_cffi` 而非整包。
+
+### 门禁
+- `fetch_retry_gate`：强制 `au._HAVE_STEALTH = False` 再 patch `urlopen`——装了 curl_cffi
+  的本地跑门禁也不会因 urlopen 不被调用而失效，与 CI（无 curl_cffi）语义一致。
+- `report_gate.sample` 41>40 → 合并两行字典回到 ≤40，形态门禁全仓 0 超标（此前一直红着）。
+
+### 文档修正（README）
+- 「发布」小节：原写「仓库默认无 remote、本机无认证 gh」已过时——origin 早已配置且已 push；
+  改为如实描述（已配 origin，直接 `git push` 即触发 CI，推送走 SSH）。
+- 「语料与版权」+ 顶部 intro：澄清「134 条是切片（非全账号），这 134 条的完整原文收录在
+  corpus.json」的措辞矛盾；显式点名版权归 **@loki_yan_seo**。
+- 依赖说明：补「可选 curl_cffi 作为抓取后端，缺失自动回退标准库」。
+
 ## 1.0.12 — 2026-09-02（机器层 site: 单源收口）
 
 1.0.11 只在人话层（md 八/九节）消重。机器层有两处问题，缺一不可：

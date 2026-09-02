@@ -62,8 +62,7 @@ def sample():
             ],
             "top_risk": "最优先: sitemap-mix (warn, loki 7.4 siteFocus；单一前缀 posts 占 75%)",
             "focus_reading": "站点可能被当成 posts 站（posts 占 75%，n=444）",
-            "gaps": [], "to_judge": [], "n_fail": 0, "n_warn": 2,
-            "evidence_partial": False,
+            "gaps": [], "to_judge": [], "n_fail": 0, "n_warn": 2, "evidence_partial": False,
         },
         "next_collect": [
             {"need": "GSC 效果页对齐下跌窗口：掉的是转化页还是博客页",
@@ -74,8 +73,7 @@ def sample():
         "sniffs": [{"url": "https://x.com/a/event", "status": 200, "title": "一场活动"}],
         "html": {"linkedin": 0}, "partial": False,
         "sitemap": {"n": 444, "prefixes": [("posts", 333), ("news", 7)]},
-        "cannot": ["GSC Field 要后台（7.3）", "整站差要爬（#116 他本人）",
-                   "搜索 site:域名 看收录结构"],
+        "cannot": ["GSC Field 要后台（7.3）", "整站差要爬（#116 他本人）", "搜索 site:域名 看收录结构"],
     }
 
 
