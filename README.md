@@ -148,7 +148,6 @@ cp -r loki-seo-probe ~/.workbuddy/skills/loki-seo   # ~/.claude/skills/、~/.gro
 | `tests/confidence_gate.py` | 门禁 | 语义门禁 `24 组 73 点` |
 | `tests/report_gate.py` | 门禁 | 可读性+`agent↔md` 一致性 |
 | `tests/fetch_retry_gate.py` | 门禁 | 重试行为 |
-| `peercare_business_first_draft.md` | 草稿 | `peercare.cn` 一页一词首版（业务待拍板，不入库） |
 | `NOTICE.md` | 声明 | 语料归属/非官方/下架方式 |
 | `LICENSE` | 声明 | MIT（不含推文原文） |
 
