@@ -1,6 +1,6 @@
 ---
 name: loki-seo
-version: 1.0.9
+version: 1.0.10
 description: >
   用 Loki Yan (@loki_yan_seo) 的口径诊断一个线上网址：先跑 audit_url.py 探针，
   再给 3–7 条贴合该站的可落地动作，并列出要从 GSC / Frog 导出的数据。
@@ -167,7 +167,7 @@ python3 scripts/audit_url.py https://example.com
 - AI 改站前**只读 JSON.agent**，不要只读 md——md 故意删掉 `loki`/`#n`，对不上闭环键。
 - `actions[].verify.kind` 三态是 moat：`probe`=同一命令复跑对 `rule+status`（软404/`<main>`/https/m站/display:none）；`human`=探针打不绿（About 定性、一页一词、成交页），**AI 禁止为了绿而改 sitemap 比例或堆标题**；`collect`=GSC/Frog/site:，没文件就停、不准编。
 - `reprobe.cmd` 是复测命令，`agent.reprobe.diff` 是稳定对账键；修复循环只改一项、复跑、对 `diff` 比对，na↔pass 抖动标「可能是代理抖动」不当成修复成功。
-- `may_conclude=false`（inconclusive/partial）时只报没看到，不开方。
+- `conclude` 三态，不要收成一个布尔：`full`（ok，正常开方）/ `tentative`（partial，只对看得见的部分开方，整份暂定，禁止当终局）/ `none`（inconclusive，只报没看到，**不开方**，`actions` 只留 collect）。`may_conclude` 仅 `full` 为 true，给只读布尔的调用方。**禁止把 partial 当成 inconclusive**——那会把降级诊断整份丢掉。
 - 不用 MCP 假接 GSC/Frog；不把 md 再喂给模型当 prompt；不给探针加 LLM（口径已在规则里，加层只会编 query/DR）。
 
 1. **任务类型**

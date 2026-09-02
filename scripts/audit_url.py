@@ -807,25 +807,37 @@ def _agent_actions(bundle):
             + _agent_collect(bundle) + _agent_ask())
 
 
+def _conclude(bundle):
+    """三态，禁止把 partial 和 inconclusive 收成同一个布尔。
+    none=三核全没看到，不开方；tentative=看得见的部分可开方、整份暂定；
+    full=核心都看到，正常开方。"""
+    if bundle.get("inconclusive") or bundle.get("status") == "inconclusive":
+        return "none"
+    if bundle.get("partial") or bundle.get("status") == "partial":
+        return "tentative"
+    return "full"
+
+
 def build_agent(bundle):
     origin = bundle.get("origin", "")
     host = urlparse(origin).netloc or origin
     disp = host[4:] if host.startswith("www.") else host
-    may = not (bundle.get("inconclusive")
-               or bundle.get("status") == "inconclusive")
+    mode = _conclude(bundle)
+    acts = (_agent_collect(bundle) if mode == "none" else _agent_actions(bundle))
     cannot = [{"id": f"no-{i+1:02d}", "forbid": (c.get("forbid") if isinstance(c, dict) else _plain(c))}
               for i, c in enumerate(bundle.get("cannot") or [])]
     return {
         "schema": "loki-seo-agent/v1",
         "source_of_truth": "this_json",
         "human_projection": f"{disp}_audit_report.md",
-        "may_conclude": may,
+        "conclude": mode,
+        "may_conclude": mode == "full",
         "reprobe": {
             "cmd": ["python3", "scripts/audit_url.py", origin + "/"],
             "diff": ["findings.rule", "findings.status",
                      "sitemap.n", "sitemap.prefixes"],
         },
-        "actions": _agent_actions(bundle),
+        "actions": acts,
         "cannot": cannot,
         "ask_human": [
             "转化发生在哪几页（探针看不到成交）",

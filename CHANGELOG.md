@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.10 — 2026-09-02（conclude 三态：partial ≠ inconclusive）
+
+`may_conclude` 布尔把两种完全不同的降级收成一件事。SKILL 对 partial 的合同是「只对看得见的部分开方、整份暂定」，对 inconclusive 才是「不开方」。把 partial 也打成 false 会丢掉降级诊断（与旧「home 非 200 就 exit 1」同型）。
+
+- 新增 `_conclude()`：`full`（ok）/ `tentative`（partial）/ `none`（inconclusive）。
+- `agent.conclude` 为三态；`may_conclude` 仅 `full` 为 true（布尔兼容）。
+- `none` 时 `actions` 只留 collect，不产出 do。
+- `tentative` 仍产出 do/stop，但 `may_conclude=false`，禁止当终局。
+- report_gate 钉死三态，并显式禁止「partial 拆掉 do」。
+
 ## 1.0.9+1 — 2026-09-02（CI 补齐 report_gate / fetch_retry_gate）
 
 `.github/workflows/gate.yml` 原先只跑 `confidence_gate`。补齐用户早先要求的「把 report_gate 并进 CI」：

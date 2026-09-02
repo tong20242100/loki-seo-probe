@@ -135,6 +135,24 @@ def check_agent(au, d, bad):
     stop_n = sum(1 for x in a["actions"] if x["kind"] == "stop")
     if _table_rows(md, "## 二、先做") != do_n or _table_rows(md, "## 三、先停") != stop_n:
         bad.append("先做/先停表行数与 agent do/stop 数不一致")
+    if a.get("conclude") != "full" or a.get("may_conclude") is not True:
+        bad.append("ok 样本 conclude 应为 full 且 may_conclude=true")
+
+
+def check_conclude(au, bad):
+    """partial ≠ inconclusive。A 方案（partial 也不开方）会丢掉降级诊断。"""
+    p = sample()
+    p.update(status="partial", partial=True, inconclusive=False)
+    a = au.build_agent(p)
+    if a.get("conclude") != "tentative" or a.get("may_conclude"):
+        bad.append("partial 应为 conclude=tentative 且 may_conclude=false")
+    if not any(x.get("kind") == "do" for x in a.get("actions") or []):
+        bad.append("partial 仍应对看得见的部分开方，不应拆掉 do")
+    q = sample()
+    q.update(status="inconclusive", inconclusive=True, partial=False)
+    b = au.build_agent(q)
+    if b.get("conclude") != "none" or any(x.get("kind") == "do" for x in b.get("actions") or []):
+        bad.append("inconclusive 应 conclude=none 且无 do")
 
 
 def check(md, html, bad, au=None):
@@ -167,6 +185,7 @@ def main():
     bad = []
     check(md, html, bad, au)
     check_agent(au, d, bad)
+    check_conclude(au, bad)
     for b in bad:
         print("  FAIL", b)
     print(f"报告可读性门禁: {len(bad)} 项失败" if bad else "报告可读性门禁: 全部通过")
