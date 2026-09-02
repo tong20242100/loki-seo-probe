@@ -1150,10 +1150,21 @@ def _home_th(data):
     return (m.group(1) if m else ""), (mh.group(1) if mh else "").strip()
 
 
+def _home_demo(data):
+    """首页「搜索词」列的示范：用内部叫法 vs 外人会搜的说法点破区别。
+    优先读数据里的 home_keyword_demo（样例可填真实示例），否则用中性占位示例。"""
+    d = data.get("home_keyword_demo")
+    if isinstance(d, dict) and d.get("internal") and d.get("good"):
+        return d
+    return {"internal": "XX 工作坊", "good": "幼儿园 XX 课程设计 / 二十四节气校本课程"}
+
+
 def _onepage_rows(data):
-    unclear = "你来填：这页用什么词能找到你？"
+    demo = _home_demo(data)
     title, h1 = _home_th(data)
-    rows = [["首页", unclear, f"标题：{title}；页面主标题（H1）：{h1}"]]
+    home = f"示范：内部叫「{demo['internal']}」→ 外人搜「{demo['good']}」"
+    rows = [["首页", home, f"标题：{title}；页面主标题（H1）：{h1}"]]
+    unclear = "你来填：这页用什么词能找到你？"
     live = 0
     for s in data.get("sniffs") or []:
         if s.get("status") != 200:
@@ -1164,7 +1175,7 @@ def _onepage_rows(data):
         rows.append([path, unclear, f"标题：{(s.get('title') or '')[:80]}"])
     if not live:
         rows.append(["内页", "这次没抽到活样本", "全站一词表需效果报告或人工看"])
-    rows.append(["能产生订单/咨询的页面", "（你填：这些页面在哪）", "检测工具看不到成交数据"])
+    rows.append(["能赚钱的页面", "（你填：这些页面在哪）", "检测工具看不到成交数据"])
     return rows
 
 
@@ -1174,7 +1185,7 @@ def _grade_lines(data):
         "能直接动手的：首页和「关于我们」写清楚你是谁；每页盯一个外人会搜的词；技术没问题后看每页内容，别堆标题。",
         "要打折扣的：DA / DR 这类第三方打的「网站权重分」是结果不是原因，不能拿来解释排名为什么掉。",
         "没有数据的：见「八、需要你手动处理」。没有你的后台导出就不写那些数字。",
-        "还要你自己定的：能产生订单/咨询的页面在哪（你填）。搜索词列检测工具不替你编关键词。",
+        "还要你自己定的：能赚钱的页面在哪（你填）。搜索词列检测工具不替你编关键词。",
     ]
 
 
@@ -1268,12 +1279,6 @@ def _md_table(rows, headers):
     return out
 
 
-def _html_table(rows, headers):
-    th = "".join(f"<th>{_esc(h)}</th>" for h in headers)
-    body = "".join("<tr>" + "".join(f"<td>{_esc(c)}</td>" for c in r) + "</tr>" for r in rows)
-    return f"<table><thead><tr>{th}</tr></thead><tbody>{body}</tbody></table>"
-
-
 def _reading_line(data):
     """报告第一屏的读法提示。硬编码成「技术没硬伤」会在 critical 报告里自相矛盾。"""
     v = (data.get("diagnosis") or {}).get("verdict", "")
@@ -1336,43 +1341,197 @@ def _ul(items):
     return "<ul>" + "".join(f"<li>{_esc(x)}</li>" for x in items) + "</ul>"
 
 
+def _verdict_badge(v):
+    if v in ("critical", "at-risk"):
+        return "有硬伤，先处理"
+    if v == "insufficient":
+        return "查的不够全"
+    return "没有硬伤"
+
+
+
+def _verdict_color(v):
+    if v in ("critical", "at-risk"):
+        return "#c0392b"
+    if v == "insufficient":
+        return "#b9770e"
+    return "#0a7d4f"
+
+
+def _html_hero(data, host, vh, conf, follow, status):
+    v = (data.get("diagnosis") or {}).get("verdict", "")
+    col = _verdict_color(v)
+    badges = [f"<span class='pill'>{_esc(RUN_HUMAN.get(status, status))}</span>",
+              f"<span class='pill'>数据可信度 {_esc(conf)}</span>",
+              f"<span class='pill'>{_esc(FOLLOW_HUMAN.get(follow, follow))}网站地图</span>"]
+    return ("<div class='hero' style='background:" + col + "'>"
+            "<span class='badge'>" + _verdict_badge(v) + "</span>"
+            "<div class='ht'>" + _esc(_opening(data, host, vh)) + "</div>"
+            "<div class='pills'>" + "".join(badges) + "</div>"
+            "<div class='reading'>" + _esc(_reading_line(data)) + "</div></div>")
+
+
+def _html_spotlight(data):
+    dx = data.get("diagnosis") or {}
+    pri = dx.get("priority") or []
+    big, sub = "", ""
+    if pri:
+        rule = pri[0].get("rule")
+        f = next((x for x in data.get("findings", []) if x.get("rule") == rule), {}) or {}
+        focus = f.get("focus") or {}
+        share = focus.get("share")
+        if share:
+            big = f"{share:.0%}"
+            sub = "的页面是博客文章" if focus.get("top") in (None, "posts") else f"的页面集中在「{focus.get('top')}」"
+    out = ["<section class='problem'>", "<div class='problem-label'>核心问题</div>"]
+    if big:
+        out.append(f"<div class='bigstat'><span class='num'>{big}</span>"
+                   f"<span class='num-sub'>{_esc(sub)}</span></div>")
+    for r in _facts_rows(data)[:3]:
+        out.append(f"<div class='problem-line'>{_esc(r)}</div>")
+    out.append("</section>")
+    return "".join(out)
+
+
+def _html_table(headers, rows, status_col=None, raw_cols=()):
+    th = "".join(f"<th>{_esc(h)}</th>" for h in headers)
+    body = ""
+    for r in rows:
+        if status_col is not None:
+            cells = [f"<td class='st st-{_esc(r[status_col])}'>{_esc(c)}</td>" if i == status_col
+                     else f"<td>{c if i in raw_cols else _esc(c)}</td>" for i, c in enumerate(r)]
+        else:
+            cells = [f"<td>{c if i in raw_cols else _esc(c)}</td>" for i, c in enumerate(r)]
+        body += "<tr>" + "".join(cells) + "</tr>"
+    return f"<table><thead><tr>{th}</tr></thead><tbody>{body}</tbody></table>"
+
+
+def _tech_status_cn(s):
+    return {"pass": "通过", "fail": "未通过", "warn": "注意",
+            "seen": "检测到", "na": "没看到"}.get(s, s or "")
+
+
+def _no_leak(s):
+    return (s or "").replace("posts 站", "博客站").replace("posts", "博客文章")
+
+
+def _html_do(data):
+    rows = _do_rows(data, tech=False)
+    if not rows:
+        return ""
+    body = []
+    for r in rows:
+        body.append([str(r[0]), r[1], r[2], r[3], r[4]])
+    return ("<section class='block'><h2>先做</h2>"
+            "<p class='lead'>想清楚三件事：你是谁 · 哪几页赚钱 · 每页排什么。</p>"
+            + _html_table(["#", "谁改", "改哪一页", "改成什么", "怎么验收"], body)
+            + "</section>")
+
+
+def _bold_no_fake(note):
+    return _esc(note or "").replace("不要编", "<b>不要编</b>")
+
+
+def _html_stop(data):
+    rows = _stop_rows(data)
+    if not rows:
+        return ""
+    body = [[str(r[0]), _esc(r[1]), _esc(r[2]), _bold_no_fake(r[3])] for r in rows]
+    return ("<section class='block stop'><h2>先停（这些先别做）</h2>"
+            + _html_table(["#", "别碰哪块", "为什么先别做", "边界在哪"], body, raw_cols=(3,))
+            + "</section>")
+
+
+def _html_keyword(data):
+    d = _home_demo(data)
+    hint = (f"<p class='hint'><b>示范：</b>内部叫「{_esc(d['internal'])}」→ "
+            f"外人搜「{_esc(d['good'])}」。一页只抢一个词，别贪心。</p>")
+    rows = [[c[0], c[1], c[2]] for c in _onepage_rows(data)]
+    return ("<section class='block'><h2>每页要排哪个词</h2>"
+            + hint
+            + _html_table(["页面", "搜索词（你填）", "当前标题"], rows)
+            + "</section>")
+
+
+def _html_tech(data):
+    findings = data.get("findings") or []
+    notes = _site_notes(data)
+    if not findings and not notes:
+        return ""
+    out = ["<section class='block tech'>", "<h2>技术核查</h2>"]
+    if findings:
+        body = [[_tech_status_cn(f.get("status")), f.get("rule", ""),
+                 _no_leak(str(f.get("evidence", "")))] for f in findings]
+        out.append("<p class='lead'>逐项核查结果：</p>")
+        out.append(_html_table(["状态", "检查项", "证据"], body, status_col=0))
+    if notes:
+        out.append("<p class='lead'>补充说明（探测范围有限）：</p>")
+        out.append("<ul class='notes'>" + "".join(f"<li>{_esc(x)}</li>" for x in notes) + "</ul>")
+    out.append("</section>")
+    return "".join(out)
+
+
+def _html_manual(data):
+    todo = _cannot_todo(data)
+    conf = _cannot_confirm(data)
+    if not todo and not conf:
+        return ""
+    out = ["<section class='block manual'><h2>需你手动处理</h2>",
+           "<p class='lead'>以下检测工具查不了，需你登录后台或用其它工具核查。没查之前不要猜结论。</p>"]
+    if todo:
+        rows = [[t.split(" —— ")[0], t.split(" —— ")[1] if " —— " in t else ""] for t in todo]
+        out.append("<p class='lead'>待办任务（你去做）</p>")
+        out.append(_html_table(["待办任务", "为什么探针查不了"], rows))
+    if conf:
+        rows = [[t.split(" —— ")[0], t.split(" —— ")[1] if " —— " in t else ""] for t in conf]
+        out.append("<p class='lead'>需你确认（探针看不到）</p>")
+        out.append(_html_table(["需你确认", "为什么探针看不到"], rows))
+    out.append("</section>")
+    return "".join(out)
+
+
+def _html_next(data):
+    rows = _next_rows(data)
+    if not rows:
+        return ""
+    out = ["<section class='block next'><h2>还需补充的数据</h2>",
+           _html_table(["还需补充"], [[r] for r in rows]),
+           "</section>"]
+    return "".join(out)
+
+
+def _html_footer(data):
+    return ("<footer class='foot'>做不做由你定。该做的写在了「先做」，别碰的写在了「先停」。"
+            "没有后台数据的数字一律标无数据。</footer>")
+
+
+def _html_style():
+    css = (":root{--green:#0a7d4f;--green-soft:#f4f9f6;--green-line:#cfe6da;--amber:#b9770e;--amber-line:#f0dcb4;--red:#c0392b;--red-line:#f3cfc9;--ink:#1d2329;--mut:#5b6670;--line:#dfe3e7;--bg:#fafbfc}*{box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif;max-width:1000px;margin:0 auto;padding:2rem 1.2rem 3rem;color:var(--ink);line-height:1.65;background:#fff}.sitename{font-size:13px;font-weight:600;letter-spacing:.05em;color:var(--mut);text-transform:uppercase;margin:0 0 1rem}"
+           ".hero{border-radius:12px;padding:1.4rem 1.6rem;color:#fff;margin-bottom:1.6rem}.hero .badge{display:inline-block;background:rgba(255,255,255,.2);border-radius:999px;padding:.2rem .7rem;font-size:12px;font-weight:600;margin-bottom:.6rem}.hero .ht{font-size:18px;font-weight:700;line-height:1.5;margin:0 0 .8rem}.hero .pills{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.6rem}.hero .pill{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:.2rem .65rem;font-size:11.5px}.hero .reading{font-size:12px;opacity:.85;border-top:1px solid rgba(255,255,255,.25);padding-top:.55rem}"
+           ".problem{background:#fff;border:1px solid var(--line);border-radius:10px;padding:1.2rem 1.4rem;margin-bottom:1.6rem}.problem-label{font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--amber);margin-bottom:.4rem}.bigstat{display:flex;align-items:baseline;gap:.55rem;margin-bottom:.2rem}.bigstat .num{font-size:52px;font-weight:800;color:var(--amber);line-height:1;letter-spacing:-.02em}.bigstat .num-sub{font-size:16px;font-weight:600;color:var(--ink)}.problem-line{font-size:14px;color:var(--mut);margin:.35rem 0}"
+           ".block{margin:2rem 0}.block h2{font-size:17px;font-weight:700;color:var(--ink);margin:0 0 .7rem;padding-bottom:.35rem;border-bottom:2px solid var(--green-line)}.block.stop h2{border-bottom-color:var(--red-line)}.block.tech h2{border-bottom-color:var(--green-line)}.block.manual h2{border-bottom-color:var(--amber-line)}.block.next h2{border-bottom-color:var(--amber-line)}.lead{font-size:14px;color:var(--mut);margin:-.2rem 0 .7rem}.lead b{color:var(--green)}.hint{font-size:13px;color:var(--mut);background:var(--green-soft);border-left:3px solid var(--green-line);padding:.55rem .8rem;margin:.2rem 0 .8rem;border-radius:0 6px 6px 0}.hint b{color:var(--green)}"
+           "table{border-collapse:collapse;width:100%;margin:.2rem 0 1rem;font-size:13.5px;background:#fff}th,td{border:1px solid var(--line);padding:.55rem .65rem;text-align:left;vertical-align:top}th{background:var(--green-soft);color:var(--green);font-weight:700;font-size:12.5px;white-space:nowrap}.stop th{background:#fff8f7;color:var(--red)}.tech th{background:#f8f9fa;color:var(--mut)}td{color:var(--ink)}.notes{font-size:13px;color:var(--mut);margin:.2rem 0;padding-left:1.1rem}.foot{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);font-size:12px;color:var(--mut);text-align:center}"
+           "th.st,td.st{font-weight:600;white-space:nowrap}td.st-通过{color:var(--green)}td.st-未通过{color:var(--red)}td.st-注意{color:var(--amber)}td.st-检测到,td.st-没看到{color:var(--mut)}tr:nth-child(even) td{background:var(--bg)}"
+           "@media(max-width:560px){body{padding:1.2rem .9rem 2rem}.hero{padding:1.1rem}.bigstat .num{font-size:42px}th,td{padding:.45rem .5rem;font-size:12.5px}}")
+    return "<style>" + css + "</style>"
+
+
 def render_html(data):
     host, verdict, vh, conf, follow, status = _report_meta(data)
-    p = [f"<h1>站点诊断报告：{_esc(host)}</h1>",
-         f"<p class='open'>{_esc(_opening(data, host, vh))}</p>",
-         "<h2>一、现在的状态</h2><ul>",
-         f"<li>这次查全了吗：<b>{_esc(RUN_HUMAN.get(status, status))}</b></li>",
-         f"<li>数据可信度：{_esc(conf)}（1.0 = 该查的都查到了；越低只说明这次看到的越少，不是站越差）</li>",
-         f"<li>网站地图：<b>{_esc(FOLLOW_HUMAN.get(follow, follow))}</b></li>",
-         f"<li>总体判断：<b>{_esc(vh)}</b></li>",
-         f"<li>{_esc(_reading_line(data))}</li></ul>",
-         "<h2>二、先做（业务侧：你和内容团队能做）</h2>", _html_table(_do_rows(data, tech=False), HDR_DO),
-         ("<h3>技术项（交给技术团队）</h3>" + _html_table(_do_rows(data, tech=True), HDR_DO)) if _do_rows(data, tech=True) else "",
-         "<h2>三、先停</h2>", _html_table(_stop_rows(data), HDR_STOP),
-         "<h2>四、检测发现的问题</h2>", _ul(_facts_rows(data)),
-         "<h2>五、每页要排哪个词</h2>",
-         "<p>每个页面只盯一个搜索词。下面是检测到的页面，「搜索词」列留给你填——检测工具不知道你的业务目标，不替你发明关键词。</p>",
-         _html_table(_onepage_rows(data), ["页面", "搜索词（你填）", "当前标题"]),
-         "<h2>六、哪些数据可信</h2>", _ul(_grade_lines(data)),
-         "<h2>七、逐项核查结果</h2>", _ul(_site_notes(data)),
-         "<h2>八、需要你手动处理</h2>",
-         "<p>以下几项检测工具查不了，需要你自己登录后台或用其他工具去查。没查之前不要猜结论。</p>",
-         ("<h3>8.1 待办任务（你去做）</h3>" + _ul(_cannot_todo(data))) if _cannot_todo(data) else "",
-         ("<h3>8.2 需你确认（检测工具看不到）</h3>" + _ul(_cannot_confirm(data))) if _cannot_confirm(data) else "",
-         "<h2>九、还需要补充的数据</h2>", _ul(_next_rows(data)),
-         "<h2>十、最终决定权在你</h2>",
-         "<p>做不做由你定。该做的写在「先做」，别碰的写在「先停」。没有后台数据的数字一律标无数据。</p>"]
-    style = ("<style>body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:820px;"
-             "margin:2rem auto;padding:0 1rem;color:#1a1a1a;line-height:1.6}"
-             "h1{color:#0a7d4f}h2{color:#0a7d4f;border-bottom:1px solid #ddd;padding-bottom:.3rem}"
-             ".open{background:#f3f9f4;border-left:4px solid #0a7d4f;padding:1rem}"
-             "table{border-collapse:collapse;width:100%;margin:.5rem 0}"
-             "th,td{border:1px solid #ddd;padding:.5rem;text-align:left}th{background:#f3f9f4}"
-             "ul{margin:.5rem 0}li{margin:.3rem 0}</style>")
+    p = [f"<h1 class='sitename'>站点诊断 · {_esc(host)}</h1>",
+         _html_hero(data, host, vh, conf, follow, status),
+         _html_spotlight(data),
+         _html_do(data),
+         _html_stop(data),
+         _html_keyword(data),
+         _html_tech(data),
+         _html_manual(data),
+         _html_next(data),
+         _html_footer(data)]
     return (f"<!doctype html><html lang='zh'><head><meta charset='utf-8'>"
-            f"<title>站点诊断：{_esc(host)}</title>{style}</head>"
+            f"<meta name='viewport' content='width=device-width,initial-scale=1'>"
+            f"<title>站点诊断：{_esc(host)}</title>{_html_style()}</head>"
             f"<body>{''.join(p)}</body></html>")
-
 
 def diff_json(prev, now):
     out = []

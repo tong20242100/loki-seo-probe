@@ -85,9 +85,10 @@ VERDICT_EN = ("needs-focus", "at-risk", "critical", "insufficient")
 NEED = (("这次没检测到", "md", "na 状态未翻译（应出现「这次没检测到」）"),
         ("博客文章", "md", "术语未首翻：posts 应翻成「博客文章」"),
         ("| 谁改 |", "md", "markdown 缺少四列动作表（| 谁改 |）"),
-        ("<table", "html", "html 缺少四列动作表"),
-        ("谁改", "html", "html 动作表缺表头"),
+        ("你是谁", "html", "html 缺少老板版卡片（你是谁）"),
+        ("技术核查", "html", "html 技术核查未直接展示为表格"),
         ("先停", "md", "技术全绿时仍须有先停（别追外链 / 别上作业清单 / 别充分数）"),
+        ("先停", "html", "html 缺先停卡片"),
         ("这页说不出自己排什么", "md", "一页一词说不清须照写，不许「待你填」"),
         ("哪些数据可信", "md", "缺「哪些数据可信」章节"),
         ("分数冒充真实用户体验", "md", "缺「用测速工具分数冒充真实体验」警告"),
@@ -98,7 +99,11 @@ NEED = (("这次没检测到", "md", "na 状态未翻译（应出现「这次没
         ("需要你手动处理", "md", "cannot[] 没改写成「需要你手动处理」"),
         ("site:", "md", "缺 site: 收录结构这一步"),
         ("不替你发明", "md", "每页要排的词未明示检测工具不替你发明关键词"),
-        ("能产生订单/咨询的页面", "md", "纯博客地图应点亮缺成交页"))
+        ("能赚钱的页面", "md", "纯博客地图应点亮缺成交页"),
+        ("示范", "html", "html 关键词表缺首页示范行"),
+        ("一页只抢一个词", "html", "html 未口语化每页一词"),
+        ("每页要排哪个词", "html", "html 缺一页一词表"),
+        ("需你手动处理", "html", "html 缺「需你手动处理」节（探针查不了的项）"))
 
 GENERIC = ("探针未抽样", "待你填", "降低单一前缀", "结构更均衡", "增加业务页")
 
@@ -253,7 +258,10 @@ def check_sample_consistency(au, bad):
         d["agent"] = au.build_agent(d)
         if mp.read_text(encoding="utf-8") != au.render_markdown(d):
             bad.append(f"样例 md 与 json 不同源：{mp.name}（按 json 重渲后不一致）")
-        if hp.read_text(encoding="utf-8") != au.render_html(d):
+        disk_h = hp.read_text(encoding="utf-8")
+        # 预览工具会给盘上 html 注入 data-page-node-id，剥掉后再比。
+        disk_h = re.sub(r'\s*data-page-node-id="[^"]*"', "", disk_h)
+        if disk_h != au.render_html(d):
             bad.append(f"样例 html 与 json 不同源：{hp.name}（按 json 重渲后不一致）")
 
 
