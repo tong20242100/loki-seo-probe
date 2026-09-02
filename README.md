@@ -32,13 +32,15 @@
 
 ## 三层结构
 
-同类工具缺的从来不是知识，是**防编造的强制力**。本仓库把口径落成三层，每一层都可被程序验证：
+同类工具缺的从来不是知识，是**防编造的强制力**——结论不能靠模型「觉得对」就出口。本仓库把一套 SEO 判断标准体系落成三层，每层都能被程序验证：
 
-| 层 | 文件 | 做什么 |
-|---|---|---|
-| 🔬 **口径层** | `SKILL.md` + `expert_claims.md` | 134 条专家主张：判定规则、边界、反例、出处 `tweet_id`；碰撞表决定规则叠加顺序 |
-| 🧭 **探针层** | `scripts/audit_url.py` | 未登录 HTTP 事实采集：robots / sitemap / 软 404 / `<main>` / m 站 / Wayback，输出带置信度的 JSON。五值状态机 `na / seen / pass / warn / fail`：**没看到 ≠ 没问题** |
-| 🚧 **门禁层** | `tests/confidence_gate.py` | 语义断言（含变异测试）：口径一旦回归直接 `exit 1`，不靠模型阅读自觉 |
+| 层 | 文件 | 这一层负责什么 |
+| --- | --- | --- |
+| 🔬 **判断标准体系** | `SKILL.md` + `expert_claims.md` | 把一位 SEO 专家的 134 条判断标准整理成可查的规则库：每条都有判定条件、适用边界、反例、和原始推文出处。多条规则同时命中时，按优先级决定先后顺序。 |
+| 🧭 **事实采集** | `scripts/audit_url.py` | 不登录、纯公开请求抓取网站的客观事实：robots 协议、sitemap、伪装成正常的死链（软 404）、移动版子站、历史存档。输出带可信度标注的结果——**抓不到 ≠ 没问题**。 |
+| 🚧 **防回归门禁** | `tests/confidence_gate.py` | 用自动化测试把上面的判断标准钉死：只要标准被改坏，测试立刻报错，不靠人肉审查。 |
+
+> 专家推文原文收录在 `corpus.json`，每条规则都能回源核对（见「语料与版权」）。
 
 ---
 
@@ -87,13 +89,13 @@ python3 scripts/audit_url.py https://example.com --diff prev.json  # 只打印 f
 
 | 文件 | 所属层 | 作用 |
 |---|---|---|
-| `SKILL.md` | 口径 | 调用规程：路由表、碰撞表、输出合同、风险信号、判定规则全文 |
-| `expert_claims.md` | 口径 | 134 条主张表（含 `#n → tweet_id` 映射） |
-| `corpus.json` | 口径（语料） | 134 条推文原文（`#n` 同序、日期、X 链接，可离线核验） |
-| `scripts/audit_url.py` | 探针 | 纯标准库探针；运行后自动生成人话 md/html 报告；含 `build_agent` 产出 `JSON.agent` 机器合同 + `--diff` 复测对账；`fetch` 含 502/超时退避重试 |
-| `tests/confidence_gate.py` | 门禁 | 语义门禁 |
-| `tests/report_gate.py` | 门禁 | 报告可读性门禁（钉死渲染层去黑话 / verdict 人话 / 四列表 / JSON.agent↔md 投影一致） |
-| `tests/fetch_retry_gate.py` | 门禁 | 抓取重试门禁 |
+| `SKILL.md` | 判断标准体系 | 调用规程：路由表、碰撞表、输出合同、风险信号、判定规则全文 |
+| `expert_claims.md` | 判断标准体系 | 134 条主张表（含 `#n → tweet_id` 映射） |
+| `corpus.json` | 判断标准体系（语料） | 134 条推文原文（`#n` 同序、日期、X 链接，可离线核验） |
+| `scripts/audit_url.py` | 事实采集 | 纯标准库探针；运行后自动生成人话 md/html 报告；含 `build_agent` 产出 `JSON.agent` 机器合同 + `--diff` 复测对账；`fetch` 含 502/超时退避重试 |
+| `tests/confidence_gate.py` | 防回归门禁 | 语义门禁 |
+| `tests/report_gate.py` | 防回归门禁 | 报告可读性门禁（钉死渲染层去黑话 / verdict 人话 / 四列表 / JSON.agent↔md 投影一致） |
+| `tests/fetch_retry_gate.py` | 防回归门禁 | 抓取重试门禁 |
 | `NOTICE.md` | 声明 | 语料归属、非官方声明、下架方式 |
 | `LICENSE` | 声明 | MIT 许可证 |
 
