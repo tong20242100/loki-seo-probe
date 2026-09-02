@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.5 — 2026-09-02（抓取 502/超时退避重试，无语义变更）
+
+给 `fetch()` 加统一退避重试：502/503/504 与网络超时（URLError/TimeoutError/SSLError）自动重试，最多 3 次、间隔 1s→2s→4s。sitemap/robots/well-known 全链路受覆盖（它们都走 `fetch()`），单次代理/隧道抖动不再把结果打成 `na`。
+
+- 站点**真**返回 502 时如实报 502（上游仍按「没看到」处理），不被重试掩盖成探测失败 0。
+- 新增 `tests/fetch_retry_gate.py`：只 patch 下一层 `urllib.request.urlopen`，断言 `fetch` 真实重试行为（502/网络错重试到 200、穷尽后 URLError→status=0、真 502→502），不是只查源码字符串。
+- 顺手删掉 1.0.4 遗留的重复死代码旧 `main()`（Python 只会用最后的 main，旧版只出 JSON 的 main 成了死代码）。
+- 门禁全绿：confidence_gate 24 组 + report_gate + fetch_retry_gate + shape_check（4 个 .py 超标 0）。诊断语义未动。
+
 ## 1.0.4 — 2026-09-02（探针自动出人话报告 md/html，无语义变更）
 
 让探针**自己**输出人话版报告，不再依赖 agent 手动翻译 JSON。代码与判定语义未动，门禁仍全绿（confidence_gate 24 组 + 新增 report_gate + shape_check 三个 .py 超标 0）。

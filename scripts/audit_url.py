@@ -50,6 +50,7 @@
 import json
 import re
 import sys
+import time
 import ssl
 import socket
 from pathlib import Path
@@ -62,6 +63,9 @@ UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
       "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36")
 CTX = ssl.create_default_context()
 TIMEOUT = 20
+RETRIES = 3
+BACKOFF = 1.0
+_RETRY_HTTP = frozenset((502, 503, 504))
 FAKE = "/loki-audit-not-found-7f3c9e"
 
 
@@ -74,20 +78,32 @@ def origin_of(url):
 
 def fetch(url, method="GET", timeout=TIMEOUT):
     req = Request(url, method=method, headers={"User-Agent": UA})
-    try:
-        with urlopen(req, timeout=timeout, context=CTX) as r:
-            body = r.read(2_000_000)
-            return {
-                "url": r.geturl(), "status": r.status,
-                "ctype": r.headers.get("Content-Type", ""),
-                "body": body.decode("utf-8", "replace"),
-            }
-    except HTTPError as e:
-        raw = e.read(20_000) if e.fp else b""
-        return {"url": url, "status": e.code, "ctype": "",
-                "body": raw.decode("utf-8", "replace")}
-    except (URLError, TimeoutError, ssl.SSLError, ValueError) as e:
-        return {"url": url, "status": 0, "ctype": "", "body": "", "error": str(e)}
+    last = None
+    for attempt in range(RETRIES):
+        try:
+            with urlopen(req, timeout=timeout, context=CTX) as r:
+                body = r.read(2_000_000)
+                return {
+                    "url": r.geturl(), "status": r.status,
+                    "ctype": r.headers.get("Content-Type", ""),
+                    "body": body.decode("utf-8", "replace"),
+                }
+        except HTTPError as e:
+            if e.code in _RETRY_HTTP and attempt < RETRIES - 1:
+                last = e
+                time.sleep(BACKOFF * (2 ** attempt))
+                continue
+            raw = e.read(20_000) if e.fp else b""
+            return {"url": url, "status": e.code, "ctype": "",
+                    "body": raw.decode("utf-8", "replace")}
+        except (URLError, TimeoutError, ssl.SSLError, ValueError) as e:
+            if attempt < RETRIES - 1:
+                time.sleep(BACKOFF * (2 ** attempt))
+                continue
+            return {"url": url, "status": 0, "ctype": "", "body": "",
+                    "error": str(e)}
+    return {"url": url, "status": 0, "ctype": "", "body": "",
+            "error": f"重试 {RETRIES} 次仍失败: {last}"}
 
 
 # 探针发现层的清单——「到底抓哪些 well-known 路径」由这份常量决定。
@@ -679,22 +695,6 @@ NOTE = {"partial": "JSON 仍有可研判的输出，但不要当整站看见了"
 # core_missing 表达，并在 stderr 补一行，不靠退出码。
 # NOTE 必须按状态分开写：inconclusive 时 JSON 里并没有可研判的输出，
 # 沿用 partial 那句「仍有输出」会让调用方去读一份全 na 的 JSON 找结论。
-
-
-def main():
-    if len(sys.argv) < 2 or not sys.argv[1].strip():
-        print("用法: python3 audit_url.py https://example.com", file=sys.stderr)
-        return 2
-    data = audit(sys.argv[1].strip())
-    json.dump(data, sys.stdout, ensure_ascii=False, indent=2)
-    print()
-    st = data.get("status") or "inconclusive"
-    if st != "ok":
-        print(f"[loki-seo] status={st} core_missing={data.get('core_missing')} "
-              f"sitemap_follow={data.get('sitemap_follow')} "
-              f"run_confidence={data.get('run_confidence')}：{NOTE[st]}",
-              file=sys.stderr)
-    return EXIT.get(st, 1)
 
 
 # ===== 人话报告渲染层（遵循 SKILL.md 输出合同「可读性」红线）=====

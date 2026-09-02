@@ -1,6 +1,6 @@
 ---
 name: loki-seo
-version: 1.0.4
+version: 1.0.5
 description: >
   用 Loki Yan (@loki_yan_seo) 的口径诊断一个线上网址：先跑 audit_url.py 探针，
   再给 3–7 条贴合该站的可落地动作，并列出要从 GSC / Frog 导出的数据。
