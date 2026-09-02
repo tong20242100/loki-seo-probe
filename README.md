@@ -10,8 +10,8 @@
 <h1 align="center">🔬 loki-seo-probe</h1>
 
 <p align="center">
-  <b>把一位 SEO 专家的公开口径，蒸馏成一套<em>可被程序强制校验</em>的审计流水线</b><br/>
-  探针采集客观 HTTP 事实 → 研判按专家规则映射 → 语义门禁把口径钉成断言，任何回归直接红灯
+  <b>用 @loki_yan_seo 的口径，把一个网址诊断成能落地的动作——并且结构上不能编</b><br/>
+  探针抓客观 HTTP 事实 → 研判套专家判定规则 → 语义门禁锁死口径，任何回归直接红灯
 </p>
 
 <p align="center">
@@ -22,7 +22,7 @@
 
 ---
 
-> **非官方蒸馏，无授权、无关联。** 口径来自 [@loki_yan_seo](https://x.com/loki_yan_seo) 在 X 上公开发布的推文，未获本人授权或背书。
+> **非官方实现，无授权、无关联。** 判定规则以 [@loki_yan_seo](https://x.com/loki_yan_seo) 在 X 上公开发布的推文为源（见 `corpus.json`），未获本人授权或背书。
 >
 > 我们从其全账号切出 **134 条**门禁切片（`core × authored × strong`，**非全账号**），这 134 条的**完整原文**收录在 `corpus.json`（与 `expert_claims.md` 同序、含 X 链接），可离线回源核对每一条判定规则。**原文版权归 @loki_yan_seo 所有**；MIT 仅覆盖本仓库的代码与文档结构（见 [`NOTICE.md`](NOTICE.md)）。
 >
