@@ -2,3 +2,9 @@ __pycache__/
 *.pyc
 *.bak*
 .DS_Store
+
+# 探针生成物（每次运行产生，含具体站点诊断，不入库）
+*_audit_report.md
+*_audit_report.html
+*_audit_run.json
+peercare.cn_audit_*.json
