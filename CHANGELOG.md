@@ -9,6 +9,7 @@ site: 搜索是探针永久能力缺口（探针永远不能搜索），属常�
 - `_next_rows()` 删除无条件 append 的 site: 行。
 - `_cannot_todo()` 渲染时把占位「域名」替换为真实 host，八节 site 项现在写成 `site:peercare.cn` 这类针对本站的明确指令。
 - 门禁 NEED 令牌 `site:` 仍在八节保留，report_gate 不受影响。
+- 仓库工具：新增 `scripts/publish.sh`（幂等补 remote + push）与 README「发布」小节。本机无认证 `gh`、仓库默认无 remote，push 归用户执行；push 后 `.github/workflows/gate.yml` 才真跑三道门禁。不改探针语义。
 
 ## 1.0.10 — 2026-09-02（conclude 三态：partial ≠ inconclusive）
 

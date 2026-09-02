@@ -68,6 +68,19 @@ CI（`.github/workflows/gate.yml`）在每次 push 到 `main` 与每个 PR 上�
 agent 按 SKILL.md 的输出合同（任务类型 / 探针事实 / 先做先停 / 一页一词表 / 证据等级 / 下一步搜集）出报告。
 人肉使用也成立：跑探针，对着 JSON 里的 `status` / `run_confidence` / `diagnosis` / `agent` 读。
 
+## 发布（推到 GitHub 触发 CI）
+
+本机无认证 `gh`、仓库默认无 remote，push 需你手动执行（或跑辅助脚本）。push 之后，`.github/workflows/gate.yml` 才会在每次 push/PR 跑三道门禁，README 顶部 badge 也才开始有状态。
+
+```bash
+# 方式一：直接命令
+git remote add origin git@github.com:tong20242100/loki-seo-probe.git
+git push -u origin main
+
+# 方式二：辅助脚本（首次自动补 remote，之后幂等）
+bash scripts/publish.sh
+```
+
 ## 语料与版权
 
 - 收录的是**公开发布的推文原文**，目的是让每条判定规则可离线回源，不是转载传播。
