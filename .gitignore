@@ -8,3 +8,6 @@ __pycache__/
 *_audit_report.html
 *_audit_run.json
 peercare.cn_audit_*.json
+
+# 业务草稿（本地待拍板，不入库）
+peercare_business_first_draft.md
