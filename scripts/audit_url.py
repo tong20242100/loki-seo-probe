@@ -805,7 +805,7 @@ def _agent_stop(bundle):
         out.append({"id": "stop-llms", "kind": "stop", "loki": "2.3", "who": "先别做",
             "where": "给 AI 看的说明文件",
             "change": "本站已经有这份文件。谷歌的 AI 搜索结果不一定会读。有文件不等于这件事做完了。",
-            "verify": {"kind": "none", "note": "不要再加社区帖、问答、公关那一套作业"}})
+            "verify": {"kind": "none", "note": "有了说明文件就够，不用额外去发帖、做问答、写公关稿那一套"}})
     return out
 
 
@@ -945,14 +945,15 @@ STATUS_HUMAN = {
     "fail": "检测到硬伤，必须修",
 }
 RULE_HUMAN = {
-    "robots.txt": "robots 文件（告诉搜索引擎哪些能抓）", "sitemap": "网站地图",
-    "llms.txt": "llms.txt（给 AI 看的站点说明）", "semantic main": "页面主内容区 <main>",
-    "h1": "H1 标题", "linkedin": "作者 LinkedIn 链接", "json-ld": "结构化数据 JSON-LD",
-    "display:none": "隐藏文本（display:none）", "soft-404 probe": "软 404（错误页却返回 200）",
-    "wayback": "Wayback 历史存档", "m-subdomain": "移动端 m. 子域",
+    "robots.txt": "搜索引擎抓取规则文件", "sitemap": "网站地图",
+    "llms.txt": "给 AI 看的站点说明文件", "semantic main": "正文区标记",
+    "h1": "页面主标题", "linkedin": "作者 LinkedIn 链接",
+    "json-ld": "给搜索引擎看的结构化数据",
+    "display:none": "藏起来的文字", "soft-404 probe": "假的「找不到」页面",
+    "wayback": "历史存档记录", "m-subdomain": "手机站另开的 m. 地址",
     "sitemap-mix": "网站地图内的页面结构", "sampled-originality": "抽样页原创度",
-    "jsonld-types": "结构化数据类型", "title-h1": "标题与 H1 文案",
-    "robots-ua": "robots 里按搜索引擎分别写的屏蔽规则", "https": "HTTPS（加密地址）",
+    "jsonld-types": "结构化数据里标的类型", "title-h1": "页面标题与主标题",
+    "robots-ua": "按搜索引擎分别设的屏蔽规则", "https": "加密地址（网址开头的 https）",
 }
 # 两张动作表的表头。先停表不复用先做的表头：那里既没有「谁改」也没有「改成什么」。
 HDR_DO = ["#", "谁改", "改哪一页", "改成什么", "怎么验收"]
@@ -981,14 +982,14 @@ ACTIONS = {
 # 测不到也要说的刹车。技术全 pass 时报告仍靠这几条，不许只剩「结构均衡」。
 ALWAYS_STOP = (
     ("先别做", "买外链这件事",
-     "不要把 DA/DR 这类第三方打分当排名原因去追，更不要花钱买外链来恢复排名",
-     "没有外链工具就写无数据，禁止编数字"),
+     "不要把第三方网站打分（比如 DA/DR）当成排名原因去追，更不要花钱买外链",
+     "外链数据你查不到就写无数据，不要编个数字凑上去"),
     ("先别做", "AI 搜索结果",
-     "不要另做一套「给 AI 看的作业」（社区帖、问答、公关稿、结构化数据清单）；说明文件有了，谷歌 AI 也不一定读",
-     "被 AI 提到，靠的还是普通收录，没有另一套作业"),
+     "不要为了被 AI 提到，专门去做一套「给 AI 看的内容」（发帖、问答、公关稿、硬塞结构化数据）；本站已经有了说明文件，AI 也不一定读",
+     "不用专门跑去小红书发帖求 AI 收录，把本站内容做好就行"),
     ("先别做", "分数和处罚",
-     "不要用 PageSpeed Insights 这类工具给的分数冒充真实用户体验；没有后台截图不要说被处罚",
-     "体验看 Google Search Console 近 28 天的真实用户数据"),
+     "不要用网页测速工具给的分数冒充真实用户体验；没有后台截图不要说被处罚",
+     "真实体验看谷歌站长后台近 28 天的数据"),
 )
 
 
@@ -998,11 +999,11 @@ ALWAYS_STOP = (
 EVID = {
     "robots-ua": ("这份文件读到了，但里面针对某些搜索引擎单独写的那几段没读到全文，可能把重要目录误挡在了外面",
                   "这一项没抓到结果", "已读到全文，没有误挡"),
-    "semantic main": ("首页缺了这个标签，或者放的位置不对", "这一项没抓到结果", "首页主内容区正常"),
-    "display:none": ("页面里有用隐藏样式藏起来的文字，搜索引擎可能认为你在耍花样", "这一项没抓到结果", "没有发现藏起来的文字"),
-    "soft-404 probe": ("有页面写着「找不到」，地址却返回正常。搜索引擎会反复来抓这些其实不存在的页面，白占它花在你站上的时间", "这一项没抓到结果", "没有发现这类页面"),
+    "semantic main": ("首页缺了这个标记，或者放的位置不对，搜索引擎可能把侧栏或页脚当成正文", "这一项没抓到结果", "首页正文区标记正常"),
+    "display:none": ("有些文字被样式藏了起来，人看不见、搜索引擎却读得到，可能被当成耍花样", "这一项没抓到结果", "没有发现藏起来的文字"),
+    "soft-404 probe": ("页面上写着「找不到」，却告诉搜索引擎这页是正常的。搜索引擎会反复来抓这些其实不存在的页面，白占它花在你站上的时间", "这一项没抓到结果", "没有发现这类页面"),
     "m-subdomain": ("手机站另开了一个 m. 开头的地址，内容可能和电脑版是两回事，搜索引擎会当成两个站", "这一项没抓到结果", "没有发现手机电脑两套页面"),
-    "https": ("网址开头没有统一用 https", "这一项没抓到结果", "已启用 HTTPS"),
+    "https": ("网址开头没有统一用 https，访客和搜索引擎看到的可能不是同一个地址", "这一项没抓到结果", "网址已经统一用 https"),
     "sampled-originality": ("抽查到的页面里有整段照搬或改几个字的搬运内容", "没抽到内页，无法判断原创度", "抽查到的页面没发现搬运"),
     "sitemap": ("这份文件读到了，但里面的内容有问题", "这次没拿到网站地图（可能超时或被挡），说不清有没有", "网站地图正常"),
     "h1": ("一页只该有一个主标题，这个页面不是", "这一项没抓到结果", "主标题正常"),
@@ -1086,11 +1087,17 @@ def _looks_blog_only(data):
     return not any(any(k in n for k in money) for n in names)
 
 
-def _do_rows(data):
+def _do_rows(data, tech=None):
+    """先做表数据源。tech=None 返回全部；True 只返回技术项（rule 在 ACTIONS 里，
+    即交给前端的 main/隐藏文本、后台的 404、运维的 https 等），False 只返回业务/
+    内容项。技术全 pass 时业务表先行、技术表不渲染，非技术读者不会被术语劝退。"""
     ag = (data.get("agent") or {}).get("actions") or []
     rows, seen = [], set()
     for a in ag:
         if a.get("kind") != "do":
+            continue
+        is_tech = a.get("rule") in ACTIONS
+        if tech is not None and is_tech != tech:
             continue
         key = (a.get("where", ""), a.get("change", "")[:24])
         if key in seen or len(rows) >= 12:
@@ -1275,6 +1282,15 @@ def _reading_line(data):
     return "读法：没写出来的数字不是漏了，是没抓到就不编。技术没硬伤时，先看「先停」。"
 
 
+def _do_section(data):
+    """先做节：业务表（必出，非技术读者也能动手）+ 技术表（仅技术项有 fail/warn 时出现）。"""
+    out = _md_table(_do_rows(data, tech=False), HDR_DO)
+    tech_rows = _do_rows(data, tech=True)
+    if tech_rows:
+        out += ["", "### 技术项（交给技术团队，非技术读者可跳过）"] + _md_table(tech_rows, HDR_DO)
+    return out
+
+
 def render_markdown(data):
     host, verdict, vh, conf, follow, status = _report_meta(data)
     L = [f"# 站点诊断报告：{host}", "", _opening(data, host, vh), "",
@@ -1284,8 +1300,8 @@ def render_markdown(data):
          f"- 网站地图：**{FOLLOW_HUMAN.get(follow, follow)}**",
          f"- 总体判断：**{vh}**",
          f"- {_reading_line(data)}",
-         "", "## 二、先做"]
-    L.extend(_md_table(_do_rows(data), HDR_DO))
+         "", "## 二、先做（业务侧：你和内容团队能做）"]
+    L.extend(_do_section(data))
     L += ["", "## 三、先停"]
     L.extend(_md_table(_stop_rows(data), HDR_STOP))
     L += ["", "## 四、检测发现的问题"]
@@ -1330,7 +1346,8 @@ def render_html(data):
          f"<li>网站地图：<b>{_esc(FOLLOW_HUMAN.get(follow, follow))}</b></li>",
          f"<li>总体判断：<b>{_esc(vh)}</b></li>",
          "<li>读法：没写出来的数字不是漏了，是没抓到就不编。技术没硬伤时，先看「先停」。</li></ul>",
-         "<h2>二、先做</h2>", _html_table(_do_rows(data), HDR_DO),
+         "<h2>二、先做（业务侧：你和内容团队能做）</h2>", _html_table(_do_rows(data, tech=False), HDR_DO),
+         ("<h3>技术项（交给技术团队）</h3>" + _html_table(_do_rows(data, tech=True), HDR_DO)) if _do_rows(data, tech=True) else "",
          "<h2>三、先停</h2>", _html_table(_stop_rows(data), HDR_STOP),
          "<h2>四、检测发现的问题</h2>", _ul(_facts_rows(data)),
          "<h2>五、每页要排哪个词</h2>",
