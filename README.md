@@ -1,42 +1,22 @@
-<p align="center">
-  <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="license MIT"/>
-  <img src="https://img.shields.io/badge/python-3%20%2B-blue.svg" alt="python 3+"/>
-  <img src="https://img.shields.io/badge/AI--native-probe-9cf.svg" alt="AI-native probe"/>
-  <img src="https://img.shields.io/badge/corpus-134%20tweets-blueviolet.svg" alt="corpus 134 tweets"/>
-  <img src="https://img.shields.io/badge/non--official-orange.svg" alt="non-official"/>
-  <img src="https://img.shields.io/badge/core-zero--deps-0a0.svg" alt="core zero deps"/>
-</p>
+# loki-seo-probe
 
-<h1 align="center">🔬 loki-seo-probe</h1>
+用 [@loki_yan_seo](https://x.com/loki_yan_seo) 的口径，把一个网址诊断成能落地的动作——并且**结构上不能编**。
 
-<p align="center">
-  <b>用 @loki_yan_seo 的口径，把一个网址诊断成能落地的动作——并且结构上不能编</b><br/>
-  探针抓客观 HTTP 事实 → 研判套专家判定规则 → 语义门禁锁死口径，任何回归直接红灯
-</p>
+非官方实现 · MIT 许可证 · 语料版权见 [NOTICE.md](NOTICE.md)
 
-<p align="center">
-  <a href="https://github.com/tong20242100/loki-seo-probe/actions/workflows/gate.yml">
-    <img src="https://github.com/tong20242100/loki-seo-probe/actions/workflows/gate.yml/badge.svg" alt="门禁 CI"/>
-  </a>
-</p>
-
----
-
-> **非官方实现，无授权、无关联。** 判定规则以 [@loki_yan_seo](https://x.com/loki_yan_seo) 在 X 上公开发布的推文为源（见 `corpus.json`），未获本人授权或背书。
+> **非官方实现，与作者无关联、未获授权、未获背书。** 判定规则以 @loki_yan_seo 的公开推文为源（见 `corpus.json`）；原始推文版权归原作者所有，MIT 仅覆盖本仓库代码与文档结构。完整版权与下架方式见 [NOTICE.md](NOTICE.md)。
 >
-> 我们从其全账号切出 **134 条**门禁切片（`core × authored × strong`，**非全账号**），这 134 条的**完整原文**收录在 `corpus.json`（与 `expert_claims.md` 同序、含 X 链接），可离线回源核对每一条判定规则。**原文版权归 @loki_yan_seo 所有**；MIT 仅覆盖本仓库的代码与文档结构（见 [`NOTICE.md`](NOTICE.md)）。
->
-> 这不是通用 SEO 手册。关键词密度、H1 塞目标词、外链建设、GEO 作业清单这类 commodity 建议，不在本口径的覆盖范围内（见 SKILL.md「明确不进」）。
+> 这不是通用 SEO 手册：关键词密度、H1 塞目标词、外链建设、GEO 作业清单这类 commodity 建议，不在本口径的覆盖范围内（见 SKILL.md「明确不进」）。
 
 ---
 
 ## 三层结构
 
-同类工具缺的从来不是知识，是**防编造的强制力**——结论不能靠模型「觉得对」就出口。本仓库把一套 SEO 判断标准体系落成三层，每层都能被程序验证：
+本仓库把一套 SEO 判断标准体系落成三层，每一层都能被程序验证：
 
 | 层 | 文件 | 这一层负责什么 |
 | --- | --- | --- |
-| 🔬 **判断标准体系** | `SKILL.md` + `expert_claims.md` | 把一位 SEO 专家的 134 条判断标准整理成可查的规则库：每条都有判定条件、适用边界、反例、和原始推文出处。多条规则同时命中时，按优先级决定先后顺序。 |
+| 🔬 **判断标准体系** | `SKILL.md` + `expert_claims.md` | 把一位 SEO 专家的 134 条判断标准整理成可查的规则库：每条都有判定条件、适用边界、反例、和原始推文出处；多条规则同时命中时按优先级决定顺序。 |
 | 🧭 **事实采集** | `scripts/audit_url.py` | 不登录、纯公开请求抓取网站的客观事实：robots 协议、sitemap、伪装成正常的死链（软 404）、移动版子站、历史存档。输出带可信度标注的结果——**抓不到 ≠ 没问题**。 |
 | 🚧 **防回归门禁** | `tests/confidence_gate.py` | 用自动化测试把上面的判断标准钉死：只要标准被改坏，测试立刻报错，不靠人肉审查。 |
 
@@ -62,8 +42,8 @@ cp -r loki-seo-probe ~/.workbuddy/skills/loki-seo      # ~/.claude/skills/、~/.
 ## 使用
 
 ```bash
-python3 scripts/audit_url.py https://example.com                  # 输出 JSON，并生成 <域名>_audit_report.md / .html 人话版
-python3 scripts/audit_url.py https://example.com --diff prev.json  # 只打印 findings / sitemap 变化，复测对账
+python3 scripts/audit_url.py https://example.com                   # 输出 JSON，并生成 <域名>_audit_report.md / .html 人话版
+python3 scripts/audit_url.py https://example.com --diff prev.json   # 只打印 findings / sitemap 变化，复测对账
 ```
 
 跑完得到两份产物：一份机器可读的 `JSON`（含 `status` / `run_confidence` / `diagnosis` / `agent`），一份人话版的 `md` / `html` 报告。
@@ -77,11 +57,13 @@ python3 scripts/audit_url.py https://example.com --diff prev.json  # 只打印 f
 
 判定语义不是靠模型自觉，而是由 `tests/` 下三道门禁强制钉死——任何回归都会让 CI 变红：
 
-- `confidence_gate.py` — 语义断言（含变异测试）：覆盖置信度、研判排序、seen/na 拆分、sitemap 变体、抖动与假 healthy、m-host / Wayback / 抽样分母 / `display:none` / 各探针超时路径。
-- `report_gate.py` — 渲染层去黑话、verdict 人话、四列表、JSON.agent↔md 投影一致。
-- `fetch_retry_gate.py` — 抓取重试行为：断言真实退避，而非只在源码里写字符串。
+| 门禁 | 钉死什么 |
+| --- | --- |
+| `confidence_gate.py` | 语义断言（含变异测试）：置信度、研判排序、seen/na 拆分、sitemap 变体、抖动与假 healthy、m-host / Wayback / 抽样分母 / `display:none` / 各探针超时路径 |
+| `report_gate.py` | 渲染层去黑话、verdict 人话、四列表、JSON.agent↔md 投影一致 |
+| `fetch_retry_gate.py` | 抓取重试行为：断言真实退避，而非只检查源码字符串 |
 
-门禁在每次 push / PR 的 CI 中自动跑，顶部 badge 显示当前状态；演进记录见 [`CHANGELOG.md`](CHANGELOG.md)。
+门禁在每次 push / PR 的 CI 中自动跑；演进记录见 [CHANGELOG.md](CHANGELOG.md)。
 
 ---
 
@@ -104,7 +86,7 @@ python3 scripts/audit_url.py https://example.com --diff prev.json  # 只打印 f
 ## 语料与版权
 
 - 收录的是 **@loki_yan_seo** 在 X 上**公开发布的推文原文**，目的是让每条判定规则可离线回源，不是转载传播。
-- **134 条是切片，不是全账号**：收录标准与不收录范围见 [`NOTICE.md`](NOTICE.md)。
+- **134 条是切片，不是全账号**：收录标准与不收录范围见 [NOTICE.md](NOTICE.md)。
 - **原文版权归 @loki_yan_seo 所有**；MIT 仅覆盖本仓库的代码与文档结构，**不覆盖**推文原文。
 - 有异议即下架：原作者或权利人在 issue 或 X（[@MagicQM](https://x.com/MagicQM)）提出，直接删，不问理由。
 
@@ -112,4 +94,4 @@ python3 scripts/audit_url.py https://example.com --diff prev.json  # 只打印 f
 
 ## License
 
-MIT，见 [`LICENSE`](LICENSE)。推文原文不在 MIT 覆盖范围内，见 [`NOTICE.md`](NOTICE.md)。
+MIT，见 [LICENSE](LICENSE)。推文原文不在 MIT 覆盖范围内，见 [NOTICE.md](NOTICE.md)。
