@@ -26,7 +26,7 @@
 >
 > 我们从其全账号切出 **134 条**门禁切片（`core × authored × strong`，**非全账号**），这 134 条的**完整原文**收录在 `corpus.json`（与 `expert_claims.md` 同序、含 X 链接），可离线回源核对每一条判定规则。**原文版权归 @loki_yan_seo 所有**；MIT 仅覆盖本仓库的代码与文档结构（见 [`NOTICE.md`](NOTICE.md)）。
 >
-> 这不是通用 SEO 手册。关键词密度、H1 塞目标词、外链建设、GEO 作业清单这类 commodity 建议，在本口径里被明确顶回去（见 SKILL.md「明确不进」）。
+> 这不是通用 SEO 手册。关键词密度、H1 塞目标词、外链建设、GEO 作业清单这类 commodity 建议，不在本口径的覆盖范围内（见 SKILL.md「明确不进」）。
 
 ---
 
