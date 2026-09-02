@@ -15,7 +15,7 @@
 
 ## 和常见检测工具不一样
 
-一般工具给你一堆分数和「待优化 127 项」，让你去修。这份诊断反过来：**先告诉你什么别做，再让你把人话说清楚。**
+一般工具给你一堆分数和「待优化 127 项」，让你去修。这份诊断反过来：**先告诉你什么别做，再把结论与待办说清楚。**
 
 - **不编数字。** 没有外链库就不写 DR，没有搜索量就不写「品牌词 800」。没抓到就写「无数据」，可信度写在结论前面。
 - **把你当生意，不当网站。** 页面多、博客勤，它不会夸「内容丰富」——它会问：外人能不能一句话说清你是谁、成交发生在哪几页。
@@ -61,13 +61,13 @@ python3 scripts/audit_url.py https://peercare.cn
 
 | 文件 | 给谁看 | 关键内容 |
 |---|---|---|
-| `*_audit_report.json` | 人 + 机器同源 | `status` / `run_confidence` / `sitemap_follow` / `findings[]` / `diagnosis` / `agent`（AI 闭环）/ `cannot` / `next_collect`。`agent` 是唯一可信源，`md/html` 由它投影，`report_gate` 钉死一致性 |
-| `*_audit_report.md` | 给人看 | 十节人话报告（见下表），可直接贴给业务方 |
-| `*_audit_report.html` | 给人看 | 同 `md` 的表格版（`max-width:1000px` 白底表格，无卡片折叠），适合转发 |
+| `*_audit_report.json` | 人 + 机器同源 | 完整数据与机器接口，含诊断与待办清单 |
+| `*_audit_report.md` | 给人看 | 十节结构化报告（见下表），可直接贴给业务方 |
+| `*_audit_report.html` | 给人看 | 同 `md` 的表格版，白底表格，适合转发 |
 
 `md/html` 十节结构（固定顺序，空数据则整节不渲染）：
 
-1. 现在的状态（`status/run_confidence/sitemap_follow/verdict` + 读法） 2. 先做（业务表必出，技术表仅有 `fail/warn` 时出现） 3. 先停 4. 检测发现的问题 5. 每页要排哪个词（含首页示范行） 6. 哪些数据可信 7. 逐项核查结果（18 条 `findings` 状态+证据，中文映射）8. 需要你手动处理（待办/需确认） 9. 还需补充的数据 10. 最终决定权在你
+1. 现在的状态 2. 先做 3. 先停 4. 检测发现的问题 5. 每页要排哪个词 6. 哪些数据可信 7. 逐项核查结果 8. 需要你手动处理 9. 还需补充的数据 10. 最终决定权在你
 
 `stdout` 同步打印 `json`（管道友好），`stderr` 提示落盘路径与 `status≠ok` 时的 `core_missing`。
 
@@ -75,7 +75,7 @@ python3 scripts/audit_url.py https://peercare.cn
 
 ## 报告怎么看
 
-`md/html` 已按人话排好序，开头即结论，后面按「先做/先停/核查/待办」展开。判定语义（`status`/`verdict`/`na/seen` 区分、定性与硬伤的边界等）不赘于此，完整读法与口径出处见 `SKILL.md`，报告本身已是按该合同渲染的投影。
+报告按结论→任务→核查→待办顺序展开，结构固定。字段含义与判定边界见 `SKILL.md`。
 
 ## 复测闭环
 
@@ -91,7 +91,7 @@ python3 scripts/audit_url.py https://example.com --diff example.com_audit_report
 # na↔pass 抖动会标「可能是代理抖动，非真实修复」
 ```
 
-`agent.reprobe.cmd` 给出复跑命令，`agent.reprobe.diff` 是稳定对账键。`agent.actions[].verify.kind` 三态是 AI 护栏：`probe` 同命令复跑（软404/`<main>`/https/m站/`display:none`）/ `human` 探针打不绿（About/一页一词/成交页）/ `collect` 需 GSC/Frog/site: 文件，没文件就停。
+`--diff` 仅对比关键字段，`na↔pass` 的抖动会标注，避免把网络抖动当成修复。
 
 ---
 
@@ -119,21 +119,21 @@ cp -r loki-seo-probe ~/.workbuddy/skills/loki-seo   # ~/.claude/skills/、~/.gro
 |---|---|---|
 | 🔬 判断标准体系 | `SKILL.md` + `expert_claims.md` + `corpus.json` | 134 条判定规则（判定条件/适用边界/反例/推文出处 `#n`），碰撞时按五档优先级取舍 |
 | 🧭 事实采集 | `scripts/audit_url.py` | 零登录公开抓取：`robots/sitemap/llms.txt/软404/<main>/m站/Wayback/抽样原创度`，带可信度与降级状态机，自动落盘 `md/html` |
-| 🚧 防回归门禁 | `tests/*_gate.py` | 语义/可读性/抓取重试三道门禁，形态门禁 `shape_check.py` 限 `行数≤40 嵌套≤3 分支≤5` |
+| 🚧 防回归门禁 | `tests/*_gate.py` | 三道门禁 + 形态检查，改坏即报错 |
 
 ---
 
 ## 可信度保证
 
-不是靠模型自觉，是三道门禁在 `CI` 每次 `push/PR` 自动跑，任一红即阻断：
+三道门禁在 `CI` 每次 `push/PR` 自动跑，任一失败即阻断：
 
-| 门禁 | 钉死什么 |
+| 门禁 | 保证什么 |
 |---|---|
-| `confidence_gate.py` | 置信度、判定优先级、采集状态 `na/seen/pass` 区分、`sitemap` 结构、`m站/Wayback/抽样/display:none` 边界、超时与抖动不翻案 |
-| `report_gate.py` | 术语首翻（`posts→博客文章`）、`verdict` 人话、`na` 翻译、四列表头、开头大白话、黑话泄漏、`md/html` 与 `JSON.agent` 投影逐条一致、`sample/探针同源`、`critical` 读法不自相矛盾、证据句不复述括号 |
-| `fetch_retry_gate.py` | 真重试（`patch urlopen` 验 `502/超时 3 次`）且真 `502` 不被掩盖成 `0` |
+| `confidence_gate.py` | 探针判定是否按规则执行，边界与超时是否正确处理 |
+| `report_gate.py` | 报告与 `json` 是否同源一致，结论是否可直接使用 |
+| `fetch_retry_gate.py` | 网络失败是否会重试，且真实错误不会被掩盖 |
 
-形态门禁 `shape_check.py` 递归扫仓库 `.py`，覆盖数打印，新增脚本自动纳管。演进见 `CHANGELOG.md`，`SKILL.md` 为调用规程全文。
+演进见 `CHANGELOG.md`，完整规程见 `SKILL.md`。
 
 ---
 
@@ -141,7 +141,7 @@ cp -r loki-seo-probe ~/.workbuddy/skills/loki-seo   # ~/.claude/skills/、~/.gro
 
 | 文件 | 所属层 | 作用 |
 |---|---|---|
-| `SKILL.md` | 判断标准体系 | 路由/碰撞表/输出合同/风险信号 `RF01-28`/判定规则 `1.x-7.x` 全文，Agent 调用规程 |
+| `SKILL.md` | 判断标准体系 | 判定规则与调用规程全文 |
 | `expert_claims.md` | 判断标准体系 | 134 条主张表（`#n→tweet_id`） |
 | `corpus.json` | 语料 | 134 条原文快照（同序、日期、`X` 链接，离线可核验） |
 | `scripts/audit_url.py` | 事实采集 | 探针+渲染+`--diff`，`~1590 行`，含重试与隐身后端 |
@@ -163,7 +163,7 @@ cp -r loki-seo-probe ~/.workbuddy/skills/loki-seo   # ~/.claude/skills/、~/.gro
 
 **如何对比改动是否生效？** 用 `--diff`：`python3 scripts/audit_url.py https://example.com --diff prev.json`，只对 `findings/status` 与 `sitemap` 打 `diff`，`na↔pass` 抖动会标注。
 
-**`md/html` 与 `json` 不一致？** 不应发生，`report_gate` 钉死 `agent→md` 投影逐条一致与 `check_sample_consistency` 同源校验；若命中请提 `issue` 附 `json`。
+**`md/html` 与 `json` 不一致？** 不应发生，若出现请提 `issue` 并附 `json`。
 
 口径相关（`needs-focus/llms.txt/LinkedIn/partial` 含义）见 `SKILL.md`，不在此赘述。
 
